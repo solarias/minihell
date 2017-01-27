@@ -649,11 +649,9 @@ window.onload = function() {
     }
     $("#record_box").addEventListener('touchend', function(e){
         scrollLock(this);
-        e.preventDefault();
     }, false);
     $("#dg_box").addEventListener('touchend', function(e){
         scrollLock(this);
-        e.preventDefault();
     }, false);
 
 

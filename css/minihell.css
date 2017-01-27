@@ -9,6 +9,7 @@
 
 
 /*하드웨어 가속*/
+/*
 *[gpuaccel] {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
@@ -32,6 +33,7 @@
     -webkit-perspective: 1000;
     perspective: 1000;
 }
+*/
 /*스타일*/
     /*폰트 - 나눔고딕*/
     @import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
