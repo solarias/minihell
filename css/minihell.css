@@ -1,0 +1,730 @@
+* {
+    margin:0rem;
+    padding:0rem;
+    border:0rem;
+
+	font-family:"Nanum Gothic", sans-serif;
+	text-decoration:none;
+}
+
+
+/*하드웨어 가속*/
+*[gpuaccel] {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+
+    -webkit-transform: translate3d(0,0,0)
+    transform: translate3d(0,0,0);
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    -webkit-perspective: 1000;
+    perspective: 1000;
+}
+*[gpuaccel2] {
+    -webkit-transform: translate3d(0,0,0)
+    transform: translate3d(0,0,0);
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    -webkit-perspective: 1000;
+    perspective: 1000;
+}
+/*스타일*/
+    /*폰트 - 나눔고딕*/
+    @import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+.color_yellow {
+	color:yellow;
+}
+.color_orange {
+	color:orange;
+}
+.color_green {
+	color:#59FF00;
+}
+.color_skyblue {
+    color:skyblue;
+}
+.color_gray {
+    color:#bdbdbd;
+}
+.color_white {
+    color:white;
+}
+.color_epic {
+	color:#E5B64A;
+	font-size:inherit;
+}
+.color_set {
+	color:#59FF00;
+}
+.font_shadow {
+    text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
+}
+button {/*버튼 애니메이션*/
+    transition:all 0.2s;
+}
+/*그림자 효과*/
+button:hover, select:hover, label:hover {
+    box-shadow:-0.2rem 0rem 0.2rem white,-0.2rem 0.2rem 0.2rem white,0rem 0.2rem 0.2rem white,0.2rem 0.2rem 0.2rem white,0.2rem 0rem 0.2rem white,0.2rem -0.2rem 0.2rem white,0rem -0.2rem 0.2rem white,-0.2rem -0.2rem 0.2rem white;
+    cursor:pointer;
+}
+button:active, select:active, label:active {
+    box-shadow:-0.3rem 0rem 0.3rem skyblue,-0.3rem 0.3rem 0.3rem skyblue,0rem 0.3rem 0.3rem skyblue,0.3rem 0.3rem 0.3rem skyblue,0.3rem 0rem 0.3rem skyblue,0.3rem -0.3rem 0.3rem skyblue,0rem -0.3rem 0.3rem skyblue,-0.3rem -0.3rem 0.3rem skyblue;
+}
+.hover_inset:hover {
+    box-shadow:inset -0.2rem 0rem 0.2rem white,inset -0.2rem 0.2rem 0.2rem white,inset 0rem 0.2rem 0.2rem white,inset 0.2rem 0.2rem 0.2rem white,inset 0.2rem 0rem 0.2rem white,inset 0.2rem -0.2rem 0.2rem white,inset 0rem -0.2rem 0.2rem white,inset -0.2rem -0.2rem 0.2rem white;
+    cursor:pointer;
+}
+.hover_inset:active {
+    box-shadow:inset -0.3rem 0rem 0.3rem skyblue,inset -0.3rem 0.3rem 0.3rem skyblue,inset 0rem 0.3rem 0.3rem skyblue,inset 0.3rem 0.3rem 0.3rem skyblue,inset 0.3rem 0rem 0.3rem skyblue,inset 0.3rem -0.3rem 0.3rem skyblue,inset 0rem -0.3rem 0.3rem skyblue,inset -0.3rem -0.3rem 0.3rem skyblue;
+}
+/*캐릭터 스프라이트(공용)*/
+.swordman_m {
+	background-image:url('../img/sprite/character_swordman_m.png');
+}
+.swordman_f {
+	background-image:url('../img/sprite/character_swordman_f.png');
+}
+.darkknight_m {
+	background-image:url('../img/sprite/character_darkknight_m.png');
+}
+.fighter_m {
+	background-image:url('../img/sprite/character_fighter_m.png');
+}
+.fighter_f {
+	background-image:url('../img/sprite/character_fighter_f.png');
+}
+.gunner_m {
+	background-image:url('../img/sprite/character_gunner_m.png');
+}
+.gunner_f {
+	background-image:url('../img/sprite/character_gunner_f.png');
+}
+.mage_m {
+	background-image:url('../img/sprite/character_mage_m.png');
+}
+.mage_f {
+	background-image:url('../img/sprite/character_mage_f.png');
+}
+.creator_f {
+	background-image:url('../img/sprite/character_creator_f.png');
+}
+.priest_m {
+	background-image:url('../img/sprite/character_priest_m.png');
+}
+.priest_f {
+	background-image:url('../img/sprite/character_priest_f.png');
+}
+.thief_f {
+	background-image:url('../img/sprite/character_thief_f.png');
+}
+.knight_f {
+	background-image:url('../img/sprite/character_knight_f.png');
+}
+.lancer_m {
+	background-image:url('../img/sprite/character_lancer_m.png');
+}
+.beckey {
+	background-image:url('../img/sprite/character_beckey.png');
+}
+
+
+
+
+
+/*뼈대*/
+
+html, body {
+    position:absolute;
+        z-index:-2;
+
+    overflow:hidden;
+    width:100%;
+	height:100%;
+
+	background-color:#606060;
+}
+@media (max-aspect-ratio:60/100) {
+    html{font-size:10vw;}
+}
+@media (min-aspect-ratio:60/100) {
+    html{font-size:6vh;}
+}
+
+#wrapper {
+    position:absolute;
+        z-index:-1;
+    left:0;
+    right:0;
+    overflow:hidden;
+
+    margin:0 auto;
+    width:10rem;
+    height:100%;
+}
+
+.frame_area {
+    position:relative;
+
+    width:100%;
+    height:100%;
+}
+
+
+/*메인 프레임*/
+#frame_main {
+    position:relative;
+    overflow:hidden;
+
+    width:10rem;
+    height:12rem;
+
+    background-color:black;
+    background-image:url('../img/bg/bg_gate.jpg');
+        background-position:50% 80%;
+        background-size:22.2rem auto;
+        background-repeat: no-repeat;
+}
+    #main_cover {
+        position:absolute;
+            z-index:99;
+
+        width:100%;
+        height:100%;
+
+        background-color:black;
+        transition:opacity 0.75s;
+
+        display:none;
+    }
+        #main_cover_bg {
+            position:absolute;
+
+            width:100%;
+            height:100%;
+
+            background-image:url('../img/bg/loading_metro.jpg');
+                background-position:50% 50%;
+                background-size:120% 100%;
+            transition:opacity 0.75s;
+            opacity:1;
+        }
+
+#main_channel {
+    position:relative;
+
+    margin-top:0.2rem;
+    width:10rem;
+    height:1.0rem;
+
+    background-image:url('../img/channel.png');
+    background-size:100% 1.0rem;
+
+    color:white;
+    font-weight:bold;
+    font-size:0.5rem;
+        line-height:1.0rem;
+    text-align:center;
+}
+    #channel_text {color:yellow;font-weight:normal;}
+#main_tower {
+    position:absolute;
+}
+
+#main_character {
+    position:absolute;
+        z-index:1;
+
+    width:15rem;
+    height:12rem;
+
+    background-size:180rem 24rem;
+}
+    #main_character.gate {
+        top:0.5rem;
+        left:-5rem;
+    }
+    #main_character.dungeon {
+        top:-3rem;
+        left:-3rem;
+    }
+    /*캐릭터 이미지 : 공용 클래스 스타일 적용*/
+    #main_character.left {
+    }
+    #main_character.right {
+        -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        filter: FlipH;
+        -ms-filter: "FlipH";
+    }
+        /*대기모션은 자체적인 애니메이셔으로 소화*/
+        #main_character.wait {
+            -webkit-animation: sprite_wait 2s steps(12) infinite;
+            animation: sprite_wait 2s steps(12) infinite;
+            background-position:0 0;
+            opacity:1;
+        }
+            @-webkit-keyframes sprite_wait {
+                100% {background-position:-180rem 0;}
+            }
+            @keyframes sprite_wait {
+                100% {background-position:-180rem 0;}
+            }
+        #main_character.attack {
+            -webkit-animation: sprite_attack 0.5s steps(12) infinite;
+            animation: sprite_attack 0.5s steps(12) infinite;
+            background-position:0px -12rem;
+            opacity:1;
+        }
+            @-webkit-keyframes sprite_attack {
+                100% {background-position:-180rem -12rem;}
+            }
+            @keyframes sprite_attack {
+                100% {background-position:-180rem -12rem;}
+            }
+/*드랍 아이템*/
+.item {
+	position:absolute;
+    left: 3.5rem;
+    top: 2.5rem;
+
+	width:10rem;
+	height:2rem;
+
+	text-align:center;
+}
+	.item_description {
+        position:absolute;
+            z-index:3;
+        left:0;
+        top:0;
+        margin-bottom:0.2rem;
+        width:100%;
+        height:100%;
+    }
+	.item_name {
+        position:relative;
+		margin:0 auto;
+		padding:0.06rem 0.1rem;
+
+		width:auto;
+		white-space: nowrap;
+
+		background:rgba(0,0,0,0.7);
+		border:0.04rem #B89F7C solid;
+		border-radius:0.15rem;
+
+		font-size:0.4rem;
+		font-weight:bold;
+		white-space:nowrap;
+
+        display:inline-block;
+		visibility:hidden;
+	}
+		.item_name.type_normal {
+			display:none;
+		}
+		.item_name.type_jogak {
+			display:none;
+		}
+	.item_img {
+		position:absolute;
+            z-index:3;
+        left:0;
+        right:0;
+        margin:auto;
+        top:1.5rem;
+
+		width:0.01rem;
+		height:0.01rem;
+
+		background-image:url('http://solarias.github.io/dnf/sprite/images/sprite_item.png');
+		    background-position:0 0;
+            background-size:auto 21.6rem;
+
+		-ms-transition: none;
+		-webkit-transition: none;
+		transition: none;
+
+		visibility:hidden;
+	}
+		.item_img.rotate {
+			-ms-transform:rotate(-360deg);
+			-webkit-transform:rotate(-360deg);
+			transform:rotate(-360deg);
+
+			-ms-transition: -ms-transform 0.55s linear;
+			-webkit-transition: -webkit-transform 0.55s linear;
+			transition: transform 0.55s linear;
+		}
+
+	.effect_appear {
+		position:absolute;
+            z-index:4;
+		left:0.65rem;
+		top:-5.3rem;
+		/*
+		position:absolute;
+		top:0px;
+		left:-144px;
+		z-index:4;
+		*/
+
+		width:10.2rem;
+		height:11.9rem;
+
+		background-image:url('../img/epic_appear.png');
+            background-size:122.4rem auto;
+
+		visibility:hidden;
+	}
+        .effect_appear.act {
+            -webkit-animation: effect_appear 0.8s steps(11) forwards;
+            animation: effect_appear 0.8s steps(11) forwards;
+            background-position:0 0;
+
+		    visibility:visible;
+        }
+            @-webkit-keyframes effect_appear {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-112.2rem 0rem;}
+            }
+            @keyframes effect_appear {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-112.2rem 0rem;}
+            }
+
+	.effect_land {
+		position:absolute;
+            z-index:2;
+		left:-3.7rem;
+        top:-3rem;
+		/*
+		position:absolute;
+		top:0px;
+		left:-302px;
+		z-index:4;
+		*/
+
+		margin:0px auto;
+		width:18rem;
+		height:9.5rem;
+
+		background-image:url('../img/epic_land.png');
+            background-size:145.1rem auto;
+
+		visibility:hidden;
+	}
+        .effect_land.act {
+            -webkit-animation: effect_land 0.9s steps(7) forwards;
+            animation: effect_land 0.9s steps(7) forwards;
+            background-position:0 0;
+
+		    visibility:visible;
+        }
+            @-webkit-keyframes effect_land {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-127.1rem 0rem;}
+            }
+            @keyframes effect_land {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-127.1rem 0rem;}
+            }
+	.effect_wait {
+		position:absolute;
+            z-index:2;
+		left:2rem;
+        top:-1rem;
+
+		width:5.64rem;
+		height:5.64rem;
+
+		background-image:url('../img/epic_wait.png');
+            background-size:67.72rem auto;
+
+		visibility:hidden;
+	}
+        .effect_wait.act {
+            -webkit-animation: effect_wait 1.2s steps(11) infinite;
+            animation: effect_wait 1.2s steps(11) infinite;
+            background-position:0 0;
+
+		    visibility:visible;
+        }
+            @-webkit-keyframes effect_wait {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-62.0rem 0rem;}
+            }
+            @keyframes effect_wait {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-62.0rem 0rem;}
+            }
+
+
+
+/*보드 프레임*/
+#frame_board {
+    position:relative;
+
+    padding:0.1rem;
+    width:10rem;
+    height:2rem;
+
+    background:black;
+    border:0.1rem #909090 outset;
+    box-sizing: border-box;
+
+    color:white;
+    font-size:0.5rem;
+    font-weight:bold;
+}
+    #frame_board hr {
+        margin:0.1rem 0;
+        border:0.02rem white solid;
+    }
+    #board_set_text {font-weight:normal}
+    #board_count {float:left;}#board_epic {float:right;}
+
+
+
+
+/*버튼 프레임*/
+#frame_button {
+    position:absolute;
+        z-index:-1;
+    top:0;
+    overflow:hidden;
+
+    padding-top:14rem;
+    width: 10rem;
+    height: 100%;
+
+    background:black;
+    background-image:url('../img/button_background.png');
+        background-size:100% auto;
+    box-sizing: border-box;
+}
+
+#button_main {
+    position:absolute;
+        z-index:2;
+    left:15%;
+    top:15%;
+    display:block;
+
+    width:70%;
+    height:70%;
+
+    background: -webkit-linear-gradient(top, #ffffff, #A0A0A0);
+    background: linear-gradient(top, #ffffff, #A0A0A0);
+    border:0.05rem gray outset;
+    border-radius:0.5rem;
+    opacity:0.9;
+
+    font-size:1em;
+    font-weight:bold;
+}
+
+.button_side{
+    position:absolute;
+        z-index:3;
+    top:10%;
+    display:block;
+
+    width:2rem;
+    height:80%;
+
+    box-sizing:border-box;
+
+    font-size:0.6rem;
+    font-weight:bold;
+}
+#button_left {
+    left:0;
+
+    background: -webkit-linear-gradient(top, #ffffff 0%,#516BFF 100%);
+    background: linear-gradient(top bottom, #ffffff 0%,#516BFF 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    border:0.05rem gray outset;
+    border-left:0;
+    border-top-right-radius:0.4rem;
+    border-bottom-right-radius:0.4rem;
+}
+#button_right {
+    right:0;
+
+    background: -webkit-linear-gradient(top, #ffffff 0%,#FF6A00 100%);
+    background: linear-gradient(top bottom, #ffffff 0%,#FF6A00 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    border:0.05rem gray outset;
+    border-right:0;
+    border-top-left-radius:0.4rem;
+    border-bottom-left-radius:0.4rem;
+}
+
+
+
+/*메뉴 프레임*/
+#frame_slot_left {
+    position:absolute;
+        z-index:100;
+    left:-8rem;
+    top:0;
+
+    width:8rem;
+    height:100%;
+
+    background:rgba(0,0,0,0.8);
+    border-right:0.01rem black solid;
+    box-sizing: border-box;
+
+    display:none;
+}
+#frame_slot_right {
+    position:absolute;
+        z-index:100;
+    right:-8rem;
+    top:0;
+
+    width:8rem;
+    height:100%;
+
+    background:black;
+    border-left:0.01rem black solid;
+    box-sizing: border-box;
+
+    display:none;
+}
+.slot_title {
+    position:absolute;
+        z-index:1;
+    width:100%;
+    height:1rem;
+
+    box-sizing: border-box;
+
+    color:#f0f0f0;
+    font-weight:bold;
+    font-size:0.5rem;
+    line-height:1rem;
+    text-align:center;
+}
+    .slot_title.blue {
+        background: -webkit-linear-gradient(#ffffff, #0026ff);
+        background: linear-gradient(#ffffff, #0026ff); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    }
+    .slot_title.black {
+        background: -webkit-linear-gradient(#aaaaaa, #222222);
+        background: linear-gradient(#aaaaaa, #222222); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    }
+.slot_content {
+    position:relative;
+
+    padding:1rem 0 2rem 0;
+    width:100%;
+    height:100%;
+
+    box-sizing: border-box;
+}
+.slot_list {
+    margin-bottom:0.05rem;
+    width:100%;
+    height:3.2rem;
+
+    background-color:#303030;
+        background-position:50% 50%;
+        background-repeat:no-repeat;
+    background-size:100% auto;
+    border-radius: 0.5rem;
+
+    display:block;
+}
+    .scroll {
+        overflow-y:scroll;
+    }
+    .scroll_stop {
+        overflow-y:hidden;
+    }
+    #record_box {
+        padding:0.2rem;
+
+        box-sizing: border-box;
+
+        color:white;
+        font-size:0.3rem;
+        font-weight:bold;
+    }
+        .record_item, .record_set {
+            margin-left:0.2rem;
+            margin-bottom:0.25rem;
+        }
+        .record_set {
+            font-size:0.4rem;
+        }
+        .record_head .font_small, .record_item .font_small {
+            font-size:0.25rem;
+            line-height:0.3rem;
+        }
+
+    #dg1{background-image:url('../img/slot/metro_1.png')}
+    #dg2{background-image:url('../img/slot/metro_2.png')}
+    #dg3{background-image:url('../img/slot/metro_3.png')}
+    #dg4{background-image:url('../img/slot/metro_4.png')}
+    #dg5{background-image:url('../img/slot/metro_5.png')}
+    #dg6{background-image:url('../img/slot/metro_6.png')}
+.slot_close {
+    position:absolute;
+        z-index:1;
+    bottom:0;
+    width:100%;
+    height:2rem;
+
+    background: -webkit-linear-gradient(top, #ffffff 0%,#FF6A00 100%);
+    background: linear-gradient(top bottom, #ffffff 0%,#FF6A00 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    border-top:0.05rem black solid;
+    box-sizing: border-box;
+
+    color:black;
+    font-weight:bold;
+    font-size:0.8rem;
+    line-height:1rem;
+    text-align:center;
+}
+
+
+
+/*======================================================================================================*/
+/* ※ 4. 기타 */
+/*======================================================================================================*/
+#imagePreloader {
+	width:1px;
+	height:1px;
+
+	display:none;
+}
+
+/*모바일 스크롤바 가시화*/
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+::-webkit-scrollbar:vertical {
+    width: 0.25rem;
+}
+
+::-webkit-scrollbar:horizontal {
+    height: 0.25rem;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .5);
+    border-radius: 0.4rem;
+    border: 0.025rem solid #ffffff;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #ffffff;
+}

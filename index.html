@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+        <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no" />
+		<!--모바일 최적화 : 화면 자동확대, 터치 딜레이 제거 (시작)-->
+		<script src="./package/subtool.js"></script>
+		<script src="./package/fastclick.js"></script>
+		<!--모바일 최적화 : 화면 자동확대, 터치 딜레이 제거 (끝)-->
+		<!--[if lt IE 11]>
+		<script src="../package/no_ie10.js"></script>
+		<![endif]-->
+
+		<link rel="stylesheet" type="text/css" href="./css/minihell.css" />
+
+		<title>미니 지옥파티 시뮬레이터</title>
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="frame_main">
+					<div id="main_cover"><div id="main_cover_bg"></div></div>
+				<div id="main_channel" class="font_shadow">채널 : <span id="channel_text">???</span></div>
+				<div id="main_character" class="fighter_m gate wait" gpuaccel></div>
+				<!--드랍 아이템-->
+				<div id="item1" class="item">
+					<div id="item_description1" class="item_description">
+						<p id="item_name1" class="item_name">아이리스의 메멘토 - 스트리트파이터(여)</p>
+					</div>
+					<div id="item_img1" class="item_img" gpuaccel2></div>
+					<div id="effect_appear1" class="effect_appear" gpuaccel></div>
+					<div id="effect_land1" class="effect_land" gpuaccel></div>
+					<div id="effect_wait1" class="effect_wait" gpuaccel></div>
+				</div>
+			</div>
+
+			<div id="frame_board">
+				<div id="board_set">세트 :  <span id="board_set_text" class="color_gray">정보 없음</span></div>
+				<hr/>
+				<div id="board_count">제 <span id="board_count_num" class="color_epic">0</span>회차</div>
+				<div id="board_epic">획득 에픽 : <span id="board_epic_num" class="color_epic">0</span>개</div>
+			</div>
+
+			<div id="frame_button"><div class="frame_area">
+				<button id="button_left" class="button_side">획득<br/>기록</button>
+				<!--
+				<button id="button_left_bottom" class="button_side">탐색설정</button>
+				-->
+
+				<button id="button_main" disabled>클릭 ▷</button>
+
+				<button id="button_right" class="button_side">던전<br/>선택</button>
+				<!--
+				<button id="button_right_bottom" class="button_side font_shadow">옵션</button>
+				-->
+			</div></div>
+
+			<div id="frame_slot_left" gpuaccel>
+				<div class="slot_title font_shadow blue">에픽아이템 획득 기록</div>
+				<div class="slot_content"><div id="record_box" class="frame_area scroll">
+				</div></div>
+				<button id="slot_left_close" class="slot_close hover_inset">닫기</button>
+			</div>
+
+			<div id="frame_slot_right" gpuaccel>
+				<div class="slot_title font_shadow black">지옥파티 던전 선택</div>
+				<div class="slot_content"><div id="dg_box" class="frame_area scroll">
+					<button id="dg1" data-target="metro_1" class="slot_list dg_list hover_inset"></button>
+					<button id="dg2" data-target="metro_2" class="slot_list dg_list hover_inset"></button>
+					<button id="dg3" data-target="metro_3" class="slot_list dg_list hover_inset"></button>
+					<button id="dg4" data-target="metro_4" class="slot_list dg_list hover_inset"></button>
+					<button id="dg5" data-target="metro_5" class="slot_list dg_list hover_inset"></button>
+					<button id="dg6" data-target="metro_6" class="slot_list dg_list hover_inset"></button>
+				</div></div>
+				<button id="slot_right_close" class="slot_close hover_inset">선택 취소</button>
+			</div>
+		</div>
+
+		<!--외부  라이브러리-->
+			<!-- vunit polyfill -->
+			<script src="./package/prefixfree.min.js"></script>
+			<script src="./package/vunit.js"></script>
+			<!-- seetAlert -->
+			<script src="./package/sweetalert2/dist/sweetalert2.min.js"></script>
+			<link rel="stylesheet" href="./package/sweetalert2/dist/sweetalert2.css">
+			<!--GSAP-->
+			<script src="./package/tweenMax.min2.js"></script>
+			<!--Howler-->
+			<script src="./package/howler.min.js"></script>
+		<!--외부  라이브러리-->
+
+		<!--채널, 아이템, 스프라이트 정보-->
+		<script src="http://solarias.github.io/dnf/js/fortuneResultList.js"></script>
+		<script src="http://solarias.github.io/dnf/js/hell_itemList.js"></script>
+		<script src="http://solarias.github.io/dnf/sprite/spriteList.js"></script>
+		<script src="http://solarias.github.io/dnf/sprite/sprite_function.js"></script>
+		<link rel="stylesheet" type="text/css" href="http://solarias.github.io/dnf/sprite/spriteCss.css" />
+		<!--채널, 아이템, 스프라이트 정보-->
+		<script src="./js/minihell.js"></script>
+
+	</body>
+</html>

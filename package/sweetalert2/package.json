@@ -1,0 +1,57 @@
+{
+  "name": "sweetalert2",
+  "version": "3.0.2",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/limonte/sweetalert2.git"
+  },
+  "description": "A replacement for JavaScript's popup boxes, supported fork of sweetalert",
+  "main": "src/sweetalert2.js",
+  "dependencies": {
+    "es6-promise-polyfill": "*"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^2.2.0",
+    "gulp-uglify": "^1.5.3",
+    "gulp-clean-css": "^2.0.6"
+  },
+  "author": {
+    "name": "t4t5 & limonte"
+  },
+  "license": "MIT",
+  "gitHead": "de57cc57c92d32d67cb294b334a67c70df0ba9a7",
+  "bugs": {
+    "url": "https://github.com/limonte/sweetalert2/issues"
+  },
+  "homepage": "https://github.com/limonte/sweetalert2#readme",
+  "_id": "sweetalert2@3.0.2",
+  "scripts": {},
+  "_shasum": "9bd2ca460201175f523b4edd77e7fb4d5039f3ac",
+  "_from": "sweetalert2@latest",
+  "_npmVersion": "2.15.1",
+  "_nodeVersion": "0.10.45",
+  "_npmUser": {
+    "name": "limonte",
+    "email": "limon.monte@gmail.com"
+  },
+  "dist": {
+    "shasum": "9bd2ca460201175f523b4edd77e7fb4d5039f3ac",
+    "tarball": "https://registry.npmjs.org/sweetalert2/-/sweetalert2-3.0.2.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "limonte",
+      "email": "limon.monte@gmail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/sweetalert2-3.0.2.tgz_1463771470395_0.6591029660776258"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/sweetalert2/-/sweetalert2-3.0.2.tgz",
+  "readme": "ERROR: No README data found!"
+}
