@@ -142,8 +142,8 @@ button:active, select:active, label:active {
 html, body {
     position:absolute;
         z-index:-2;
-
     overflow:hidden;
+    
     width:100%;
 	height:100%;
 

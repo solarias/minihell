@@ -490,6 +490,12 @@ var display = new displayP();
 //※ 실행
 //=====================================================================
 window.onload = function() {
+    //버튼 활성화
+    $("#button_main").innerHTML = "클릭 ▷";
+    $("#button_left").disabled = false;
+    $("#button_main").disabled = false;
+    $("#button_right").disabled = false;
+
     //브금 실행
     bgmObj.gate.play();
 
