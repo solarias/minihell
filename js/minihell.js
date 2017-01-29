@@ -469,7 +469,7 @@ displayP.prototype = {
                     }
                     break;
                 case "string":
-                    text += "<p class='record_set color_yellow'>\"" + record_item[i] + "\" 세트 완성!</p>";
+                    text += "<p class='record_set color_yellow'>\"" + record_item[i] + "\" 완성!</p>";
 
                     break;
             }
@@ -512,7 +512,7 @@ window.onload = function() {
         //닫기 버튼
         $("#slot_left_close").onclick = function() {
             //메뉴창 닫기
-            TweenMax.to($("#frame_slot_left"),0.3,{xPercent:-100,
+            TweenMax.to($("#frame_slot_left"),0.3,{xPercent:0,
                 onComplete:function() {
                     $("#frame_slot_left").style.display = "none";
                     //버튼들 활성화
