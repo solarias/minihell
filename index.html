@@ -7,6 +7,7 @@
 		<!--모바일 최적화 : 화면 자동확대, 터치 딜레이 제거 (시작)-->
 		<script src="./package/subtool.js"></script>
 		<script src="./package/fastclick.js"></script>
+		<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
 		<!--모바일 최적화 : 화면 자동확대, 터치 딜레이 제거 (끝)-->
 		<!--[if lt IE 11]>
 		<script src="../package/no_ie10.js"></script>
@@ -19,20 +20,24 @@
 	<body>
 		<div id="wrapper">
 			<div id="frame_main">
-					<div id="main_cover"><div id="main_cover_bg"></div></div>
+					<div id="main_cover"><div id="main_cover_bg">
+						<div id="cover_title">입장 중...</div>
+					</div></div>
 				<div id="main_channel" class="font_shadow">채널 : <span id="channel_text">???</span></div>
-				<div id="main_character" class="priest_m gate wait" gpuaccel></div>
+				<div id="main_npc_text">오늘도 좋은 하루가 되길 기원합니다.</div>
+				<div id="main_npc" class="npc_seria"></div>
+				<div id="main_character" class="gate wait" gpuaccel></div>
+				<button id="main_character_change">캐릭터 변경</button>
 				<!--드랍 아이템-->
-					<!--item : X축 이동 / item_container : Y축 이동-->
-				<div id="item1" class="item"><div id="item_container1" class="item_container">
+				<div id="item1" class="item">
 					<div id="item_description1" class="item_description">
 						<p id="item_name1" class="item_name">아이리스의 메멘토 - 스트리트파이터(여)</p>
 					</div>
-					<div id="item_img1" class="item_img" gpuaccel2></div>
+					<div id="item_img1" class="item_img"></div>
 					<div id="effect_appear1" class="effect_appear" gpuaccel></div>
 					<div id="effect_land1" class="effect_land" gpuaccel></div>
 					<div id="effect_wait1" class="effect_wait" gpuaccel></div>
-				</div></div>
+				</div>
 			</div>
 
 			<div id="frame_board">
@@ -50,7 +55,7 @@
 
 				<button id="button_main" disabled>클릭 ▷</button>
 
-				<button id="button_right" class="button_side">던전<br/>선택</button>
+				<button id="button_right" class="button_side">행선지<br/>선택</button>
 				<!--
 				<button id="button_right_bottom" class="button_side font_shadow">옵션</button>
 				-->
@@ -64,14 +69,17 @@
 			</div>
 
 			<div id="frame_slot_right">
-				<div class="slot_title font_shadow black">지옥파티 던전 선택</div>
+				<div class="slot_title font_shadow black">행선지 선택</div>
 				<div class="slot_content"><div id="dg_box" class="frame_area scroll">
-					<button id="dg1" data-target="metro_1" class="slot_list dg_list hover_inset"></button>
-					<button id="dg2" data-target="metro_2" class="slot_list dg_list hover_inset"></button>
-					<button id="dg3" data-target="metro_3" class="slot_list dg_list hover_inset"></button>
-					<button id="dg4" data-target="metro_4" class="slot_list dg_list hover_inset"></button>
-					<button id="dg5" data-target="metro_5" class="slot_list dg_list hover_inset"></button>
-					<button id="dg6" data-target="metro_6" class="slot_list dg_list hover_inset"></button>
+					<div class="slot_area">마을</div>
+					<button id="gate" data-target="gate" class="slot_list dg_list"></button>
+					<div class="slot_area">메트로센터</div>
+					<button id="dg1" data-target="metro_1" class="slot_list dg_list"></button>
+					<button id="dg2" data-target="metro_2" class="slot_list dg_list"></button>
+					<button id="dg3" data-target="metro_3" class="slot_list dg_list"></button>
+					<button id="dg4" data-target="metro_4" class="slot_list dg_list"></button>
+					<button id="dg5" data-target="metro_5" class="slot_list dg_list"></button>
+					<button id="dg6" data-target="metro_6" class="slot_list dg_list"></button>
 				</div></div>
 				<button id="slot_right_close" class="slot_close hover_inset">선택 취소</button>
 			</div>
@@ -100,4 +108,16 @@
 		<script src="./js/minihell.js"></script>
 
 	</body>
+<!-- Histats.com  START  (aync)-->
+ <script type="text/javascript">var _Hasync= _Hasync|| [];
+ _Hasync.push(['Histats.start', '1,3717342,4,0,0,0,00010000']);
+ _Hasync.push(['Histats.fasi', '1']);
+ _Hasync.push(['Histats.track_hits', '']);
+ (function() {
+ var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+ hs.src = ('//s10.histats.com/js15_as.js');
+ (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+ })();</script>
+ <noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?3717342&101" alt="web page hit counter" border="0"></a></noscript>
+ <!-- Histats.com  END  -->
 </html>

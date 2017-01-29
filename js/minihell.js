@@ -17,6 +17,7 @@ var current_goyu = [];//현재 지역 고유에픽 리스트
 
 //아이템 관련
 var channel = "";//아이템 획득한 채널
+var myCharacter = "";//현재 캐릭터
 var record_item = [];//획득 아이템 정보
 var record_epic = 0;//획득 에픽 수
 var record_set = [];//획득 세트(세트완성 중복 출력 방지)
@@ -230,7 +231,7 @@ simulateP.prototype = {
         setTimeout(function() {
             //타격 사운드
                 //임시로 남격가 타격음 출력
-                sfxObj.hit_hit.play();
+                sfxObj["hit_" + characterList[myCharacter].hittype].play();
             //탐색 결과 확인
             if (this.result()) {
                 //아이템 드랍 승인 -> 아이템 선정
@@ -355,8 +356,6 @@ simulateP.prototype = {
         //아이템 이름 변경
         $("#item_name1").classList.add("color_epic");
         $("#item_name1").innerHTML = item.name;
-            //(최대 길이 아이템 - 출력 테스트용)
-            //$("#item_name1").innerHTML = "증폭의 탈리스만 스톤 - 문엠프레스 (화)";
 
         //아이템 이미지 출력
         var field_name = "field_" + item.sort1 + "_" + item.sort2 + "_" + item.sort3;
@@ -392,22 +391,25 @@ simulateP.prototype = {
 
 
         //아이템 루팅
-            //X좌표
+            //향후 자리 4곳 정하기
+            //X좌표 (좌Max : -45 / 우Max : -25)
             TweenMax.fromTo($("#item1"),0.6,
-                {transform:"translate(0,0)"},
+                {xPercent:0},
                 {
-                    transform:"translate(-5rem,0)",
+                    xPercent:-30,
                     ease:Power0.easeNone
                 });
-            //Y좌표
-            TweenMax.fromTo($("#item_container1"),0.2,
-                {transform:"translate(0,0)"},
+            //Y좌표 (상합Max : 25/ 하합Max : 65 / 최소 Y축 이동 절대값 : 40)
+            TweenMax.fromTo($("#item1"),0.2,
+                {yPercent:0},
                 {
-                    transform:"translate(0,-0.5rem)",
+                    yPercent:"-=5",
+                    //transform:"translate(0,-0.5rem)",
                     ease:Power0.easeNone
                 });
-            TweenMax.to($("#item_container1"),0.4,{
-                    transform:"translate(0,3.5rem)",
+            TweenMax.to($("#item1"),0.4,{
+                    yPercent:"+=50",
+                    //transform:"translate(0,3.5rem)",
                     ease: Circ.easeIn,
                     delay:0.2,
                     onComplete:function() {
@@ -486,10 +488,108 @@ displayP.prototype = {
 };
 var display = new displayP();
 
+
+//메뉴 관련
+function menuP() {}
+menuP.prototype = {
+    //★마을/던전 진입하기
+    enterMap:function(target) {
+        //메인 버튼 문구 변경
+        $("#button_main").innerHTML = "입장 중...";
+        //던전 정보 변경
+        selectedDungeon.after = target;
+        //던전 입장 이미지
+        $("#main_cover").style.display = "block";
+        $("#main_cover").style.opacity = "1";
+        $("#main_cover_bg").style.backgroundImage = "url('./img/bg/loading_" + target.split("_")[0] + ".jpg')";
+        $("#main_cover_bg").style.opacity = "1";
+        //던전 입장 사운드
+        sfxObj.slot_enter.play();
+        setTimeout(function() {
+            //===============================================================
+            //블랙 아웃 (던전 정보 반영)
+            $("#main_cover_bg").style.opacity = "0";
+            //던전 배경 변경
+            $("#frame_main").style.backgroundImage = "url('./img/bg/bg_" + target + ".jpg')";
+            //캐릭터, 아이템 배치
+            if (target !== "gate") {
+                //던전 - 캐릭터 배치
+                $("#main_character").classList.remove("gate");
+                $("#main_character").classList.add("dungeon");
+                //던전 - 아이템 원위치
+                simulate.resetItem();
+                //던전 -  아이템 드랍 부위/레벨 가중치 구축
+                simulate.build();
+                //던전 - NPC 관련 치우기
+                $("#main_npc_text").style.display = "none";
+                $("#main_npc").style.display = "none";
+                $("#main_character_change").style.display = "none";
+            } else {
+                //게이트
+                $("#main_character").classList.remove("dungeon");
+                $("#main_character").classList.add("gate");
+                //아이템 원위치
+                simulate.resetItem();
+                //던전 - NPC 표시
+                $("#main_npc_text").style.display = "inline-block";
+                $("#main_npc").style.display = "block";
+                $("#main_character_change").style.display = "block";
+            }
+            //===============================================================
+            setTimeout(function() {
+                //입장 완료
+                $("#main_cover").style.opacity = "0";
+                //기존 브금 종료
+                if (selectedDungeon.before !== "" && selectedDungeon.before !== selectedDungeon.after)
+                    bgmObj[selectedDungeon.before].stop();
+                //새 브금 실행
+                if (selectedDungeon.before !== selectedDungeon.after)
+                    bgmObj[selectedDungeon.after].play();
+                setTimeout(function() {
+                    //던전 변경 완료
+                    selectedDungeon.before = selectedDungeon.after;
+                    selectedDungeon.after = "";
+                    //클릭 가능
+                    $("#main_cover").style.display = "none";
+                    //버튼들 활성화
+                    $("#button_left").disabled = false;
+                    if (selectedDungeon.before !== "gate")
+                        $("#button_main").disabled = false;
+                    $("#button_right").disabled = false;
+                    //메인 버튼 문구 변경
+                    if (selectedDungeon.before !== "gate") {
+                        $("#button_main").innerHTML = "탐색 개시";
+                    }
+                    else {
+                        $("#button_main").innerHTML = "클릭 ▷";
+                    }
+
+                },750);
+            },750);
+        },750);
+    },
+    changeCharacter:function() {
+        //캐릭터 랜덤 선택
+        var chaList = [];
+        for (i in characterList) {
+            if (characterList.hasOwnProperty(i) && i !== "beckey") {
+                chaList.push(i);
+            }
+        }
+        myCharacter = chaList[Math.floor(Math.random() * chaList.length)];
+        //선택된 캐릭터 출력
+        for (i = 0;i < chaList.length;i++) {
+            $("#main_character").classList.remove(chaList[i]);
+        }
+        $("#main_character").classList.add(myCharacter);
+    }
+};
+var menu = new menuP();
 //=====================================================================
 //※ 실행
 //=====================================================================
-window.onload = function() {
+document.addEventListener("DOMContentLoaded", function(e) {
+    menu.changeCharacter();
     //브금 실행
     bgmObj.gate.play();
 
@@ -548,55 +648,8 @@ window.onload = function() {
                             $("#frame_slot_right").style.display = "none";
                         }
                     });
-                    //메인 버튼 문구 변경
-                    $("#button_main").innerHTML = "입장 중...";
-                    //던전 정보 변경
-                    selectedDungeon.after = bt.dataset.target;
-                    //던전 입장 이미지
-                    $("#main_cover").style.display = "block";
-                    $("#main_cover").style.opacity = "1";
-                    $("#main_cover_bg").style.opacity = "1";
-                    //던전 입장 사운드
-                    sfxObj.slot_enter.play();
-                    setTimeout(function() {
-                        //===============================================================
-                        //블랙 아웃 (던전 정보 반영)
-                        $("#main_cover_bg").style.opacity = "0";
-                        //던전 배경 변경
-                        $("#frame_main").style.backgroundImage = "url('./img/bg/bg_" + bt.dataset.target + ".jpg')";
-                        //캐릭터 배치
-                        $("#main_character").classList.remove("gate");
-                        $("#main_character").classList.add("dungeon");
-                        //아이템 원위치
-                        simulate.resetItem();
-                        //아이템 드랍 부위/레벨 가중치 구축
-                        simulate.build();
-                        //===============================================================
-                        setTimeout(function() {
-                            //던전 등장
-                            $("#main_cover").style.opacity = "0";
-                            //기존 브금 종료
-                            if (selectedDungeon.before !== "" && selectedDungeon.before !== selectedDungeon.after)
-                                bgmObj[selectedDungeon.before].stop();
-                            //새 브금 실행
-                            if (selectedDungeon.before !== selectedDungeon.after)
-                                bgmObj[selectedDungeon.after].play();
-                            setTimeout(function() {
-                                //던전 변경 완료
-                                selectedDungeon.before = selectedDungeon.after;
-                                selectedDungeon.after = "";
-                                //클릭 가능
-                                $("#main_cover").style.display = "none";
-                                //버튼들 활성화
-                                $("#button_left").disabled = false;
-                                if (selectedDungeon.before !== "gate")
-                                    $("#button_main").disabled = false;
-                                $("#button_right").disabled = false;
-                                //메인 버튼 문구 변경
-                                $("#button_main").innerHTML = "탐색 개시";
-                            },750);
-                        },750);
-                    },750);
+                    //마을/던전 입장하기
+                    menu.enterMap(bt.dataset.target);
                 };
             })();
         }
@@ -644,14 +697,73 @@ window.onload = function() {
         }
     };
 
+    //※ 버튼 : 캐릭터 변경
+    $("#main_character_change").onclick = function() {
+        //사운드
+        sfxObj.slot_enter.play();
+        //실행
+        menu.changeCharacter();
+    };
 
-};
+    //강제 스크롤링 (터치 한정)
+    var touchY = 0;//첫 터치 Y좌표 기억(스크립트 스크롤 용)
+    $("#dg_box").addEventListener("touchstart",function(e) {
+        //스크롤 비활성화
+        $("#dg_box").style.overflowY = "hidden";
+        //$("#dg_box").classList.remove("scroll");
+        //터치포인트 기억
+        touchY = e.touches[0].clientY - $("#dg_box").offsetTop;
+    },false);
+    $("#dg_box").addEventListener("touchmove",function(e) {
+        //스크롤 적용
+        var touchYC = e.touches[0].clientY - $("#dg_box").offsetTop;
+        $("#dg_box").scrollTop = $("#dg_box").scrollTop + (touchY - touchYC);
+        //이동 이후 터치포인트 기억
+        touchY = touchYC;
+    },false);
+    $("#dg_box").addEventListener("touchend",function(e) {
+        //스크롤 재활성화
+        $("#dg_box").style.overflowY = "scroll";
+        //$("#dg_box").classList.add("scroll");
+    },false);
 
-//뒤로 버튼 경고음
-window.onbeforeunload = function() {
-    return '정말로 아라드 운세를 종료하시겠습니까?';
-};
+    //나가기 경고
+        //웹 브라우저
+        window.addEventListener("beforeunload", function(e) {
+            return "미니 지옥파티를 종료하시겠습니까?";
+        }, false);
+        //어플리케이션
+        function quit() {
+            swal({
+                text:"미니 지옥파티를 종료하시겠습니까?",
+                type:"warning",
+                showCancelButton:true,
+                confirmButtonText: '종료',
+                confirmButtonColor: '#d33',
+                cancelButtonText: '취소'
+            }).then(function(isConfirm){
+                if (isConfirm) {
+                    navigator.app.exitApp();
+                }
+            });
+        }
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function onDeviceReady() {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+        }
+        function onBackKeyDown() {
+            quit();
+            //navigator.notification.confirm('종료하시겠습니까?', onBackKeyDownMsg, '종료', '취소, 종료');
+        }
+        function onBackKeyDownMsg() {
+            if(button == 2) {
+                navigator.app.exitApp();
+            }
+        }
 
 
+
+
+});
 
 })();

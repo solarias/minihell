@@ -4,13 +4,17 @@
     border:0rem;
 
     background-origin: border-box;
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+
 	font-family:"Nanum Gothic", sans-serif;
 	text-decoration:none;
 }
 
 
 /*하드웨어 가속*/
-*[gpuaccel] {
+[gpuaccel] {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
 
@@ -23,7 +27,14 @@
     -webkit-perspective: 1000;
     perspective: 1000;
 }
-*[gpuaccel2] {
+[gpuaccel2] {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    -webkit-perspective: 1000;
+    perspective: 1000;
+}
+[gpuaccel3] {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 
@@ -73,29 +84,10 @@ button {
 /*그림자 효과*/
 button:hover, select:hover, label:hover {
     border:0.2rem white solid !important;
-    /*
-    box-shadow:-0.2rem 0rem 0.2rem white,-0.2rem 0.2rem 0.2rem white,0rem 0.2rem 0.2rem white,0.2rem 0.2rem 0.2rem white,0.2rem 0rem 0.2rem white,0.2rem -0.2rem 0.2rem white,0rem -0.2rem 0.2rem white,-0.2rem -0.2rem 0.2rem white;
-    */
     cursor:pointer;
 }
 button:active, select:active, label:active {
     border:0.3rem skyblue solid !important;
-    /*
-    box-shadow:-0.3rem 0rem 0.3rem skyblue,-0.3rem 0.3rem 0.3rem skyblue,0rem 0.3rem 0.3rem skyblue,0.3rem 0.3rem 0.3rem skyblue,0.3rem 0rem 0.3rem skyblue,0.3rem -0.3rem 0.3rem skyblue,0rem -0.3rem 0.3rem skyblue,-0.3rem -0.3rem 0.3rem skyblue;
-    */
-}
-.hover_inset:hover {
-    border:0.2rem white solid !important;
-    /*
-    box-shadow:inset -0.2rem 0rem 0.2rem white,inset -0.2rem 0.2rem 0.2rem white,inset 0rem 0.2rem 0.2rem white,inset 0.2rem 0.2rem 0.2rem white,inset 0.2rem 0rem 0.2rem white,inset 0.2rem -0.2rem 0.2rem white,inset 0rem -0.2rem 0.2rem white,inset -0.2rem -0.2rem 0.2rem white;
-    */
-    cursor:pointer;
-}
-.hover_inset:active {
-    border:0.3rem skyblue solid !important;
-    /*
-    box-shadow:inset -0.3rem 0rem 0.3rem skyblue,inset -0.3rem 0.3rem 0.3rem skyblue,inset 0rem 0.3rem 0.3rem skyblue,inset 0.3rem 0.3rem 0.3rem skyblue,inset 0.3rem 0rem 0.3rem skyblue,inset 0.3rem -0.3rem 0.3rem skyblue,inset 0rem -0.3rem 0.3rem skyblue,inset -0.3rem -0.3rem 0.3rem skyblue;
-    */
 }
 /*캐릭터 스프라이트(공용)*/
 .swordman_m {
@@ -152,7 +144,6 @@ button:active, select:active, label:active {
 
 
 /*뼈대*/
-
 html, body {
     position:absolute;
         z-index:-2;
@@ -163,13 +154,6 @@ html, body {
 
 	background-color:#606060;
 }
-@media (max-aspect-ratio:60/100) {
-    html{font-size:10vw;}
-}
-@media (min-aspect-ratio:60/100) {
-    html{font-size:6vh;}
-}
-
 #wrapper {
     position:absolute;
         z-index:-1;
@@ -178,8 +162,21 @@ html, body {
     overflow:hidden;
 
     margin:0 auto;
-    width:10rem;
+    /*width : @media에서 결정*/
     height:100%;
+}
+/*화면 비율 조절*/
+@media (max-aspect-ratio:60/100) {
+    html{font-size:10vw;}
+    #wrapper {width:10rem;}/*10rem*/
+}
+@media (min-aspect-ratio:60/100) and (max-aspect-ratio:100/100){
+    html{font-size:6vh;}
+    #wrapper {width:100vw;}/*10rem ~ 15rem*/
+}
+@media (min-aspect-ratio:100/100) {
+    html{font-size:6vh;}
+    #wrapper {width:100vh;}
 }
 
 .frame_area {
@@ -195,7 +192,7 @@ html, body {
     position:relative;
     overflow:hidden;
 
-    width:10rem;
+    width:100%;
     height:12rem;
 
     background-color:black;
@@ -203,6 +200,8 @@ html, body {
         background-position:50% 80%;
         background-size:22.2rem auto;
         background-repeat: no-repeat;
+
+    text-align:center;
 }
     #main_cover {
         position:absolute;
@@ -230,11 +229,27 @@ html, body {
             transition:opacity 0.75s;
             opacity:1;
         }
+        #cover_title {
+            position:relative;
+
+            margin:0.2rem auto 0 auto;
+            width:10rem;
+            height:1.0rem;
+
+            background-image:url('../img/channel.png');
+            background-size:100% 1.0rem;
+
+            color:yellow;
+            font-weight:bold;
+            font-size:0.5rem;
+                line-height:1.0rem;
+            text-align:center;
+        }
 
 #main_channel {
     position:relative;
 
-    margin-top:0.2rem;
+    margin:0.2rem auto 0 auto;
     width:10rem;
     height:1.0rem;
 
@@ -248,13 +263,46 @@ html, body {
     text-align:center;
 }
     #channel_text {color:yellow;font-weight:normal;}
-#main_tower {
-    position:absolute;
-}
+#main_npc_text {
+    position:relative;
 
-#main_character {
+    margin:1.3rem auto 0 auto;
+    padding:0.1rem 0.15rem;
+
+    width:auto;
+
+    background:rgba(0,0,0,0.6);
+    border:0.04rem gray solid;
+    border-radius:0.15rem;
+
+    color:white;
+    font-size:0.3rem;
+    font-weight: 600;
+    text-align:center;
+    white-space:nowrap;
+
+    display:inline-block;
+}
+#main_npc {
     position:absolute;
         z-index:1;
+    left:0;
+    right:0;
+    bottom:5.3rem;
+
+    margin:0 auto;
+
+    background-position:0 0;
+}
+    .npc_seria {width:1.7rem;height:3.3rem;background-image:url('../img/npc/seria.png');
+        background-size:1.7rem 3.3rem;}
+    .npc_erze {
+        width:1.2rem;height:2.9rem;background-image:url('../img/npc/npc_erze.png');
+        background-size:7.2rem 2.9rem;
+    }
+#main_character {
+    position:absolute;
+        z-index:3;
 
     width:15rem;
     height:12rem;
@@ -262,12 +310,12 @@ html, body {
     background-size:180rem 24rem;
 }
     #main_character.gate {
+        left:calc(50% - 10rem);
         top:0.5rem;
-        left:-5rem;
     }
     #main_character.dungeon {
+        left:calc(50% - 8rem);
         top:-3rem;
-        left:-3rem;
     }
     /*캐릭터 이미지 : 공용 클래스 스타일 적용*/
     #main_character.left {
@@ -304,15 +352,32 @@ html, body {
             @keyframes sprite_attack {
                 100% {background-position:-180rem -12rem;}
             }
+#main_character_change {
+    position:absolute;
+    z-index:10;
+    bottom:0.5rem;
+    right:0.5rem;
+
+    width:3.5rem;
+    height:1.2rem;
+
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #FFFFFF), color-stop(1.00, #A0A0A0));
+    background: linear-gradient(to bottom, #ffffff, #A0A0A0);
+    border:0.02rem gray outset;
+    border-radius:0.2rem;
+
+    font-size:0.5rem;
+    font-weight:bold;
+}
 /*드랍 아이템*/
 .item {
 	position:absolute;
-        z-index:2;
+        z-index:5;
     left: 3.5rem;
     top: 2.5rem;
 
-	width:10rem;
-	height:2rem;
+	width:100%;/*10rem*/
+	height:10rem;/*2rem*/
 
 	text-align:center;
 }
@@ -324,7 +389,6 @@ html, body {
         top:0;
         margin-bottom:0.2rem;
         width:100%;
-        height:100%;
     }
 	.item_name {
         position:relative;
@@ -382,8 +446,8 @@ html, body {
 	.effect_appear {
 		position:absolute;
             z-index:4;
-		left:0.65rem;
-		top:-5.3rem;
+		left: calc(50% - 5.1rem + 0.7rem);/*0.65rem*/
+		top: -5.3rem;
 		/*
 		position:absolute;
 		top:0px;
@@ -418,8 +482,8 @@ html, body {
 	.effect_land {
 		position:absolute;
             z-index:2;
-		left:-3.7rem;
-        top:-3rem;
+		left: calc(50% - 9rem);/*3.7rem*/
+        top: -3rem;
 		/*
 		position:absolute;
 		top:0px;
@@ -454,7 +518,7 @@ html, body {
 	.effect_wait {
 		position:absolute;
             z-index:2;
-		left:2rem;
+		left:calc(50% - 2.82rem - 0.4rem);/*2rem*/
         top:-1rem;
 
 		width:5.64rem;
@@ -488,7 +552,7 @@ html, body {
     position:relative;
 
     padding:0.1rem;
-    width:10rem;
+    width:100%;
     height:2rem;
 
     background:black;
@@ -517,7 +581,7 @@ html, body {
     overflow:hidden;
 
     padding-top:14rem;
-    width: 10rem;
+    width: 100%;
     height: 100%;
 
     background:black;
@@ -552,7 +616,7 @@ html, body {
     top:10%;
     display:block;
 
-    width:2rem;
+    width:20%;
     height:80%;
 
     box-sizing:border-box;
@@ -645,6 +709,22 @@ html, body {
 
     box-sizing: border-box;
 }
+.slot_area {
+    position:relative;
+
+    margin:0.1rem 0.2rem;
+    width:calc(100% - 0.4rem);
+    height:0.8rem;
+
+    background-color:#606060;
+    border-radius:0.1rem;
+    box-sizing: border-box;
+
+    color:white;
+    font-size:0.6rem;
+    line-height:0.8rem;
+    text-align:center;
+}
 .slot_list {
     margin-bottom:0.05rem;
     width:100%;
@@ -660,9 +740,6 @@ html, body {
 }
     .scroll {
         overflow-y:scroll;
-    }
-    .scroll_stop {
-        overflow-y:hidden;
     }
     #record_box {
         padding:0.1rem;
@@ -685,6 +762,7 @@ html, body {
             line-height:0.3rem;
         }
 
+    #gate{background-image:url('../img/slot/gate.png')}
     #dg1{background-image:url('../img/slot/metro_1.png')}
     #dg2{background-image:url('../img/slot/metro_2.png')}
     #dg3{background-image:url('../img/slot/metro_3.png')}
