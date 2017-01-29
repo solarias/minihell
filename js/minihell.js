@@ -362,6 +362,9 @@ simulateP.prototype = {
         //아이템 이름 변경
         $("#item_name1").classList.add("color_epic");
         $("#item_name1").innerHTML = item.name;
+            //(최대 길이 아이템 - 출력 테스트용)
+            //$("#item_name1").innerHTML = "증폭의 탈리스만 스톤 - 문엠프레스 (화)";
+
         //아이템 이미지 출력
         var field_name = "field_" + item.sort1 + "_" + item.sort2 + "_" + item.sort3;
         $("#item_img1").className = "item_img " + field_name;
@@ -509,8 +512,9 @@ window.onload = function() {
         //닫기 버튼
         $("#slot_left_close").onclick = function() {
             //메뉴창 닫기
-            TweenMax.to($("#frame_slot_left"),0.3,{xPercent:0,
+            TweenMax.to($("#frame_slot_left"),0.3,{xPercent:-100,
                 onComplete:function() {
+                    $("#frame_slot_left").style.display = "none";
                     //버튼들 활성화
                     $("#button_left").disabled = false;
                     if (selectedDungeon.before !== "gate")
@@ -542,7 +546,11 @@ window.onload = function() {
                 var bt = $$(".dg_list")[i];
                 bt.onclick = function() {
                     //메뉴창 닫기
-                    TweenMax.to($("#frame_slot_right"),0.3,{xPercent:0});
+                    TweenMax.to($("#frame_slot_right"),0.3,{xPercent:0,
+                        onComplete:function() {
+                            $("#frame_slot_right").style.display = "none";
+                        }
+                    });
                     //메인 버튼 문구 변경
                     $("#button_main").innerHTML = "입장 중...";
                     //던전 정보 변경
@@ -600,6 +608,7 @@ window.onload = function() {
             //메뉴창 닫기
             TweenMax.to($("#frame_slot_right"),0.3,{xPercent:0,
                 onComplete:function() {
+                    $("#frame_slot_right").style.display = "none";
                     //버튼들 활성화
                     $("#button_left").disabled = false;
                     if (selectedDungeon.before !== "gate")
@@ -637,22 +646,6 @@ window.onload = function() {
                 break;
         }
     };
-
-    //스크롤바 이벤트
-    function scrollLock(target) {
-        target.classList.add("scroll_stop");
-        target.scrollTop = target.scrollTop;
-        void target.offsetWidth;
-        setTimeout(function() {
-            target.classList.remove("scroll_stop");
-        }, 100);
-    }
-    $("#record_box").addEventListener('touchend', function(e){
-        scrollLock(this);
-    }, false);
-    $("#dg_box").addEventListener('touchend', function(e){
-        scrollLock(this);
-    }, false);
 
 
 };

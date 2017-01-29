@@ -3,18 +3,18 @@
     padding:0rem;
     border:0rem;
 
+    background-origin: border-box;
 	font-family:"Nanum Gothic", sans-serif;
 	text-decoration:none;
 }
 
 
 /*하드웨어 가속*/
-/*
 *[gpuaccel] {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
 
-    -webkit-transform: translate3d(0,0,0)
+    -webkit-transform: translate3d(0,0,0);
     transform: translate3d(0,0,0);
 
     -webkit-backface-visibility: hidden;
@@ -24,16 +24,12 @@
     perspective: 1000;
 }
 *[gpuaccel2] {
-    -webkit-transform: translate3d(0,0,0)
-    transform: translate3d(0,0,0);
-
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 
     -webkit-perspective: 1000;
     perspective: 1000;
 }
-*/
 /*스타일*/
     /*폰트 - 나눔고딕*/
     @import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
@@ -62,26 +58,44 @@
 .color_set {
 	color:#59FF00;
 }
+/*
 .font_shadow {
     text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
 }
-button {/*버튼 애니메이션*/
+*/
+/*버튼 애니메이션*/
+/*
+button {
+    -webkit-transition:all 0.2s;
     transition:all 0.2s;
 }
+*/
 /*그림자 효과*/
 button:hover, select:hover, label:hover {
+    border:0.2rem white solid !important;
+    /*
     box-shadow:-0.2rem 0rem 0.2rem white,-0.2rem 0.2rem 0.2rem white,0rem 0.2rem 0.2rem white,0.2rem 0.2rem 0.2rem white,0.2rem 0rem 0.2rem white,0.2rem -0.2rem 0.2rem white,0rem -0.2rem 0.2rem white,-0.2rem -0.2rem 0.2rem white;
+    */
     cursor:pointer;
 }
 button:active, select:active, label:active {
+    border:0.3rem skyblue solid !important;
+    /*
     box-shadow:-0.3rem 0rem 0.3rem skyblue,-0.3rem 0.3rem 0.3rem skyblue,0rem 0.3rem 0.3rem skyblue,0.3rem 0.3rem 0.3rem skyblue,0.3rem 0rem 0.3rem skyblue,0.3rem -0.3rem 0.3rem skyblue,0rem -0.3rem 0.3rem skyblue,-0.3rem -0.3rem 0.3rem skyblue;
+    */
 }
 .hover_inset:hover {
+    border:0.2rem white solid !important;
+    /*
     box-shadow:inset -0.2rem 0rem 0.2rem white,inset -0.2rem 0.2rem 0.2rem white,inset 0rem 0.2rem 0.2rem white,inset 0.2rem 0.2rem 0.2rem white,inset 0.2rem 0rem 0.2rem white,inset 0.2rem -0.2rem 0.2rem white,inset 0rem -0.2rem 0.2rem white,inset -0.2rem -0.2rem 0.2rem white;
+    */
     cursor:pointer;
 }
 .hover_inset:active {
+    border:0.3rem skyblue solid !important;
+    /*
     box-shadow:inset -0.3rem 0rem 0.3rem skyblue,inset -0.3rem 0.3rem 0.3rem skyblue,inset 0rem 0.3rem 0.3rem skyblue,inset 0.3rem 0.3rem 0.3rem skyblue,inset 0.3rem 0rem 0.3rem skyblue,inset 0.3rem -0.3rem 0.3rem skyblue,inset 0rem -0.3rem 0.3rem skyblue,inset -0.3rem -0.3rem 0.3rem skyblue;
+    */
 }
 /*캐릭터 스프라이트(공용)*/
 .swordman_m {
@@ -143,7 +157,7 @@ html, body {
     position:absolute;
         z-index:-2;
     overflow:hidden;
-    
+
     width:100%;
 	height:100%;
 
@@ -198,6 +212,7 @@ html, body {
         height:100%;
 
         background-color:black;
+        -webkit-transition:opacity 0.75s;
         transition:opacity 0.75s;
 
         display:none;
@@ -211,6 +226,7 @@ html, body {
             background-image:url('../img/bg/loading_metro.jpg');
                 background-position:50% 50%;
                 background-size:120% 100%;
+            -webkit-transition:opacity 0.75s;
             transition:opacity 0.75s;
             opacity:1;
         }
@@ -257,11 +273,10 @@ html, body {
     #main_character.left {
     }
     #main_character.right {
-        -moz-transform: scaleX(-1);
-        -o-transform: scaleX(-1);
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
-        filter: FlipH;
+        -webkit-filter: FlipH;
+                filter: FlipH;
         -ms-filter: "FlipH";
     }
         /*대기모션은 자체적인 애니메이셔으로 소화*/
@@ -348,21 +363,18 @@ html, body {
 		background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_item.png');
 		    background-position:0 0;
             background-size:auto 21.6rem;
-
-		-ms-transition: none;
 		-webkit-transition: none;
 		transition: none;
 
 		visibility:hidden;
 	}
 		.item_img.rotate {
-			-ms-transform:rotate(-360deg);
 			-webkit-transform:rotate(-360deg);
 			transform:rotate(-360deg);
-
-			-ms-transition: -ms-transform 0.55s linear;
 			-webkit-transition: -webkit-transform 0.55s linear;
-			transition: transform 0.55s linear;
+			transition:-webkit-transform 0.55s linear;
+			transition:transform 0.55s linear;
+			transition: transform 0.55s linear, -webkit-transform 0.55s linear;
 		}
 
 	.effect_appear {
@@ -550,9 +562,9 @@ html, body {
     left:0;
 
     background: -webkit-linear-gradient(top, #ffffff 0%,#516BFF 100%);
-    background: linear-gradient(top bottom, #ffffff 0%,#516BFF 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: linear-gradient(top bottom, #ffffff 0%,#516BFF 100%);
     border:0.05rem gray outset;
-    border-left:0;
+    border-left:0.05rem transparent outset;
     border-top-right-radius:0.4rem;
     border-bottom-right-radius:0.4rem;
 }
@@ -560,9 +572,9 @@ html, body {
     right:0;
 
     background: -webkit-linear-gradient(top, #ffffff 0%,#FF6A00 100%);
-    background: linear-gradient(top bottom, #ffffff 0%,#FF6A00 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: linear-gradient(top bottom, #ffffff 0%,#FF6A00 100%);
     border:0.05rem gray outset;
-    border-right:0;
+    border-right:0.05rem transparent outset;
     border-top-left-radius:0.4rem;
     border-bottom-left-radius:0.4rem;
 }
@@ -609,14 +621,14 @@ html, body {
     box-sizing: border-box;
 
     color:#f0f0f0;
-    font-weight:bold;
+    font-weight: 500;
     font-size:0.5rem;
     line-height:1rem;
     text-align:center;
 }
     .slot_title.blue {
-        background: -webkit-linear-gradient(#ffffff, #0026ff);
-        background: linear-gradient(#ffffff, #0026ff); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        background: -webkit-linear-gradient(#6d81e3, #001cbf);
+        background: linear-gradient(#6d81e3, #001cbf); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     }
     .slot_title.black {
         background: -webkit-linear-gradient(#aaaaaa, #222222);
@@ -651,7 +663,7 @@ html, body {
         overflow-y:hidden;
     }
     #record_box {
-        padding:0.2rem;
+        padding:0.1rem;
 
         box-sizing: border-box;
 
@@ -660,8 +672,8 @@ html, body {
         font-weight:bold;
     }
         .record_item, .record_set {
-            margin-left:0.2rem;
-            margin-bottom:0.25rem;
+            margin-left:0.15rem;
+            margin-bottom:0.2rem;
         }
         .record_set {
             font-size:0.4rem;
@@ -686,6 +698,7 @@ html, body {
 
     background: -webkit-linear-gradient(top, #ffffff 0%,#FF6A00 100%);
     background: linear-gradient(top bottom, #ffffff 0%,#FF6A00 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    border:0.05rem transparent outset;
     border-top:0.05rem black solid;
     box-sizing: border-box;
 
