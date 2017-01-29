@@ -32,10 +32,6 @@ var droplevel = {
     name:[85,90],
     num:[60,40]
 };
-var itemP = {//최초 아이템 위치(개선판 만들 땐 꼭 없앨 것)
-    x:getComputedStyle($("#item1")).getPropertyValue("left").replace("px","") / 33.3,
-    y:getComputedStyle($("#item1")).getPropertyValue("top").replace("px","") / 33.3
-};
 
 //던전 관련
 var selectedDungeon = {before:"gate",after:""};
@@ -341,9 +337,6 @@ simulateP.prototype = {
         //아이템 이름, 필드 이미지 가시화
         $("#item_name1").style.visibility = "hidden";
         $("#item_img1").style.visibility = "hidden";
-        //아이템 원위치
-        $("#item1").style.left = itemP.x + "rem";
-        $("#item1").style.top = itemP.y + "rem";
         //기존 아이템 이펙트 제거
         $("#item_img1").classList.remove("rotate");
         void $("#item_img1").offsetWidth;
@@ -400,17 +393,21 @@ simulateP.prototype = {
 
         //아이템 루팅
             //X좌표
-            TweenMax.to($("#item1"),0.6,{
-                    left:"-=5rem",
+            TweenMax.fromTo($("#item1"),0.6,
+                {transform:"translate(0,0)"},
+                {
+                    transform:"translate(-5rem,0)",
                     ease:Power0.easeNone
                 });
             //Y좌표
-            TweenMax.to($("#item1"),0.2,{
-                    top:"-=0.5rem",
-                    ease: Circ.easeOut
+            TweenMax.fromTo($("#item_container1"),0.2,
+                {transform:"translate(0,0)"},
+                {
+                    transform:"translate(0,-0.5rem)",
+                    ease:Power0.easeNone
                 });
-            TweenMax.to($("#item1"),0.4,{
-                    top:"+=4.5rem",
+            TweenMax.to($("#item_container1"),0.4,{
+                    transform:"translate(0,3.5rem)",
                     ease: Circ.easeIn,
                     delay:0.2,
                     onComplete:function() {
