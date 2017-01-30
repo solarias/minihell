@@ -19,19 +19,33 @@
 	</head>
 	<body>
 		<div id="wrapper">
+			<div id="frame_cover"><div id="frame_cover_bg">
+				<div id="cover_title">던파 미니 지옥파티</div>
+				<div id="cover_notice">
+					<p title>2017-1-30</p>
+					<p content>- 서비스 시작</p>
+				</div>
+				<div id="cover_loading">
+					<div id="cover_loading_bar"></div>
+				</div>
+			</div></div>
 			<div id="frame_main">
-					<div id="main_cover"><div id="main_cover_bg">
-						<div id="cover_title">입장 중...</div>
-					</div></div>
 				<div id="main_channel" class="font_shadow">채널 : <span id="channel_text">???</span></div>
-				<div id="main_npc_text">오늘도 좋은 하루가 되길 기원합니다.</div>
+				<div id="main_npc_text">
+					게이트에서는 캐릭터 변경, 사운드 설정을 할 수 있어요.
+					<br/>
+					'이어서 하기' 기능은 차후에 지원될 거에요.
+				</div>
 				<div id="main_npc" class="npc_seria"></div>
 				<div id="main_character" class="gate wait" gpuaccel></div>
-				<button id="main_character_change">캐릭터 변경</button>
+
+				<button id="main_inventory" class="main_option">도감</button>
+				<button id="main_sound_change" class="main_option">사운드 <span class='color_red'>OFF</span></button>
+				<button id="main_character_change" class="main_option">캐릭터 변경</button>
 				<!--드랍 아이템-->
 				<div id="item1" class="item">
 					<div id="item_description1" class="item_description">
-						<p id="item_name1" class="item_name">아이리스의 메멘토 - 스트리트파이터(여)</p>
+						<p id="item_name1" class="item_name"></p>
 					</div>
 					<div id="item_img1" class="item_img"></div>
 					<div id="effect_appear1" class="effect_appear" gpuaccel></div>
@@ -48,28 +62,33 @@
 			</div>
 
 			<div id="frame_button"><div class="frame_area">
-				<button id="button_left" class="button_side">획득<br/>기록</button>
+				<button id="button_left" class="button_side hide">획득<br/>기록</button>
 				<!--
 				<button id="button_left_bottom" class="button_side">탐색설정</button>
 				-->
 
-				<button id="button_main" disabled>클릭 ▷</button>
+				<button id="button_main" disabled>로딩 중...</button>
 
-				<button id="button_right" class="button_side">행선지<br/>선택</button>
+				<button id="button_right" class="button_side hide">행선지<br/>선택</button>
 				<!--
 				<button id="button_right_bottom" class="button_side font_shadow">옵션</button>
 				-->
 			</div></div>
 
 			<div id="frame_slot_left">
-				<div class="slot_title font_shadow blue">에픽아이템 획득 기록</div>
-				<div class="slot_content"><div id="record_box" class="frame_area scroll">
-				</div></div>
+				<div id="slot_title_left" class="slot_title font_shadow blue">에픽아이템 획득 기록</div>
+				<div class="slot_content">
+					<!--획득기록창-->
+					<div id="record_box" class="frame_area scroll"></div>
+					<!--도감창-->
+					<div id="inventory_box" class="frame_area scroll"></div>
+				</div>
+				<div class="slot_content"></div>
 				<button id="slot_left_close" class="slot_close hover_inset">닫기</button>
 			</div>
 
 			<div id="frame_slot_right">
-				<div class="slot_title font_shadow black">행선지 선택</div>
+				<div id="slot_title_right" class="slot_title font_shadow black">행선지 선택</div>
 				<div class="slot_content"><div id="dg_box" class="frame_area scroll">
 					<div class="slot_area">마을</div>
 					<button id="gate" data-target="gate" class="slot_list dg_list"></button>
@@ -84,6 +103,10 @@
 				<button id="slot_right_close" class="slot_close hover_inset">선택 취소</button>
 			</div>
 		</div>
+
+		<!--이미지 임시저장소-->
+		<div id="imagePreloader"></div>
+		<!--이미지 임시저장소-->
 
 		<!--외부  라이브러리-->
 			<!-- vunit polyfill -->

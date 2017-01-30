@@ -44,6 +44,9 @@
 /*스타일*/
     /*폰트 - 나눔고딕*/
     @import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+.color_red {
+	color:red;
+}
 .color_yellow {
 	color:yellow;
 }
@@ -51,13 +54,16 @@
 	color:orange;
 }
 .color_green {
-	color:#59FF00;
+	color:green;
 }
 .color_skyblue {
     color:skyblue;
 }
 .color_gray {
     color:#bdbdbd;
+}
+.color_darkgray {
+    color:#868484;
 }
 .color_white {
     color:white;
@@ -186,6 +192,95 @@ html, body {
     height:100%;
 }
 
+/*커버 프레임*/
+#frame_cover {
+    position:absolute;
+        z-index:99;
+
+    width:100%;
+    height:14rem;
+
+    background-color:black;
+    border-bottom:0.02rem black solid;
+    -webkit-transition:opacity 0.75s;
+    transition:opacity 0.75s;
+}
+    #frame_cover_bg {
+        position:absolute;
+
+        width:100%;
+        height:100%;
+
+        background-image:url('../img/bg/loading_intro.jpg');
+            background-position:50% 50%;
+            background-size:120% 100%;
+        -webkit-transition:opacity 0.75s;
+        transition:opacity 0.75s;
+        opacity:1;
+    }
+    #cover_title {
+        position:relative;
+
+        margin:0.2rem auto 0 auto;
+        width:10rem;
+        height:1.0rem;
+
+        background-image:url('../img/channel.png');
+        background-size:100% 1.0rem;
+
+        color:yellow;
+        font-weight:bold;
+        font-size:0.5rem;
+            line-height:1.0rem;
+        text-align:center;
+    }
+    #cover_notice {
+        position:relative;
+        overflow-y:auto;
+
+        margin:1rem auto 0 auto;
+        padding:0.1rem;
+        width:8rem;
+        height:9rem;
+
+        background:rgba(0,0,0,0.7);
+        border:0.1rem white outset;
+        box-sizing: border-box;
+
+        color:white;
+        font-size:0.4rem;
+    }
+        #cover_notice p {
+            margin-bottom:0.1rem;
+        }
+        #cover_notice p[title] {
+            color:#59FF00;
+        }
+        #cover_notice p[content] {
+            margin-left:0.2rem;
+        }
+    #cover_loading {
+        position:relative;
+        overflow:auto;
+
+        margin:1rem auto 0 auto;
+        width:90%;
+        height:1rem;
+        box-sizing: border-box;
+
+        background:rgba(0,0,0,0.7);
+        border:0.1rem white outset;
+    }
+        #cover_loading_bar {
+            position:absolute;
+            left:0;top:0;
+
+            width:0%;
+            height:100%;
+
+            background:yellow;
+        }
+
 
 /*메인 프레임*/
 #frame_main {
@@ -203,48 +298,6 @@ html, body {
 
     text-align:center;
 }
-    #main_cover {
-        position:absolute;
-            z-index:99;
-
-        width:100%;
-        height:100%;
-
-        background-color:black;
-        -webkit-transition:opacity 0.75s;
-        transition:opacity 0.75s;
-
-        display:none;
-    }
-        #main_cover_bg {
-            position:absolute;
-
-            width:100%;
-            height:100%;
-
-            background-image:url('../img/bg/loading_metro.jpg');
-                background-position:50% 50%;
-                background-size:120% 100%;
-            -webkit-transition:opacity 0.75s;
-            transition:opacity 0.75s;
-            opacity:1;
-        }
-        #cover_title {
-            position:relative;
-
-            margin:0.2rem auto 0 auto;
-            width:10rem;
-            height:1.0rem;
-
-            background-image:url('../img/channel.png');
-            background-size:100% 1.0rem;
-
-            color:yellow;
-            font-weight:bold;
-            font-size:0.5rem;
-                line-height:1.0rem;
-            text-align:center;
-        }
 
 #main_channel {
     position:relative;
@@ -266,12 +319,12 @@ html, body {
 #main_npc_text {
     position:relative;
 
-    margin:1.3rem auto 0 auto;
+    margin:1rem auto 0 auto;
     padding:0.1rem 0.15rem;
 
     width:auto;
 
-    background:rgba(0,0,0,0.6);
+    background:rgba(0,0,0,0.7);
     border:0.04rem gray solid;
     border-radius:0.15rem;
 
@@ -295,7 +348,7 @@ html, body {
     background-position:0 0;
 }
     .npc_seria {width:1.7rem;height:3.3rem;background-image:url('../img/npc/seria.png');
-        background-size:1.7rem 3.3rem;}
+        background-size:100% 100%;}
     .npc_erze {
         width:1.2rem;height:2.9rem;background-image:url('../img/npc/npc_erze.png');
         background-size:7.2rem 2.9rem;
@@ -311,7 +364,7 @@ html, body {
 }
     #main_character.gate {
         left:calc(50% - 10rem);
-        top:0.5rem;
+        top:0rem;
     }
     #main_character.dungeon {
         left:calc(50% - 8rem);
@@ -331,10 +384,11 @@ html, body {
         #main_character.wait {
             -webkit-animation: sprite_wait 2s steps(12) infinite;
             animation: sprite_wait 2s steps(12) infinite;
-            background-position:0 0;
+
             opacity:1;
         }
             @-webkit-keyframes sprite_wait {
+                0% {background-position:0 0;}
                 100% {background-position:-180rem 0;}
             }
             @keyframes sprite_wait {
@@ -343,32 +397,52 @@ html, body {
         #main_character.attack {
             -webkit-animation: sprite_attack 0.5s steps(12) infinite;
             animation: sprite_attack 0.5s steps(12) infinite;
-            background-position:0px -12rem;
+
             opacity:1;
         }
             @-webkit-keyframes sprite_attack {
+                0% {background-position:0rem -12rem;}
                 100% {background-position:-180rem -12rem;}
             }
             @keyframes sprite_attack {
+                0% {background-position:0rem -12rem;}
                 100% {background-position:-180rem -12rem;}
             }
-#main_character_change {
+.main_option {
     position:absolute;
     z-index:10;
-    bottom:0.5rem;
-    right:0.5rem;
 
-    width:3.5rem;
-    height:1.2rem;
+    width:3.3rem;
+    height:1.5rem;
 
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #FFFFFF), color-stop(1.00, #A0A0A0));
     background: linear-gradient(to bottom, #ffffff, #A0A0A0);
     border:0.02rem gray outset;
     border-radius:0.2rem;
+    opacity:0.9;
 
     font-size:0.5rem;
     font-weight:bold;
 }
+        .main_option:active {
+            opacity:1;
+        }
+    #main_sound_change {
+        bottom:2.2rem;
+        right:0.3rem;
+    }
+    #main_character_change {
+        bottom:0.3rem;
+        right:0.3rem;
+    }
+    #main_inventory {
+        bottom:0.3rem;
+        left:0.3rem;
+
+        width:2rem;
+
+        font-size:0.6rem;
+    }
 /*드랍 아이템*/
 .item {
 	position:absolute;
@@ -448,25 +522,18 @@ html, body {
             z-index:4;
 		left: calc(50% - 5.1rem + 0.7rem);/*0.65rem*/
 		top: -5.3rem;
-		/*
-		position:absolute;
-		top:0px;
-		left:-144px;
-		z-index:4;
-		*/
 
 		width:10.2rem;
 		height:11.9rem;
 
 		background-image:url('../img/epic_appear.png');
-            background-size:122.4rem auto;
+            background-size:122.4rem 11.9rem;
 
 		visibility:hidden;
 	}
         .effect_appear.act {
             -webkit-animation: effect_appear 0.8s steps(11) forwards;
             animation: effect_appear 0.8s steps(11) forwards;
-            background-position:0 0;
 
 		    visibility:visible;
         }
@@ -484,26 +551,18 @@ html, body {
             z-index:2;
 		left: calc(50% - 9rem);/*3.7rem*/
         top: -3rem;
-		/*
-		position:absolute;
-		top:0px;
-		left:-302px;
-		z-index:4;
-		*/
 
-		margin:0px auto;
 		width:18rem;
 		height:9.5rem;
 
 		background-image:url('../img/epic_land.png');
-            background-size:145.1rem auto;
+            background-size:145.1rem 9.5rem;
 
 		visibility:hidden;
 	}
         .effect_land.act {
-            -webkit-animation: effect_land 0.9s steps(7) forwards;
-            animation: effect_land 0.9s steps(7) forwards;
-            background-position:0 0;
+            -webkit-animation: effect_land 0.9s steps(7) forwards !important;
+            animation: effect_land 0.9s steps(7) forwards !important;
 
 		    visibility:visible;
         }
@@ -518,21 +577,20 @@ html, body {
 	.effect_wait {
 		position:absolute;
             z-index:2;
-		left:calc(50% - 2.82rem - 0.4rem);/*2rem*/
+		left:calc(50% - 2.82rem - 0.3rem);/*2rem*/
         top:-1rem;
 
 		width:5.64rem;
 		height:5.64rem;
 
 		background-image:url('../img/epic_wait.png');
-            background-size:67.72rem auto;
+            background-size:67.72rem 5.64rem;
 
 		visibility:hidden;
 	}
         .effect_wait.act {
             -webkit-animation: effect_wait 1.2s steps(11) infinite;
             animation: effect_wait 1.2s steps(11) infinite;
-            background-position:0 0;
 
 		    visibility:visible;
         }
@@ -600,15 +658,18 @@ html, body {
     width:70%;
     height:70%;
 
-    background: -webkit-linear-gradient(top, #ffffff, #A0A0A0);
-    background: linear-gradient(top, #ffffff, #A0A0A0);
+    background: -webkit-linear-gradient(#ffffff, #A0A0A0);
+    background: linear-gradient(#ffffff, #A0A0A0);
     border:0.05rem gray outset;
     border-radius:0.5rem;
-    opacity:0.9;
+    transition:all 0.3s;
 
     font-size:1em;
     font-weight:bold;
 }
+    #button_main.hide {
+        top:100%;
+    }
 
 .button_side{
     position:absolute;
@@ -620,6 +681,7 @@ html, body {
     height:80%;
 
     box-sizing:border-box;
+    transition:all 0.3s;
 
     font-size:0.6rem;
     font-weight:bold;
@@ -627,23 +689,39 @@ html, body {
 #button_left {
     left:0;
 
-    background: -webkit-linear-gradient(top, #ffffff 0%,#516BFF 100%);
-    background: linear-gradient(top bottom, #ffffff 0%,#516BFF 100%);
+    background: -webkit-linear-gradient(#ffffff, #516BFF);
+    background: linear-gradient(#ffffff, #516BFF);
     border:0.05rem gray outset;
     border-left:0.05rem transparent outset;
     border-top-right-radius:0.4rem;
     border-bottom-right-radius:0.4rem;
 }
+    #button_left.hide {
+        left:-20%;
+    }
+    #button_left.long {
+        left:0;
+        width:40%;
+        font-size:0.7rem;
+    }
 #button_right {
     right:0;
 
-    background: -webkit-linear-gradient(top, #ffffff 0%,#FF6A00 100%);
-    background: linear-gradient(top bottom, #ffffff 0%,#FF6A00 100%);
+    background: -webkit-linear-gradient(#ffffff, #FF6A00);
+    background: linear-gradient(#ffffff, #FF6A00);
     border:0.05rem gray outset;
     border-right:0.05rem transparent outset;
     border-top-left-radius:0.4rem;
     border-bottom-left-radius:0.4rem;
 }
+    #button_right.hide {
+        right:-20%;
+    }
+    #button_right.long {
+        right:0;
+        width:40%;
+        font-size:0.7rem;
+    }
 
 
 
@@ -651,10 +729,10 @@ html, body {
 #frame_slot_left {
     position:absolute;
         z-index:100;
-    left:-8rem;
+    left:-10rem;
     top:0;
 
-    width:8rem;
+    width:10rem;
     height:100%;
 
     background:rgba(0,0,0,0.8);
@@ -741,7 +819,7 @@ html, body {
     .scroll {
         overflow-y:scroll;
     }
-    #record_box {
+    #record_box, #inventory_box {
         padding:0.1rem;
 
         box-sizing: border-box;
@@ -749,6 +827,8 @@ html, body {
         color:white;
         font-size:0.3rem;
         font-weight:bold;
+
+        display:none;
     }
         .record_item, .record_set {
             margin-left:0.15rem;
@@ -760,6 +840,18 @@ html, body {
         .record_head .font_small, .record_item .font_small {
             font-size:0.25rem;
             line-height:0.3rem;
+        }
+        #inventory_box p {
+            border-bottom:0.02rem white solid;
+
+            font-size:0.35rem;
+        }
+        #inventory_box span.right {
+            float:right;
+            display:inline-block;
+        }
+        #inventory_box span.amount.darkgray {
+            visibility:hidden;
         }
 
     #gate{background-image:url('../img/slot/gate.png')}
@@ -776,8 +868,8 @@ html, body {
     width:100%;
     height:2rem;
 
-    background: -webkit-linear-gradient(top, #ffffff 0%,#FF6A00 100%);
-    background: linear-gradient(top bottom, #ffffff 0%,#FF6A00 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: -webkit-linear-gradient(#ffffff, #FF6A00);
+    background: linear-gradient(#ffffff, #FF6A00); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     border:0.05rem transparent outset;
     border-top:0.05rem black solid;
     box-sizing: border-box;
