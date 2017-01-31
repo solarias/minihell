@@ -128,6 +128,7 @@ var imageList = [];
     imageList.push("./img/epic_appear.png");
     imageList.push("./img/epic_land.png");
     imageList.push("./img/epic_wait.png");
+    imageList.push("./img/epic_crack.png");
 //브금
 var bgmObj = {};
 for (i = 0;i < dungeonList.length;i++) {
@@ -144,7 +145,7 @@ for (i = 0;i < dungeonList.length;i++) {
 }
 //효과음
 var epicSfxList = ["epic_appear","epic_land"];
-var hitList = ["hit_slash","hit_hit","hit_gun","hit_magic"];
+var hitList = ["hit_slash","hit_hit","hit_gun","hit_magic","hit_beckey"];
 var sfxList = ["slot_open","slot_enter","slot_close"];
 var sfxObj = {};
 //에픽 사운드 업데이트
@@ -165,6 +166,9 @@ for (i = 0;i < hitList.length;i++) {
         volume:0.2
     });
 }
+    //일부 작은 소리 증폭
+    sfxObj.hit_gun.volume = 1;
+    sfxObj.hit_beckey.volume = 1;
 //기타 효과음 업데이트
 for (i = 0;i < sfxList.length;i++) {
     sfxObj[sfxList[i]] = new Howl({
@@ -416,6 +420,9 @@ simulateP.prototype = {
         $("#item_img1").classList.add("rotate");
         //에픽 등장 이펙트
         $("#effect_appear1").classList.add("act");
+        //균열 등장
+        $("#main_crack").classList.add("show");
+        void $("#main_crack").offsetWidth;
 
 
         //아이템 루팅
@@ -436,7 +443,7 @@ simulateP.prototype = {
                     ease:Power0.easeNone
                 });
             TweenMax.to($("#item1"),0.4,{
-                    yPercent:"+=40",
+                    yPercent:"+=45",
                     //transform:"translate(0,3.5rem)",
                     ease: Circ.easeIn,
                     delay:0.2,
@@ -445,6 +452,9 @@ simulateP.prototype = {
                         $("#effect_land1").classList.add("act");
                         //에픽 대기 이펙트
                         $("#effect_wait1").classList.add("act");
+                        //균열 사라짐
+                        $("#main_crack").classList.remove("show");
+                        void $("#main_crack").offsetWidth;
                         //에픽 착지 사운드
                         if (user.sound) sfxObj.epic_land.stop().play();
                     }
@@ -860,7 +870,7 @@ mainP.prototype.changeCharacter = function() {
     //캐릭터 랜덤 선택
     var chaList = [];
     for (i in characterList) {
-        if (characterList.hasOwnProperty(i) && i !== "beckey") {
+        if (characterList.hasOwnProperty(i)) {
             chaList.push(i);
         }
     }
@@ -1056,12 +1066,12 @@ document.addEventListener("DOMContentLoaded", function(e) {
     //나가기 경고
         //웹 브라우저
         window.addEventListener("beforeunload", function(e) {
-            return "미니 지옥파티를 종료하시겠습니까?";
+            return "'에픽의 균열'을 종료하시겠습니까?";
         }, false);
         //어플리케이션
         function quit() {
             swal({
-                text:"미니 지옥파티를 종료하시겠습니까?",
+                text:"'에픽의 균열'을 종료하시겠습니까?",
                 type:"warning",
                 showCancelButton:true,
                 confirmButtonText: '종료',
