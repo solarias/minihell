@@ -88,11 +88,11 @@ button {
 }
 */
 /*그림자 효과*/
-button:hover, select:hover, label:hover {
+#wrapper button:hover, #wrapper select:hover, #wrapper label:hover {
     border:0.2rem white solid !important;
     cursor:pointer;
 }
-button:active, select:active, label:active {
+#wrapper button:active, #wrapper select:active, #wrapper label:active {
     border:0.3rem skyblue solid !important;
 }
 /*캐릭터 스프라이트(공용)*/
@@ -259,6 +259,10 @@ html, body {
         #cover_notice p[content] {
             margin-left:0.2rem;
         }
+        a {
+            color:yellow;
+            text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
+        }
     #cover_loading {
         position:relative;
         overflow:auto;
@@ -368,7 +372,7 @@ html, body {
     }
     #main_character.dungeon {
         left:calc(50% - 8rem);
-        top:-3rem;
+        top:-2.8rem;
     }
     /*캐릭터 이미지 : 공용 클래스 스타일 적용*/
     #main_character.left {
@@ -446,7 +450,7 @@ html, body {
 #main_crack {
     position:absolute;
         z-index:2;
-    left:calc(50% - 1.7rem + 3.2rem);
+    left:calc(50% - 1.7rem + 3.1rem);
     top:0;
 
     width:3.4rem;
@@ -460,7 +464,7 @@ html, body {
     transition:opacity 0.2s;
 }
     #main_crack.show {
-        opacity:0.5;
+        opacity:0.8;
     }
 /*드랍 아이템*/
 .item {
@@ -861,9 +865,12 @@ html, body {
             line-height:0.3rem;
         }
         #inventory_box p {
+            height:0.5rem;
+
             border-bottom:0.02rem white solid;
 
             font-size:0.35rem;
+            line-height:0.5rem;
         }
         #inventory_box span.right {
             float:right;

@@ -167,15 +167,15 @@ for (i = 0;i < hitList.length;i++) {
     });
 }
     //일부 작은 소리 증폭
-    sfxObj.hit_gun.volume = 1;
-    sfxObj.hit_beckey.volume = 1;
+    sfxObj.hit_gun.volume(1);
+    sfxObj.hit_beckey.volume(1);
 //기타 효과음 업데이트
 for (i = 0;i < sfxList.length;i++) {
     sfxObj[sfxList[i]] = new Howl({
         src:["./sound/sfx/sfx_" + sfxList[i] + ".ogg", "./sound/sfx/sfx_" + sfxList[i] + ".mp3"],
         preload:false,
         loop:false,
-        volume:0.9
+        volume:0.5
     });
 }
 //미디어 제어
@@ -263,7 +263,10 @@ simulateP.prototype = {
         //0.5초 후(타격 애니메이션 종료 후)
         setTimeout(function() {
             //타격 사운드
-            if (user.sound) sfxObj["hit_" + characterList[myCharacter].hittype].play();
+            if (user.sound) {
+                var sd = sfxObj["hit_" + characterList[myCharacter].hittype];
+                sd.play();
+            }
             //탐색 결과 확인
             if (this.result()) {
                 //아이템 드랍 승인 -> 아이템 선정
@@ -414,7 +417,9 @@ simulateP.prototype = {
 		$("#item_img1").style.visibility = "visible";
 
         //에픽 등장 사운드
-        if (user.sound) sfxObj.epic_appear.stop().play();
+        if (user.sound) {
+            sfxObj.epic_appear.stop().play();
+        }
 
         //아이템 회전 시작
         $("#item_img1").classList.add("rotate");
@@ -681,8 +686,10 @@ mainP.prototype.init = function() {
         $("#button_left").onclick = function() {
             swal({
                 title:"처음부터 하기",
-                text:"어플이 아니라면, 데이터 소모에 주의하세요.",
-                type:"info",
+                html:"어플이 아니라면, 데이터 소모에 주의하세요.",
+                imageUrl: './img/icon_crack.png',
+                imageWidth: 128,
+                imageHeight: 128,
                 showCancelButton:true,
                 confirmButtonText: '예',
                 cancelButtonText: '아니요',
@@ -1072,7 +1079,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
         function quit() {
             swal({
                 text:"'에픽의 균열'을 종료하시겠습니까?",
-                type:"warning",
+                imageUrl: './img/icon_crack.png',
+                imageWidth: 128,
+                imageHeight: 128,
                 showCancelButton:true,
                 confirmButtonText: '종료',
                 confirmButtonColor: '#d33',
