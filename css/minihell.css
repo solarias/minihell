@@ -305,6 +305,7 @@ html, body {
 
 #main_channel {
     position:relative;
+        z-index:90;
 
     margin:0.2rem auto 0 auto;
     width:10rem;
