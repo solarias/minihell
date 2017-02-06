@@ -65,353 +65,217 @@ Array.prototype.min = function() {
 //=================================================================================================================
 //※ 함수 - 마우스 액션
 //=================================================================================================================
-//마우스 올리면 다른 개체 감추기
-function seriesOnOff(base, option, series) {
-    //옵션 지정 1
-    var _antiTrigger = "";
-    switch (option["trigger"]) {
-        case "mouseover":
-            _antiTrigger = "mouseout";
 
-            break;
-    }
 
-    //옵션 지정 2
-    function  _setEvent(target) {
-        switch (option["event"]) {
-            //정해진 옵션
-            case "display":
-                target.style.display = "block";
+//=================================================================================================================
+//※ 함수 - DOM 관련
+//=================================================================================================================
+//DOM 선택자
+function $(parameter) {
+    return document.querySelector(parameter);
+}
+function $$(parameter) {
+    return document.querySelectorAll(parameter);
+}
 
-                break;
-            case "visibility":
-                target.style.visibility = "visible";
+//DOM 생성
+    //사용법 : createElement(문법)
+    //# : id, . : class, [abc=def] : attribute, "abc" : text
+    (function(e){"use strict";var t="(-?[_a-zA-Z]+[_a-zA-Z0-9-]*)",n="([\"'])((?:(?=(\\\\?))\\",r="[\\W\\w])*?)\\",i="^(?:"+t+")|^#"+t+"|^\\."+t+"|^\\["+t+"(?:([*$|~^]?=)"+n+"8"+r+"6"+")?\\]|^\\s*[\\n\\r]+([\\t]*)\\s*|^(\\s+)|^"+n+"13"+r+"11";document.createElement=function(t){var n=t.replace(/^\s+|\s+$/),r=document.createDocumentFragment(),s=[r,e.call(this,"div")];for(var o=r,u=o.appendChild(s[1]),a=1,f=true,l;n&&(l=n.match(i));){if(l[1]){o.replaceChild(u=e.call(this,l[1]),o.lastChild);if(f)s[a]=u}if(l[2])u.id=l[2];if(l[3])u.className+=(u.className?" ":"")+l[3];if(l[4])u.setAttribute(l[4],l[7]||"");if(l[9]!==undefined){a=l[9].length;o=s[a];u=s[++a]=o.appendChild(e.call(this,"div"))}if(l[10]){o=u;u=o.appendChild(e.call(this,"div"));f=false}if(l[11]){o.replaceChild(u=document.createTextNode(l[12]),o.lastChild);if(f)s[a]=u}n=n.slice(l[0].length)}return r.childNodes.length===1?r.lastChild:r}})(document.createElement)
 
-                break;
-            case "checked":
-                target.checked = true;
-
-                break;
-        }
-    }
-    //옵션 지정 3
-    function  _clearEvent(target) {
-        switch (option["event"]) {
-            case "display":
-                target.style.display = "none";
-
-                break;
-            case "visibility":
-                target.style.visibility = "hidden";
-
-                break;
-            case "checked":
-                target.checked = false;
-
-                break;
-        }
-    }
-    //옵션 지정 4
-        //after = -1 : onmouseout - 모든 걸 clearEvent
-        //after = 0 : onmouseout - base 출현
-        //after = 1 : onmouseout - 유지
-
-    //base 깔아두기
-        //(base가 "{공백}"이면) 아무것도 하지 않기
-    function _setBase() {
-        if (base !== "") {
-            _setEvent(base);
-        }
-    }
-    function _clearBase() {
-        if (base !== "") {
-            _clearEvent(base);
-        }
-    }
-    _setBase();
-
-    //액션 지정
-    for (var i=0;i<series.length;i++) {
-        (function(i) {
-            __exe();
-            function __exe() {
-                //타겟 지정
-                if (Array.isArray(series[i])) {
-                    //대상 : 이벤트 지정
-                    series[i][0].addEventListener(option["trigger"],function() {
-                        _clearBase();
-                        _setEvent(series[i][1]);
-                        //나머지 : 이벤트 해제
-                        for (var j=0;j<series.length;j++) {
-                            (function(j) {
-                                __exe2();
-                                function __exe2() {
-                                    if (j !== i) {
-                                        _clearEvent(series[j][1]);
-                                    }
-                                }
-                            })(j);
-                        }
-                    });
-                    switch (option["after"]) {
-                        //(after가 -1) : 해제
-                        case -1:
-                            series[i][0].addEventListener(_antiTrigger,function() {
-                                _clearEvent(series[i][1]);
-                            });
-                            break;
-                        //(after가 ) : 0
-                        case 0:
-                            series[i][0].addEventListener(_antiTrigger,function() {
-                                _clearEvent(series[i][1]);
-                                _setBase();
-                            });
-                            break;
-                    }
-                } else {
-                    //대상 : 이벤트 지정
-                    series[i].addEventListener(option["trigger"],function() {
-                        _clearBase();
-                        _setEvent(series[i]);
-                        //나머지 : 이벤트 해제
-                        for (var j=0;j<series.length;j++) {
-                            (function(j) {
-                                __exe2();
-                                function __exe2() {
-                                    if (j !== i) {
-                                        _clearEvent(series[j]);
-                                    }
-                                }
-                            })(j);
-                        }
-                    });
-                    switch (option["after"]) {
-                        //(after가 -1) : 해제
-                        case -1:
-                            series[i].addEventListener(_antiTrigger,function() {
-                                _clearEvent(series[i]);
-                            });
-                            break;
-                        //(after가 ) : 0
-                        case 0:
-                            series[i].addEventListener(_antiTrigger,function() {
-                                _clearEvent(series[i]);
-                                _setBase();
-                            });
-                            break;
-                    }
-                }
+//=================================================================================================================
+//※ 함수 - 배열, 오브젝트, JSON, 로컬스토리지 등
+//=================================================================================================================
+//URL에서 JSON 불러오시 (GET 방식)
+    /*활용밥
+    loadJSON('my-file.json',
+             function(data) { console.log(data); },(성공 시)
+             function(xhr) { console.error(xhr); }(실패 시)
+    );
+    */
+function loadJSON(path, success, error)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                if (success)
+                    success(JSON.parse(xhr.responseText));
+            } else {
+                if (error)
+                    error(xhr);
             }
-        })(i);
+        }
+    };
+    xhr.open("GET", path, true);
+    xhr.send();
+}
+
+//로컬스토리지 object처럼 활용
+function localStore(key, obj) {
+    return window.localStorage.setItem(key, JSON.stringify(obj));
+}
+function localGet(key) {
+    return JSON.parse(window.localStorage.getItem(key));
+}
+
+//배열&오브젝트 복제
+function deepCopy (dupeObj) {
+    //null : 그냥 반환
+    if (dupeObj === null) return dupeObj;
+    //undefined : 그냥 반환
+    if (dupeObj === undefined) return dupeObj;
+    //문자열 : 그냥 반환
+    if (typeof(dupeObj) === "string") return dupeObj;
+    //숫자 : 그냥 반환
+    if (typeof(dupeObj) === "number") return dupeObj;
+    //불리언 : 그냥 반환
+    if (typeof(dupeObj) === "boolean") return dupeObj;
+    //나머지 : object로 취급
+    var retObj = new Object();
+    if (typeof(dupeObj) === 'object') {
+        if (typeof(dupeObj.length) !== 'undefined')
+            var retObj = new Array();
+        for (var objInd in dupeObj) {
+            if (typeof(dupeObj[objInd]) === 'object') {
+                retObj[objInd] = deepCopy(dupeObj[objInd]);
+            } else if (typeof(dupeObj[objInd]) === 'string') {
+                retObj[objInd] = dupeObj[objInd];
+            } else if (typeof(dupeObj[objInd]) === 'number') {
+                retObj[objInd] = dupeObj[objInd];
+            } else if (typeof(dupeObj[objInd]) === 'boolean') {
+                ((dupeObj[objInd] === true) ? retObj[objInd] = true : retObj[objInd] = false);
+            }
+        }
     }
+    return retObj;
+}
+
+//배열 셔플
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex ;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
+
+//오브젝트 item 수 파악
+function countProperties(obj) {
+    var count = 0;
+
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            ++count;
+    }
+
+    return count;
+}
+
+//'배열 내 오브젝트'에서 "특정 value를 가진 id"를 가진 배열 불러오기
+function indexArrKey(arr, key, value) {
+    for (var i=0;i<arr.length;i++) {
+        if (arr[i][key] === value) {
+            return arr[i];
+        }
+    }
+}
+//=================================================================================================================
+//※ 수 관련
+//=================================================================================================================
+//천단위 콤마 표시 (출처 : http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript)
+function thousand(num) {
+    //null, undefined : "0" 리턴
+    if (!num) return "0";
+
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+//가중치 적용 랜덤
+function rand(target) {//target : 숫자가 들어있는 배열
+    var number = 0;
+    for (i=0;i<target.length;i++) {
+        number += target[i];
+    }
+    var tmp = Math.random() * number;
+
+    number = 0;
+    for (i=0;i<target.length;i++) {
+        number += target[i];
+        if (tmp < number) {
+            return i;
+        }
+    }
+}
+
+//만단위 한글로 전환 (출처 : http://kin.naver.com/qna/detail.nhn?d1id=1&dirId=1040202&docId=159019083&qb=amF2YXNjcmlwdCDsiKvsnpAgNOuLqOychCDtlZzquIA=&enc=utf8&section=kin&rank=2&search_sort=0&spq=0&pid=R6VWNc5Y7vKssb7f6YZsssssssd-312648&sid=UKssqHJvLDEAAC0QENA)
+function setWon(pWon) {
+    //null, undefined : "0" 리턴
+    if (!pWon) return "0";
+
+    var won  = pWon.toString();
+    var arrWon  = ["", "만 ", "억 ", "조 ", "경 ", "해 ", "자 ", "양 ", "구 ", "간 ", "정 "];
+    var changeWon = "";
+    var pattern = /(-?[0-9]+)([0-9]{4})/;
+    while(pattern.test(won)) {
+        won = won.replace(pattern,"$1,$2");
+    }
+    won = won + "";
+    var arrCnt = won.split(",").length-1;
+    for(var ii=0; ii<won.split(",").length; ii++) {
+        changeWon += won.split(",")[ii]+arrWon[arrCnt];
+        arrCnt--;
+    }
+    return changeWon;
+}
+
+//숫자인지 판단 (출처 : http://mwultong.blogspot.com/2007/01/isnum-isnumeric-isnumber-javascript.html)
+function isNumber(s) {
+    s += ''; // 문자열로 변환
+    s = s.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
+    if (s === '' || isNaN(s)) return false;
+    return true;
 }
 
 
 //=================================================================================================================
-//※ 함수 - DOM 선택자
+//※ 문자열 관련
 //=================================================================================================================
-    //DOM 선택자
-    function $(parameter) {
-        return document.querySelector(parameter);
-    }
-    function $$(parameter) {
-        return document.querySelectorAll(parameter);
-    }
+//replaceAll prototype 선언
+String.prototype.replaceAll = function(org, dest) {
+    return this.split(org).join(dest);
+}
 
 
-    //=================================================================================================================
-    //※ 함수 - 배열, 오브젝트, JSON, 로컬스토리지 등
-    //=================================================================================================================
-    //URL에서 JSON 불러오시 (GET 방식)
-    function loadJSON(path, success, error)
-    {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function()
-        {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    if (success)
-                        success(JSON.parse(xhr.responseText));
-                } else {
-                    if (error)
-                        error(xhr);
-                }
-            }
-        };
-        xhr.open("GET", path, true);
-        xhr.send();
-    }
-    /*활용밥
-    loadJSON('my-file.json',
-             function(data) { console.log(data); },
-             function(xhr) { console.error(xhr); }
-    );
-    */
-
-    //로컬스토리지 object처럼 활용
-    function localStore(key, obj) {
-        return window.localStorage.setItem(key, JSON.stringify(obj));
-    }
-    function localGet(key) {
-        return JSON.parse(window.localStorage.getItem(key));
-    }
-
-    //배열&오브젝트 복제
-    function deepCopy (dupeObj) {
-        //null : 그냥 반환
-        if (dupeObj === null) return dupeObj;
-        //undefined : 그냥 반환
-        if (dupeObj === undefined) return dupeObj;
-        //문자열 : 그냥 반환
-        if (typeof(dupeObj) === "string") return dupeObj;
-        //숫자 : 그냥 반환
-        if (typeof(dupeObj) === "number") return dupeObj;
-        //불리언 : 그냥 반환
-        if (typeof(dupeObj) === "boolean") return dupeObj;
-        //나머지 : object로 취급
-        var retObj = new Object();
-        if (typeof(dupeObj) === 'object') {
-            if (typeof(dupeObj.length) !== 'undefined')
-                var retObj = new Array();
-            for (var objInd in dupeObj) {
-                if (typeof(dupeObj[objInd]) === 'object') {
-                    retObj[objInd] = deepCopy(dupeObj[objInd]);
-                } else if (typeof(dupeObj[objInd]) === 'string') {
-                    retObj[objInd] = dupeObj[objInd];
-                } else if (typeof(dupeObj[objInd]) === 'number') {
-                    retObj[objInd] = dupeObj[objInd];
-                } else if (typeof(dupeObj[objInd]) === 'boolean') {
-                    ((dupeObj[objInd] === true) ? retObj[objInd] = true : retObj[objInd] = false);
-                }
-            }
-        }
-        return retObj;
-    }
-
-    //배열 셔플
-    function shuffle(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex ;
-
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-
-        return array;
-    }
-
-    //오브젝트 item 수 파악
-    function countProperties(obj) {
-        var count = 0;
-
-        for(var prop in obj) {
-            if(obj.hasOwnProperty(prop))
-                ++count;
-        }
-
-        return count;
-    }
-
-    //'배열 내 오브젝트'에서 "특정 value를 가진 id"를 가진 배열 불러오기
-    function indexArrKey(arr, key, value) {
-        for (var i=0;i<arr.length;i++) {
-            if (arr[i][key] === value) {
-                return arr[i];
-            }
+//=================================================================================================================
+//※ input 계열
+//=================================================================================================================
+//value로 select문 검색
+function indexSelectByValue(selectbox, value)	{
+    for (var i = selectbox.options.length-1;i>=0;i--) {
+        if (selectbox.options[i].value === value) {
+            return i;
         }
     }
-    //=================================================================================================================
-    //※ 수 관련
-    //=================================================================================================================
-    //천단위 콤마 표시 (출처 : http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript)
-    function thousand(num) {
-        //null, undefined : "0" 리턴
-        if (!num) return "0";
+}
 
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+//특정 select 비우기
+function clearSelect(selectbox)	{
+    for (var i = selectbox.options.length-1;i>=0;i--) {
+        selectbox.remove(i);
     }
-
-    //가중치 적용 랜덤
-    function rand(target) {//target : 숫자가 들어있는 배열
-        var number = 0;
-        for (i=0;i<target.length;i++) {
-            number += target[i];
-        }
-        var tmp = Math.random() * number;
-
-        number = 0;
-        for (i=0;i<target.length;i++) {
-            number += target[i];
-            if (tmp < number) {
-                return i;
-            }
-        }
-    }
-
-    //만단위 한글로 전환 (출처 : http://kin.naver.com/qna/detail.nhn?d1id=1&dirId=1040202&docId=159019083&qb=amF2YXNjcmlwdCDsiKvsnpAgNOuLqOychCDtlZzquIA=&enc=utf8&section=kin&rank=2&search_sort=0&spq=0&pid=R6VWNc5Y7vKssb7f6YZsssssssd-312648&sid=UKssqHJvLDEAAC0QENA)
-    function setWon(pWon) {
-        //null, undefined : "0" 리턴
-        if (!pWon) return "0";
-
-        var won  = pWon.toString();
-        var arrWon  = ["", "만 ", "억 ", "조 ", "경 ", "해 ", "자 ", "양 ", "구 ", "간 ", "정 "];
-        var changeWon = "";
-        var pattern = /(-?[0-9]+)([0-9]{4})/;
-        while(pattern.test(won)) {
-            won = won.replace(pattern,"$1,$2");
-        }
-        won = won + "";
-        var arrCnt = won.split(",").length-1;
-        for(var ii=0; ii<won.split(",").length; ii++) {
-            changeWon += won.split(",")[ii]+arrWon[arrCnt];
-            arrCnt--;
-        }
-        return changeWon;
-    }
-
-    //숫자인지 판단 (출처 : http://mwultong.blogspot.com/2007/01/isnum-isnumeric-isnumber-javascript.html)
-    function isNumber(s) {
-        s += ''; // 문자열로 변환
-        s = s.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
-        if (s === '' || isNaN(s)) return false;
-        return true;
-    }
-
-
-    //=================================================================================================================
-    //※ 문자열 관련
-    //=================================================================================================================
-    //replaceAll prototype 선언
-    String.prototype.replaceAll = function(org, dest) {
-        return this.split(org).join(dest);
-    }
-
-
-    //=================================================================================================================
-    //※ input 계열
-    //=================================================================================================================
-    //value로 select문 검색
-    function indexSelectByValue(selectbox, value)	{
-        for (var i = selectbox.options.length-1;i>=0;i--) {
-            if (selectbox.options[i].value === value) {
-                return i;
-            }
-        }
-    }
-
-    //특정 select 비우기
-    function clearSelect(selectbox)	{
-        for (var i = selectbox.options.length-1;i>=0;i--) {
-            selectbox.remove(i);
-        }
-    }
+}
 
 
 //====================================================================================

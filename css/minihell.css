@@ -5,7 +5,6 @@
 
     background-origin: border-box;
     outline: none;
-    -webkit-box-shadow: none;
     box-shadow: none;
 
 	font-family:"Nanum Gothic", sans-serif;
@@ -61,9 +60,6 @@
 }
 .color_gray {
     color:#bdbdbd;
-}
-.color_darkgray {
-    color:#868484;
 }
 .color_white {
     color:white;
@@ -236,9 +232,9 @@ html, body {
     }
     #cover_notice {
         position:relative;
-        overflow-y:auto;
+        overflow-y:scroll;
 
-        margin:1rem auto 0 auto;
+        margin:0.5rem auto 0 auto;
         padding:0.1rem;
         width:8rem;
         height:9rem;
@@ -261,11 +257,28 @@ html, body {
         }
         a {
             color:yellow;
-            text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
+        }
+    #cover_google {
+        position:relative;
+
+        margin:0 auto;
+        width:6rem;
+        height:2.4rem;
+
+        background-image:url('https://play.google.com/intl/en_us/badges/images/generic/ko_badge_web_generic.png');
+        background-size:6rem auto;
+    }
+        #cover_google a {
+            position:relative;
+            width:100%;
+            height:100%;
+            display:block;
         }
     #cover_loading {
-        position:relative;
-        overflow:auto;
+        position:absolute;
+        left:0;right:0;
+        bottom:1rem;
+        overflow:hidden;
 
         margin:1rem auto 0 auto;
         width:90%;
@@ -274,7 +287,33 @@ html, body {
 
         background:rgba(0,0,0,0.8);
         border:0.1rem white outset;
+        -webkit-transition:width 0.3s;
+        transition:width 0.3s;
+
+		white-space: nowrap;
     }
+            #cover_loading.hidden1 {
+                width:0.01rem;
+                border:0;
+            }
+            #cover_loading.hidden2 {
+                width:0rem;
+                border:0;
+            }
+        #cover_loading_text {
+            position:absolute;
+                z-index:2;
+            left:0;top:0;
+
+            width:100%;
+            height:100%;
+
+            color:yellow;
+                text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
+            font-size:0.6rem;
+                line-height:0.8rem;
+            text-align:center;
+        }
         #cover_loading_bar {
             position:absolute;
             left:0;top:0;
@@ -282,7 +321,10 @@ html, body {
             width:0%;
             height:100%;
 
-            background:yellow;
+            background:-webkit-linear-gradient(#38A1E4,#2d7fb3);
+            background:linear-gradient(#38A1E4,#2d7fb3);
+            -webkit-transition:width 0.1s;
+            transition:width 0.1s;
         }
 
 
@@ -421,6 +463,7 @@ html, body {
     height:1.5rem;
 
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #FFFFFF), color-stop(1.00, #A0A0A0));
+    background: -webkit-linear-gradient(top, #ffffff, #A0A0A0);
     background: linear-gradient(to bottom, #ffffff, #A0A0A0);
     border:0.02rem gray outset;
     border-radius:0.2rem;
@@ -482,7 +525,7 @@ html, body {
         .item_container {position:relative;width:100%;height:100%;}
 	.item_description {
         position:absolute;
-            z-index:3;
+            z-index:4;
         left:0;
         top:0;
         margin-bottom:0.2rem;
@@ -561,6 +604,12 @@ html, body {
 
 		    visibility:visible;
         }
+                .effect_appear.act.large {
+                    -webkit-transform:scale(2);
+                            transform:scale(2);
+                    -webkit-transform-origin: 42% 58%;
+                            transform-origin: 42% 58%;
+                }
             @-webkit-keyframes effect_appear {
                 0% {background-position:0rem 0rem;}
                 100% {background-position:-112.2rem 0rem;}
@@ -585,8 +634,8 @@ html, body {
 		visibility:hidden;
 	}
         .effect_land.act {
-            -webkit-animation: effect_land 0.9s steps(7) forwards !important;
-            animation: effect_land 0.9s steps(7) forwards !important;
+            -webkit-animation: effect_land 0.6s steps(7) forwards !important;
+            animation: effect_land 0.6s steps(7) forwards !important;
 
 		    visibility:visible;
         }
@@ -598,6 +647,91 @@ html, body {
                 0% {background-position:0rem 0rem;}
                 100% {background-position:-127.1rem 0rem;}
             }
+    /*========찜빔========*/
+        .effect_land_wish1 {
+    		position:absolute;
+                z-index:2;
+    		left: calc(50% - 12rem);/*3.7rem*/
+            top: -1.5rem;
+
+    		width:24rem;
+    		height:8rem;
+
+    		background-image:url('../img/epic_land_wish1.png');
+                background-size:240rem 8rem;
+
+    		visibility:hidden;
+    	}
+            .effect_land_wish1.act {
+                -webkit-animation: effect_land_wish1 0.6s steps(9) forwards !important;
+                animation: effect_land_wish1 0.6s steps(9) forwards !important;
+
+    		    visibility:visible;
+            }
+                @-webkit-keyframes effect_land_wish1 {
+                    0% {background-position:0rem 0rem;}
+                    100% {background-position:-216rem 0rem;}
+                }
+                @keyframes effect_land_wish1 {
+                    0% {background-position:0rem 0rem;}
+                    100% {background-position:-216rem 0rem;}
+                }
+        .effect_land_wish2 {
+    		position:absolute;
+                z-index:4;
+    		left: calc(50% - 15rem);/*3.7rem*/
+            top: -13.1rem;
+
+    		width:30rem;
+    		height:30rem;
+
+    		background-image:url('../img/epic_land_wish2.png');
+                background-size:510rem 30rem;
+
+    		visibility:hidden;
+    	}
+            .effect_land_wish2.act {
+                -webkit-animation: effect_land_wish2 0.6s steps(16) forwards !important;
+                animation: effect_land_wish2 0.6s steps(16) forwards !important;
+
+    		    visibility:visible;
+            }
+                @-webkit-keyframes effect_land_wish2 {
+                    0% {background-position:0rem 0rem;}
+                    100% {background-position:-480rem 0rem;}
+                }
+                @keyframes effect_land_wish2 {
+                    0% {background-position:0rem 0rem;}
+                    100% {background-position:-480rem 0rem;}
+                }
+        .effect_land_wish3 {
+    		position:absolute;
+                z-index:2;
+    		left: calc(50% - 12rem);/*3.7rem*/
+            top: -10rem;
+
+    		width:24rem;
+    		height:15.3rem;
+
+    		background-image:url('../img/epic_land_wish3.png');
+                background-size:216rem 15.3rem;
+
+    		visibility:hidden;
+    	}
+            .effect_land_wish3.act {
+                -webkit-animation: effect_land_wish3 0.6s steps(8) forwards !important;
+                animation: effect_land_wish3 0.6s steps(8) forwards !important;
+
+    		    visibility:visible;
+            }
+                @-webkit-keyframes effect_land_wish3 {
+                    0% {background-position:0rem 0rem;}
+                    100% {background-position:-192rem 0rem;}
+                }
+                @keyframes effect_land_wish3 {
+                    0% {background-position:0rem 0rem;}
+                    100% {background-position:-192rem 0rem;}
+                }
 	.effect_wait {
 		position:absolute;
             z-index:2;
@@ -625,6 +759,157 @@ html, body {
             @keyframes effect_wait {
                 0% {background-position:0rem 0rem;}
                 100% {background-position:-62.0rem 0rem;}
+            }
+    /*========찜빔========*/
+    .effect_wait_wish1 {
+		position:absolute;
+            z-index:2;
+		left:calc(50% - 4.85rem);/*2rem*/
+        top:0.5rem;
+
+		width:9.7rem;
+		height:3rem;
+
+		background-image:url('../img/epic_wait_wish1.png');
+            background-size:100% 100%;
+        opacity:0.1;
+        -webkit-transition:opacity 0.9s;
+            transition:opacity 0.9s;
+
+		visibility:hidden;
+	}
+        .effect_wait_wish1.act {
+            opacity:1;
+
+		    visibility:visible;
+        }
+    .effect_wait_wish2 {
+        position:absolute;
+            z-index:2;
+        left:calc(50% - 8rem);/*2rem*/
+        top:-0.7rem;
+
+        width:16.1rem;
+        height:5.3rem;
+
+        background-image:url('../img/epic_wait_wish2.png');
+            background-size:128.8rem 5.3rem;
+        opacity:0.1;
+        -webkit-transition:opacity 0.9s;
+            transition:opacity 0.9s;
+
+        visibility:hidden;
+    }
+        .effect_wait_wish2.act {
+            -webkit-animation: effect_wait_wish2 0.3s steps(7) infinite;
+            animation: effect_wait_wish2 0.3s steps(7) infinite;
+            opacity:1;
+
+            visibility:visible;
+        }
+            @-webkit-keyframes effect_wait_wish2 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-112.7rem 0rem;}
+            }
+            @keyframes effect_wait_wish2 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-112.7rem 0rem;}
+            }
+    .effect_wait_wish3 {
+        position:absolute;
+            z-index:10;
+        left:calc(50% - 4.85rem);/*2rem*/
+        top:-1rem;
+
+        width:9.7rem;
+        height:4rem;
+
+        background-image:url('../img/epic_wait_wish3.png');
+            background-size:155.2rem 4rem;
+        opacity:0.1;
+        -webkit-transition:opacity 0.9s;
+            transition:opacity 0.9s;
+
+        visibility:hidden;
+    }
+        .effect_wait_wish3.act {
+            -webkit-animation: effect_wait_wish3 0.8s steps(15) infinite;
+            animation: effect_wait_wish3 0.8s steps(15) infinite;
+            opacity:1;
+
+            visibility:visible;
+        }
+            @-webkit-keyframes effect_wait_wish3 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-145.5rem 0rem;}
+            }
+            @keyframes effect_wait_wish3 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-145.5rem 0rem;}
+            }
+    .effect_wait_wish4 {
+        position:absolute;
+            z-index:2;
+        left:calc(50% - 1.62rem);/*2rem*/
+        top:-6.3rem;
+
+        width:3.24rem;
+        height:10.5rem;
+
+        background-image:url('../img/epic_wait_wish4.png');
+            background-size:51.8rem 10.5rem;
+        opacity:0.1;
+        -webkit-transition:opacity 0.9s;
+            transition:opacity 0.9s;
+
+        visibility:hidden;
+    }
+        .effect_wait_wish4.act {
+            -webkit-animation: effect_wait_wish4 0.8s steps(15) infinite;
+            animation: effect_wait_wish4 0.8s steps(15) infinite;
+            opacity:1;
+
+            visibility:visible;
+        }
+            @-webkit-keyframes effect_wait_wish4 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-48.56rem 0rem;}
+            }
+            @keyframes effect_wait_wish4 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-48.56rem 0rem;}
+            }
+    .effect_wait_wish5 {
+        position:absolute;
+            z-index:3;
+        left:calc(50% - 1.74rem);/*2rem*/
+        top:-1.3rem;
+
+        width:3.48rem;
+        height:4.23rem;
+
+        background-image:url('../img/epic_wait_wish5.png');
+            background-size:55.74rem 4.23rem;
+        opacity:0.1;
+        -webkit-transition:opacity 0.9s;
+            transition:opacity 0.9s;
+
+        visibility:hidden;
+    }
+        .effect_wait_wish5.act {
+            -webkit-animation: effect_wait_wish5 0.8s steps(15) infinite;
+            animation: effect_wait_wish5 0.8s steps(15) infinite;
+            opacity:1;
+
+            visibility:visible;
+        }
+            @-webkit-keyframes effect_wait_wish5 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-52.26rem 0rem;}
+            }
+            @keyframes effect_wait_wish5 {
+                0% {background-position:0rem 0rem;}
+                100% {background-position:-52.26rem 0rem;}
             }
 
 
@@ -686,7 +971,8 @@ html, body {
     background: linear-gradient(#ffffff, #A0A0A0);
     border:0.05rem gray outset;
     border-radius:0.5rem;
-    transition:all 0.3s;
+    -webkit-transition:top 0.3s;
+    transition:top 0.3s;
 
     font-size:1em;
     font-weight:bold;
@@ -705,7 +991,8 @@ html, body {
     height:80%;
 
     box-sizing:border-box;
-    transition:all 0.3s;
+    -webkit-transition:width 0.3s, left 0.3s, right 0.3s;
+    transition:width 0.3s, left 0.3s, right 0.3s;
 
     font-size:0.6rem;
     font-weight:bold;
@@ -753,10 +1040,10 @@ html, body {
 #frame_slot_left {
     position:absolute;
         z-index:100;
-    left:-10rem;
+    left:-8rem;
     top:0;
 
-    width:10rem;
+    width:8rem;
     height:100%;
 
     background:rgba(0,0,0,0.8);
@@ -854,6 +1141,9 @@ html, body {
 
         display:none;
     }
+            #inventory_box {
+                height:calc(100% - 1rem);
+            }
         .record_item, .record_set {
             margin-left:0.15rem;
             margin-bottom:0.2rem;
@@ -865,22 +1155,169 @@ html, body {
             font-size:0.25rem;
             line-height:0.3rem;
         }
-        #inventory_box p {
-            height:0.5rem;
+        #inventory_box div {
+            position:relative;
+
+            height:1rem;
 
             border-bottom:0.02rem white solid;
+        }
+            #inventory_box div.line_set {
+                border-bottom:0.02rem gray dotted;
+            }
+            #inventory_box div:hover {
+                background:rgba(45,127,179,0.8);
+
+                cursor:pointer;
+            }
+            #inventory_box div:active {
+                background:skyblue;
+            }
+            #inventory_box div.wish {
+                background:rgba(45,127,179,0.5);
+            }
+        #inventory_box p {
+            position:relative;
+
+            float:right;
+            width:calc(100% - 1.1rem);
+            height:0.5rem;
 
             font-size:0.35rem;
             line-height:0.5rem;
         }
+            #inventory_box p.icon {
+                position:relative;
+
+                float:left;
+                width:1rem;
+                height:1rem;
+
+                background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_hell.png');
+                    background-size:22.5rem auto;
+                box-sizing: border-box;
+            }
+            #inventory_box p.wish {
+                position:absolute;
+                left:0.6rem;
+                bottom:0;
+
+                font-size:0.4rem;
+                color:skyblue;
+                text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
+
+                display:none;
+            }
+                #inventory_box p.wish.show {
+                    display:block;
+                }
+            #inventory_box p.icon.nothing {
+                -webkit-filter:grayscale(1);
+                        filter:grayscale(1);
+                opacity:0.5;
+            }
         #inventory_box span.right {
             float:right;
             display:inline-block;
         }
-        #inventory_box span.amount.darkgray {
+        #inventory_box span.amount.nothing {
             visibility:hidden;
         }
+        .color_nothing {
+            color:#868484;
+        }
 
+        #inventory_wish {
+            position:absolute;
+            right:-2rem;
+            top:1rem;
+
+            padding:0.05rem;
+            width:2rem;
+            height:12.5rem;
+
+            background-color:#2d7fb3;
+            border:0.02rem black solid;
+                border-left:0;
+            border-top-right-radius:0.2rem;
+            border-bottom-right-radius:0.2rem;
+            box-sizing: border-box;
+
+            display:none;
+        }
+            #wish_title {
+                width:100%;
+
+                font-size:0.5rem;
+                color:white;
+                font-weight:bold;
+                text-align:center;
+            }
+            .wish_item {
+                position:relative;
+
+                margin:0.4rem auto;
+                width:1rem;
+
+                border:0.04rem gray outset;
+                transform:scale(1.2);
+                transform-origin: 50% 50%;
+            }
+                .wish_item_icon {
+                    position:relative;
+
+                    width:1rem;
+                    height:1rem;
+
+                    background-color:black;
+                    background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_hell.png');
+                        background-position:0 0;
+                        background-size:22.5rem auto;
+                }
+                    .wish_item_icon:hover {
+                        cursor:pointer;
+                    }
+                .wish_item_state {
+                    position:relative;
+
+                    width:1rem;
+                    height:0.3rem;
+
+                    background-color:black;
+                    border-top:0.01rem gray solid;
+                }
+                    .wish_item_state.no {background-color:red}
+                    .wish_item_state.yes {background-color:#59FF00}
+            #wish_clear {
+                position:relative;
+
+                margin:0.5rem auto 0 auto;
+                width:1.6rem;
+                height:2rem;
+
+                background-color:red;
+                border:0.02rem black solid;
+                border-radius:0.2rem;
+
+                display:table;
+            }
+                    #wish_clear:hover {
+                        outline:0.06rem skyblue solid;
+                        cursor:pointer
+                    }
+                    #wish_clear:active {
+                        background-color:orange;
+                        cursor:pointer
+                    }
+                #wish_clear p {
+                    color:white;
+                    font-size:0.4rem;
+                    font-weight:bold;
+                    text-align:center;
+                    vertical-align:middle;
+
+                    display:table-cell;
+                }
     #gate{background-image:url('../img/slot/gate.png')}
     #dg1{background-image:url('../img/slot/metro_1.png')}
     #dg2{background-image:url('../img/slot/metro_2.png')}
@@ -888,6 +1325,24 @@ html, body {
     #dg4{background-image:url('../img/slot/metro_4.png')}
     #dg5{background-image:url('../img/slot/metro_5.png')}
     #dg6{background-image:url('../img/slot/metro_6.png')}
+#inventory_footer {
+    position:absolute;
+        z-index:1;
+    bottom:2rem;
+    width:100%;
+    height:1rem;
+
+    background-color:#2d7fb3;
+    border-top:0.05rem black solid;
+    box-sizing: border-box;
+
+    color:white;
+    font-size:0.35rem;
+    font-weight:bold;
+    text-align:center;
+
+    display:none;
+}
 .slot_close {
     position:absolute;
         z-index:1;
@@ -940,5 +1395,6 @@ html, body {
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #ffffff;
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 0.4rem;
 }
