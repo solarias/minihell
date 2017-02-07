@@ -154,7 +154,7 @@ for (i = 0;i < dungeonList.length;i++) {
 //효과음
 var epicSfxList = ["epic_appear","epic_land","epic_appear_wish","epic_land_wish"];
 var hitList = ["hit_slash","hit_hit","hit_gun","hit_magic","hit_beckey"];
-var sfxList = ["slot_open","slot_close","map_show","map_enter", "setWish"];
+var sfxList = ["slot_open","slot_close","map_show","map_enter", "wish_set"];
 var sfxObj = {};
 //에픽 사운드 업데이트
 for (i = 0;i < epicSfxList.length;i++) {
@@ -718,7 +718,7 @@ displayP.prototype.addWish = function(id) {
         });
     } else {
         //찜 설정 사운드
-        if (user.option.sfx) sfxObj.setWish.play();
+        if (user.option.sfx) sfxObj.wish_set.play();
         //찜 등록, 아이콘 표시
         user.wish.push(id);
         //찜 현황 반영
@@ -733,7 +733,7 @@ displayP.prototype.addWish = function(id) {
 //★찜하기 지우기 (특정 위치 기준)
 displayP.prototype.removeWish = function(id, cmd) {
     //찜 설정 사운드
-    if (cmd !== "noSound" && user.option.sfx) sfxObj.setWish.play();
+    if (cmd !== "noSound" && user.option.sfx) sfxObj.wish_set.play();
     //찜 해제
     user.wish.splice(user.wish.indexOf(id),1);
     //찜 현황 반영
@@ -783,7 +783,7 @@ displayP.prototype.clearWish = function() {
         this.removeWish(user.wish[it],"noSound");
     }
     //초기화 별도 사운드
-    if (user.option.sfx) sfxObj.setWish.play();
+    if (user.option.sfx) sfxObj.wish_set.play();
 };
 var display = new displayP();
 
