@@ -1077,25 +1077,27 @@ mainP.prototype.createInventory = function() {
     }
     //텍스트 출력
     $("#inventory_scroll").appendChild(fragment);
-    //클러스터 생성 (부드로운 스크롤)
-    var clusterize = new Clusterize({
-        scrollId: 'inventory_box',
-        contentId: 'inventory_scroll',
-        //하단 1번 : 1 블록에 들어가는 최대 row 수 (디폴트 : 50)
-        //하단 2번 : 1 클러스터에 들어가는 최대 블록 수 (디폴트 : 4)
-        rows_in_block:20,
-        blocks_in_cluster:Math.ceil($("#inventory_scroll").childNodes.length / 20)
-    });
-    //★ (클러스터 생성 후) 각 아이템에 클릭 이벤트 추가 (찜하기)
-    var nodes = $("#inventory_scroll").childNodes;
-    var length = nodes.length;
-    for (i = 0;i < nodes.length;i++) {
-        (function(i) {
-            nodes[i].onclick = function() {
-                display.clickWish(nodes[i].id.replace("item_",""));
-            };
-        })(i);
-    }
+        //클러스터 생성 (부드로운 스크롤)
+        var clusterize = new Clusterize({
+            scrollId: 'inventory_box',
+            contentId: 'inventory_scroll',
+            //하단 1번 : 1 블록에 들어가는 최대 row 수 (디폴트 : 50)
+            //하단 2번 : 1 클러스터에 들어가는 최대 블록 수 (디폴트 : 4)
+            rows_in_block:20,
+            blocks_in_cluster:Math.ceil($("#inventory_scroll").childNodes.length / 20)
+        });
+        //★ (클러스터 생성 후) 각 아이템에 클릭 이벤트 추가 (찜하기)
+        var nodes = $("#inventory_scroll").childNodes;
+        var length = nodes.length;
+        for (i = 0;i < nodes.length;i++) {
+            (function(i) {
+                nodes[i].onclick = function() {
+                    display.clickWish(nodes[i].id.replace("item_",""));
+                };
+            })(i);
+        }
+    //찜 현황 반영
+    display.checkWish();
 };
 //★ 첫 실행
 mainP.prototype.init = function() {
