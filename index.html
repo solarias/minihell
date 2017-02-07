@@ -22,7 +22,11 @@
 			<div id="frame_cover"><div id="frame_cover_bg">
 				<div id="cover_title">에픽의 균열</div>
 				<div id="cover_notice">
-					<p title>2017-2-5</p>
+					<p title>2017-2-7</p>
+					<p content>
+						- 진행 중 찜한 아이템 미리보기 추가
+					</p>
+					<p title>2017-2-6</p>
 					<p content>
 						- 이어하기 기능 추가<br/>
 						- 도감 : 아이템 아이콘 추가<br/>
@@ -51,7 +55,7 @@
 				<div id="main_npc_text">
 					게이트에서는 캐릭터 변경, 사운드 설정을 할 수 있어요.
 					<br/>
-					도감에서 아이템을 등록하면 해당 아이템이 등장할 때 찜빔이 나타나요.
+					도감에서 아이템을 등록하면, 찜빔을 감상할 수 있어요.
 				</div>
 				<div id="main_npc" class="npc_seria"></div>
 				<div id="main_character" class="gate wait" gpuaccel></div>
@@ -67,17 +71,17 @@
 						<p id="item_name1" class="item_name"></p>
 					</div>
 					<div id="item_img1" class="item_img"></div>
-					<div id="effect_appear1" class="effect_appear" gpuaccel></div>
-					<div id="effect_land1" class="effect_land" gpuaccel></div>
-						<div id="effect_land_wish11" class="effect_land_wish1" gpuaccel></div>
-						<div id="effect_land_wish21" class="effect_land_wish2" gpuaccel></div>
-						<div id="effect_land_wish31" class="effect_land_wish3" gpuaccel></div>
-					<div id="effect_wait1" class="effect_wait" gpuaccel></div>
-						<div id="effect_wait_wish11" class="effect_wait_wish1" gpuaccel></div>
-						<div id="effect_wait_wish21" class="effect_wait_wish2" gpuaccel></div>
-						<div id="effect_wait_wish31" class="effect_wait_wish3" gpuaccel></div>
-						<div id="effect_wait_wish41" class="effect_wait_wish4" gpuaccel></div>
-						<div id="effect_wait_wish51" class="effect_wait_wish5" gpuaccel></div>
+					<div id="effect_appear1" class="item_effect effect_appear"></div>
+					<div id="effect_land1" class="item_effect effect_land"></div>
+						<div id="effect_land_wish11" class="item_effect effect_land_wish1"></div>
+						<div id="effect_land_wish21" class="item_effect effect_land_wish2"></div>
+						<div id="effect_land_wish31" class="item_effect effect_land_wish3"></div>
+					<div id="effect_wait1" class="item_effect effect_wait"></div>
+						<div id="effect_wait_wish11" class="item_effect effect_wait_wish1"></div>
+						<div id="effect_wait_wish21" class="item_effect effect_wait_wish2"></div>
+						<div id="effect_wait_wish31" class="item_effect effect_wait_wish3"></div>
+						<div id="effect_wait_wish41" class="item_effect effect_wait_wish4"></div>
+						<div id="effect_wait_wish51" class="item_effect effect_wait_wish5"></div>
 				</div>
 			</div>
 
@@ -107,33 +111,11 @@
 				<div class="slot_content">
 					<!--획득기록창-->
 					<div id="record_box" class="frame_area scroll"></div>
-					<!--도감창-->
-					<div id="inventory_box" class="frame_area scroll"></div>
-					<!--찜빔-->
-					<div id="inventory_wish">
-						<div id="wish_title">찜하기</div>
-						<div id="wish_item1" class="wish_item">
-							<div id="wish_item_icon1" class="wish_item_icon"></div>
-							<div id="wish_item_state1" class="wish_item_state"></div>
-						</div>
-						<div id="wish_item2" class="wish_item">
-							<div id="wish_item_icon2" class="wish_item_icon"></div>
-							<div id="wish_item_state2" class="wish_item_state"></div>
-						</div>
-						<div id="wish_item3" class="wish_item">
-							<div id="wish_item_icon3" class="wish_item_icon"></div>
-							<div id="wish_item_state3" class="wish_item_state"></div>
-						</div>
-						<div id="wish_item4" class="wish_item">
-							<div id="wish_item_icon4" class="wish_item_icon"></div>
-							<div id="wish_item_state4" class="wish_item_state"></div>
-						</div>
-						<div id="wish_item5" class="wish_item">
-							<div id="wish_item_icon5" class="wish_item_icon"></div>
-							<div id="wish_item_state5" class="wish_item_state"></div>
-						</div>
-						<div id="wish_clear"><p>선택<br/>초기화</p></div>
+					<!--도감창 (clusterize.js 활용)-->
+					<div id="inventory_box" class="frame_area clusterize-content">
+						<div id="inventory_scroll" class="clusterize-scroll"></div>
 					</div>
+					<!--찜빔-->
 				</div>
 				<div class="slot_content"></div>
 				<div id="inventory_footer">
@@ -141,6 +123,31 @@
 					(우측 찜하기 창에서 아이콘 클릭 : 찜 해제)
 				</div>
 				<button id="slot_left_close" class="slot_close hover_inset">닫기</button>
+			</div>
+			<div id="frame_wish" class="mini">
+				<div id="wish_cover"></div>
+				<div id="wish_title">찜하기</div>
+				<div id="wish_item1" class="wish_item">
+					<div id="wish_item_icon1" class="wish_item_icon"></div>
+					<div id="wish_item_state1" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item2" class="wish_item">
+					<div id="wish_item_icon2" class="wish_item_icon"></div>
+					<div id="wish_item_state2" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item3" class="wish_item">
+					<div id="wish_item_icon3" class="wish_item_icon"></div>
+					<div id="wish_item_state3" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item4" class="wish_item">
+					<div id="wish_item_icon4" class="wish_item_icon"></div>
+					<div id="wish_item_state4" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item5" class="wish_item">
+					<div id="wish_item_icon5" class="wish_item_icon"></div>
+					<div id="wish_item_state5" class="wish_item_state"></div>
+				</div>
+				<div id="wish_clear"><p>선택<br/>초기화</p></div>
 			</div>
 
 			<div id="frame_slot_right">
@@ -177,6 +184,9 @@
 			<script src="./package/tweenMax.min2.js"></script>
 			<!--Howler-->
 			<script src="./package/howler.min.js"></script>
+			<!--clusterize-->
+			<link href="./package/clusterize.css" rel="stylesheet">
+			<script src="./package/clusterize.min.js"></script>
 		<!--외부  라이브러리-->
 
 		<!--채널, 아이템, 스프라이트 정보-->

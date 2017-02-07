@@ -598,18 +598,23 @@ html, body {
 
 		visibility:hidden;
 	}
-        .effect_appear.act {
+        .appear .effect_appear {
             -webkit-animation: effect_appear 0.8s steps(11) forwards;
             animation: effect_appear 0.8s steps(11) forwards;
 
 		    visibility:visible;
         }
-                .effect_appear.act.large {
-                    -webkit-transform:scale(2);
-                            transform:scale(2);
-                    -webkit-transform-origin: 42% 58%;
-                            transform-origin: 42% 58%;
-                }
+        .appear_wish .effect_appear {
+            -webkit-animation: effect_appear 0.8s steps(11) forwards;
+            animation: effect_appear 0.8s steps(11) forwards;
+
+            -webkit-transform:scale(2);
+                    transform:scale(2);
+            -webkit-transform-origin: 42% 58%;
+                    transform-origin: 42% 58%;
+
+        	visibility:visible;
+        }
             @-webkit-keyframes effect_appear {
                 0% {background-position:0rem 0rem;}
                 100% {background-position:-112.2rem 0rem;}
@@ -633,7 +638,7 @@ html, body {
 
 		visibility:hidden;
 	}
-        .effect_land.act {
+        .land .effect_land {
             -webkit-animation: effect_land 0.6s steps(7) forwards !important;
             animation: effect_land 0.6s steps(7) forwards !important;
 
@@ -662,7 +667,7 @@ html, body {
 
     		visibility:hidden;
     	}
-            .effect_land_wish1.act {
+            .land_wish .effect_land_wish1 {
                 -webkit-animation: effect_land_wish1 0.6s steps(9) forwards !important;
                 animation: effect_land_wish1 0.6s steps(9) forwards !important;
 
@@ -690,7 +695,7 @@ html, body {
 
     		visibility:hidden;
     	}
-            .effect_land_wish2.act {
+            .land_wish .effect_land_wish2 {
                 -webkit-animation: effect_land_wish2 0.6s steps(16) forwards !important;
                 animation: effect_land_wish2 0.6s steps(16) forwards !important;
 
@@ -718,7 +723,7 @@ html, body {
 
     		visibility:hidden;
     	}
-            .effect_land_wish3.act {
+            .land_wish .effect_land_wish3 {
                 -webkit-animation: effect_land_wish3 0.6s steps(8) forwards !important;
                 animation: effect_land_wish3 0.6s steps(8) forwards !important;
 
@@ -746,7 +751,7 @@ html, body {
 
 		visibility:hidden;
 	}
-        .effect_wait.act {
+        .wait .effect_wait {
             -webkit-animation: effect_wait 1.2s steps(11) infinite;
             animation: effect_wait 1.2s steps(11) infinite;
 
@@ -778,7 +783,7 @@ html, body {
 
 		visibility:hidden;
 	}
-        .effect_wait_wish1.act {
+        .wait_wish .effect_wait_wish1 {
             opacity:1;
 
 		    visibility:visible;
@@ -800,7 +805,7 @@ html, body {
 
         visibility:hidden;
     }
-        .effect_wait_wish2.act {
+        .wait_wish .effect_wait_wish2 {
             -webkit-animation: effect_wait_wish2 0.3s steps(7) infinite;
             animation: effect_wait_wish2 0.3s steps(7) infinite;
             opacity:1;
@@ -832,7 +837,7 @@ html, body {
 
         visibility:hidden;
     }
-        .effect_wait_wish3.act {
+        .wait_wish .effect_wait_wish3 {
             -webkit-animation: effect_wait_wish3 0.8s steps(15) infinite;
             animation: effect_wait_wish3 0.8s steps(15) infinite;
             opacity:1;
@@ -864,7 +869,7 @@ html, body {
 
         visibility:hidden;
     }
-        .effect_wait_wish4.act {
+        .wait_wish .effect_wait_wish4 {
             -webkit-animation: effect_wait_wish4 0.8s steps(15) infinite;
             animation: effect_wait_wish4 0.8s steps(15) infinite;
             opacity:1;
@@ -896,7 +901,7 @@ html, body {
 
         visibility:hidden;
     }
-        .effect_wait_wish5.act {
+        .wait_wish .effect_wait_wish5 {
             -webkit-animation: effect_wait_wish5 0.8s steps(15) infinite;
             animation: effect_wait_wish5 0.8s steps(15) infinite;
             opacity:1;
@@ -1144,6 +1149,11 @@ html, body {
             #inventory_box {
                 height:calc(100% - 1rem);
             }
+            #inventory_scroll {
+                position:absolute;
+                left:0;top:0;
+                width:100%;height:100%;
+            }
         .record_item, .record_set {
             margin-left:0.15rem;
             margin-bottom:0.2rem;
@@ -1155,28 +1165,28 @@ html, body {
             font-size:0.25rem;
             line-height:0.3rem;
         }
-        #inventory_box div {
+        #inventory_scroll div {
             position:relative;
 
             height:1rem;
 
             border-bottom:0.02rem white solid;
         }
-            #inventory_box div.line_set {
+            #inventory_scroll div.line_set {
                 border-bottom:0.02rem gray dotted;
             }
-            #inventory_box div:hover {
+            #inventory_scroll div:hover {
                 background:rgba(45,127,179,0.8);
 
                 cursor:pointer;
             }
-            #inventory_box div:active {
+            #inventory_scroll div:active {
                 background:skyblue;
             }
-            #inventory_box div.wish {
+            #inventory_scroll div.wish {
                 background:rgba(45,127,179,0.5);
             }
-        #inventory_box p {
+        #inventory_scroll p {
             position:relative;
 
             float:right;
@@ -1186,7 +1196,7 @@ html, body {
             font-size:0.35rem;
             line-height:0.5rem;
         }
-            #inventory_box p.icon {
+            #inventory_scroll p.icon {
                 position:relative;
 
                 float:left;
@@ -1197,7 +1207,7 @@ html, body {
                     background-size:22.5rem auto;
                 box-sizing: border-box;
             }
-            #inventory_box p.wish {
+            #inventory_scroll p.wish {
                 position:absolute;
                 left:0.6rem;
                 bottom:0;
@@ -1208,116 +1218,143 @@ html, body {
 
                 display:none;
             }
-                #inventory_box p.wish.show {
+                #inventory_scroll p.wish.show {
                     display:block;
                 }
-            #inventory_box p.icon.nothing {
+            #inventory_scroll p.icon.nothing {
                 -webkit-filter:grayscale(1);
                         filter:grayscale(1);
                 opacity:0.5;
             }
-        #inventory_box span.right {
+        #inventory_scroll span.right {
             float:right;
             display:inline-block;
         }
-        #inventory_box span.amount.nothing {
+        #inventory_scroll span.amount.nothing {
             visibility:hidden;
         }
         .color_nothing {
             color:#868484;
         }
 
-        #inventory_wish {
-            position:absolute;
-            right:-2rem;
-            top:1rem;
+#frame_wish {
+    position:absolute;
+        z-index:100;
+    left:8rem;
+    top:1rem;
 
-            padding:0.05rem;
-            width:2rem;
-            height:12.5rem;
+    padding:0.05rem;
+    width:2rem;
+    height:11.5rem;
 
-            background-color:#2d7fb3;
-            border:0.02rem black solid;
-                border-left:0;
-            border-top-right-radius:0.2rem;
-            border-bottom-right-radius:0.2rem;
-            box-sizing: border-box;
+    background-color:#696969;
+    border:0.02rem black solid;
+        border-left:0;
+    border-top-right-radius:0.2rem;
+    border-bottom-right-radius:0.2rem;
+    box-sizing: border-box;
+    transition:all 0.3s;
+}
+        #frame_wish.mini {
+            z-index:90;
+            left:0rem;
+            top:1.4rem;
 
-            display:none;
+            padding:0;
+                padding-top:0.05rem;
+            width:calc(2rem * 0.55);
+            height:calc(16.2rem * 0.38);
+
+            opacity:0.8;
         }
-            #wish_title {
-                width:100%;
+        #frame_wish.mini #wish_cover {display:block;}
+        #frame_wish.mini #wish_title {display:none;}
+        #frame_wish.mini .wish_item {margin:0rem auto;transform:scale(0.8);}
+        #frame_wish.mini #wish_clear {display:none;}
+    #wish_cover {
+        position:absolute;
+            z-index:2;
+        left:0;top:0;
+        width:100%;height:100%;
+        display:none;
+    }
+    #wish_title {
+        width:100%;
 
-                font-size:0.5rem;
-                color:white;
-                font-weight:bold;
-                text-align:center;
+        font-size:0.5rem;
+        color:white;
+        font-weight:bold;
+        text-align:center;
+        transition:all 0.3s;
+    }
+    .wish_item {
+        position:relative;
+
+        margin:0.4rem auto;
+        width:1rem;
+
+        border:0.04rem gray outset;
+        transform:scale(1.2);
+        transform-origin: 50% 50%;
+        transition:all 0.3s;
+    }
+        .wish_item_icon {
+            position:relative;
+
+            width:1rem;
+            height:1rem;
+
+            background-color:black;
+            background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_hell.png');
+                background-position:0 0;
+                background-size:22.5rem auto;
+        }
+            .wish_item_icon:hover {
+                cursor:pointer;
             }
-            .wish_item {
-                position:relative;
+        .wish_item_state {
+            position:relative;
 
-                margin:0.4rem auto;
-                width:1rem;
+            width:1rem;
+            height:0.12rem;
 
-                border:0.04rem gray outset;
-                transform:scale(1.2);
-                transform-origin: 50% 50%;
+            background-color:black;
+            border-top:0.01rem gray solid;
+        }
+            .wish_item_state.no {background-color:red}
+            .wish_item_state.yes {background-color:#59FF00}
+    #wish_clear {
+        position:relative;
+
+        margin:0.5rem auto 0 auto;
+        width:1.6rem;
+        height:2rem;
+
+        background-color:red;
+        border:0.02rem black solid;
+        border-radius:0.2rem;
+        transition:all 0.3s;
+
+        display:table;
+    }
+            #wish_clear:hover {
+                outline:0.06rem skyblue solid;
+                cursor:pointer
             }
-                .wish_item_icon {
-                    position:relative;
-
-                    width:1rem;
-                    height:1rem;
-
-                    background-color:black;
-                    background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_hell.png');
-                        background-position:0 0;
-                        background-size:22.5rem auto;
-                }
-                    .wish_item_icon:hover {
-                        cursor:pointer;
-                    }
-                .wish_item_state {
-                    position:relative;
-
-                    width:1rem;
-                    height:0.3rem;
-
-                    background-color:black;
-                    border-top:0.01rem gray solid;
-                }
-                    .wish_item_state.no {background-color:red}
-                    .wish_item_state.yes {background-color:#59FF00}
-            #wish_clear {
-                position:relative;
-
-                margin:0.5rem auto 0 auto;
-                width:1.6rem;
-                height:2rem;
-
-                background-color:red;
-                border:0.02rem black solid;
-                border-radius:0.2rem;
-
-                display:table;
+            #wish_clear:active {
+                background-color:orange;
+                cursor:pointer
             }
-                    #wish_clear:hover {
-                        outline:0.06rem skyblue solid;
-                        cursor:pointer
-                    }
-                    #wish_clear:active {
-                        background-color:orange;
-                        cursor:pointer
-                    }
-                #wish_clear p {
-                    color:white;
-                    font-size:0.4rem;
-                    font-weight:bold;
-                    text-align:center;
-                    vertical-align:middle;
+        #wish_clear p {
+            color:white;
+            font-size:0.4rem;
+            font-weight:bold;
+            text-align:center;
+            vertical-align:middle;
 
-                    display:table-cell;
-                }
+            display:table-cell;
+        }
+
     #gate{background-image:url('../img/slot/gate.png')}
     #dg1{background-image:url('../img/slot/metro_1.png')}
     #dg2{background-image:url('../img/slot/metro_2.png')}

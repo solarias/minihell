@@ -206,9 +206,12 @@ var user = {
     },
     inventory:{},//보유 아이템 수량 정보
     wish:[],//찜한 아이템(id만 기억함)
-    //미디어
-    bgm:1,
-    sfx:1
+    //옵션
+    option:{
+        //미디어
+        bgm:1,
+        sfx:1
+    }
 };
 
 //=====================================================================
@@ -290,7 +293,7 @@ simulateP.prototype.run = function() {
     //0.5초 후(타격 애니메이션 종료 후)
     setTimeout(function() {
         //타격 사운드
-        if (user.sfx) {
+        if (user.option.sfx) {
             var sd = sfxObj["hit_" + characterList[user.myCharacter].hittype];
             sd.play();
         }
@@ -365,6 +368,7 @@ simulateP.prototype.applyItem = function(item) {
         user.inventory[item.id].get += 1;
         user.inventory[item.id].have += 1;
     }
+
     //아이템 획득내역 기록
         //일반 아이템
         if (item.set === "") {
@@ -402,6 +406,11 @@ simulateP.prototype.applyItem = function(item) {
         $("#board_set_text").className = "color_set";
         $("#board_set_text").innerHTML = item.set + " (" + temp[0].toString() + "/" +  temp[1].toString() + ")";
     }
+    //해당 아이템 도감 업데이트
+    display.modifyInventory(item.id);
+    //(찜한 아이템이라면) 찜 목록 업데이트
+    display.checkWish(item.id);
+
     //->아이템 드랍
     this.dropItem(item);
 };
@@ -413,31 +422,15 @@ simulateP.prototype.resetItem = function() {
     //기존 아이템 이펙트 제거
     $("#item_img1").classList.remove("rotate");
     void $("#item_img1").offsetWidth;
-    $("#effect_appear1").classList.remove("act");
-    $("#effect_appear1").classList.remove("large");
-    void $("#effect_appear1").offsetWidth;
-    $("#effect_land1").classList.remove("act");
-    void $("#effect_land1").offsetWidth;
-    $("#effect_wait1").classList.remove("act");
-    void $("#effect_wait1").offsetWidth;
+    $("#item1").classList.remove("appear");
+    $("#item1").classList.remove("land");
+    $("#item1").classList.remove("wait");
         //찜빔 이펙트 제거
-        $("#effect_land_wish11").classList.remove("act");
-        void $("#effect_land_wish11").offsetWidth;
-        $("#effect_land_wish21").classList.remove("act");
-        void $("#effect_land_wish21").offsetWidth;
-        $("#effect_land_wish31").classList.remove("act");
-        void $("#effect_land_wish31").offsetWidth;
-        $("#effect_wait_wish11").classList.remove("act");
-        void $("#effect_wait_wish11").offsetWidth;
-        $("#effect_wait_wish21").classList.remove("act");
-        void $("#effect_wait_wish21").offsetWidth;
-        $("#effect_wait_wish31").classList.remove("act");
-        void $("#effect_wait_wish31").offsetWidth;
-        $("#effect_wait_wish41").classList.remove("act");
-        void $("#effect_wait_wish41").offsetWidth;
-        $("#effect_wait_wish51").classList.remove("act");
-        void $("#effect_wait_wish51").offsetWidth;
+        $("#item1").classList.remove("appear_wish");
+        $("#item1").classList.remove("land_wish");
+        $("#item1").classList.remove("wait_wish");
         clearTimeout(autoWish);
+    void $("#item1").offsetWidth;
 };
 //★아이템 드랍
 simulateP.prototype.dropItem = function(item) {
@@ -484,7 +477,7 @@ simulateP.prototype.dropItem = function(item) {
 	$("#item_img1").style.visibility = "visible";
 
     //에픽 등장 사운드
-    if (user.sfx) {
+    if (user.option.sfx) {
         if (!wished) {
             //일반 에픽사운드
             sfxObj.epic_appear.stop().play();
@@ -504,9 +497,10 @@ simulateP.prototype.dropItem = function(item) {
     //아이템 회전 시작
     $("#item_img1").classList.add("rotate");
     //에픽 등장 이펙트
-        $("#effect_appear1").classList.add("act");
-        if (wished) {
-            $("#effect_appear1").classList.add("large");
+        if (!wished) {
+            $("#item1").classList.add("appear");
+        } else {
+            $("#item1").classList.add("appear_wish");
         }
     //균열 등장
     $("#main_crack").classList.add("show");
@@ -537,22 +531,16 @@ simulateP.prototype.dropItem = function(item) {
                     if (!wished) {
                     /*일반 이펙트*/
                         //에픽 착지 이펙트
-                        $("#effect_land1").classList.add("act");
+                        $("#item1").classList.add("land");
                         //에픽 대기 이펙트 (즉시 실행)
-                        $("#effect_wait1").classList.add("act");
+                        $("#item1").classList.add("wait");
                     /*찜빔 이펙트 */
                     } else {
                         //에픽 착지 이펙트
-                        $("#effect_land_wish11").classList.add("act");
-                        $("#effect_land_wish21").classList.add("act");
-                        $("#effect_land_wish31").classList.add("act");
+                        $("#item1").classList.add("land_wish");
                         //에픽 대기 이펙트 (착지 이펙트 0.6초 종료 후)
                         autoWish = setTimeout(function() {
-                            $("#effect_wait_wish11").classList.add("act");
-                            $("#effect_wait_wish21").classList.add("act");
-                            $("#effect_wait_wish31").classList.add("act");
-                            $("#effect_wait_wish41").classList.add("act");
-                            $("#effect_wait_wish51").classList.add("act");
+                            $("#item1").classList.add("wait_wish");
                             //(wished) : 버튼 활성화 (아직 종료 안했으니)
                             if (wished) simulate.end();
                         },600);
@@ -561,7 +549,7 @@ simulateP.prototype.dropItem = function(item) {
                     $("#main_crack").classList.remove("show");
                     void $("#main_crack").offsetWidth;
                     //에픽 착지 사운드
-                    if (user.sfx) {
+                    if (user.option.sfx) {
                         if (!wished) {
                             //일반 에픽사운드
                             sfxObj.epic_land.play();
@@ -656,63 +644,39 @@ displayP.prototype.clearRecord = function() {
         myNode.removeChild(myNode.firstChild);
     }
 };
-//★(기존에 생성된)도감 창 출력
-displayP.prototype.showInventory = function() {
-    //좌측 메뉴창 제목 석정
-    $("#slot_title_left").innerHTML = "에픽아이템 도감";
-    //스크롤 : 내리지 않음
-    //도감 창 수정
-    setTimeout(function() {
-        //획득기록창 닫기
-        $("#inventory_box").style.display = "none";
-        var rarity = "";
-        var have = 0;
-        var firstGet = 0;
-        //기존 아이템 창 조정
-        for (i = 0;i < itemList.length;i++) {
-            //85, 90레벨 장비만 보기
-            if (itemList[i].level !== 85 && itemList[i].level !== 90) continue;
-            //등급, 보유량, 최초획득시점 파악
-            rarity = (itemList[i].set === "") ? "epic" : "set";
-            have = (user.inventory[itemList[i].id]) ? user.inventory[itemList[i].id].have : 0;
-            firstGet = (user.inventory[itemList[i].id]) ? user.inventory[itemList[i].id].firstGet : 0;
-            //(보유량 = 1 이상)
-            if (have > 0) {
-                //아이콘 표시
-                $$("#item_" + itemList[i].id + " .icon")[0].classList.remove("nothing");
-                //이름 색상 표시
-                $$("#item_" + itemList[i].id + " .name")[0].classList.remove("color_nothing");
-                $$("#item_" + itemList[i].id + " .name")[0].classList.add("color_" + rarity);
-                //보유량 변경
-                $$("#item_" + itemList[i].id + " .amount")[0].innerHTML = " [x" + thousand(have) + "]";
-                $$("#item_" + itemList[i].id + " .amount")[0].classList.remove("nothing");
-                //최초획득 변경
-                $$("#item_" + itemList[i].id + " .firstGet")[0].innerHTML = " (" + thousand(firstGet) + "회차)";
-            //(보유량 = 0)
-            } else  {
-                //아이콘 표시
-                $$("#item_" + itemList[i].id + " .icon")[0].classList.add("nothing");
-                //이름 색상 표시
-                $$("#item_" + itemList[i].id + " .name")[0].classList.remove("color_" + rarity);
-                $$("#item_" + itemList[i].id + " .name")[0].classList.add("color_nothing");
-                //보유량 변경
-                $$("#item_" + itemList[i].id + " .amount")[0].innerHTML = " [x" + have + "]";
-                $$("#item_" + itemList[i].id + " .amount")[0].classList.add("nothing");
-                //최초획득 변경
-                $$("#item_" + itemList[i].id + " .firstGet")[0].innerHTML = "";
-            }
-            //찜 아이템 체크
-            if (user.wish.indexOf(itemList[i].id) >= 0) {
-                //해당 아이템줄 색상 변경
-                $("#item_" + itemList[i].id).classList.add("wish");
-                //아이콘에 WISH 추가
-                $$("#item_" + itemList[i].id + " .wish")[0].classList.add("show");
-            }
-        }
-        //획득기록창 & 설명 열기
-        $("#inventory_box").style.display = "block";
-        $("#inventory_footer").style.display = "block";
-    },0);
+//★ 도감 창 수정
+displayP.prototype.modifyInventory = function(id) {
+    //아이템 지정
+    var item = indexArrKey(itemList,"id",id);
+    //등급, 보유량, 최초획득시점 파악
+    var rarity = (item.set === "") ? "epic" : "set";
+    var have = (user.inventory[id]) ? user.inventory[id].have : 0;
+    var firstGet = (user.inventory[id]) ? user.inventory[id].firstGet : 0;
+    //(보유량 = 1 이상)
+    if (have > 0) {
+        //아이콘 표시
+        $$("#item_" + id + " .icon")[0].classList.remove("nothing");
+        //이름 색상 표시
+        $$("#item_" + id + " .name")[0].classList.remove("color_nothing");
+        $$("#item_" + id + " .name")[0].classList.add("color_" + rarity);
+        //보유량 변경
+        $$("#item_" + id + " .amount")[0].innerHTML = " [x" + thousand(have) + "]";
+        $$("#item_" + id + " .amount")[0].classList.remove("nothing");
+        //최초획득 변경
+        $$("#item_" + id + " .firstGet")[0].innerHTML = " (" + thousand(firstGet) + "회차)";
+    //(보유량 = 0)
+    } else  {
+        //아이콘 표시
+        $$("#item_" + id + " .icon")[0].classList.add("nothing");
+        //이름 색상 표시
+        $$("#item_" + id + " .name")[0].classList.remove("color_" + rarity);
+        $$("#item_" + id + " .name")[0].classList.add("color_nothing");
+        //보유량 변경
+        $$("#item_" + id + " .amount")[0].innerHTML = " [x" + have + "]";
+        $$("#item_" + id + " .amount")[0].classList.add("nothing");
+        //최초획득 변경
+        $$("#item_" + id + " .firstGet")[0].innerHTML = "";
+    }
 };
 //★도감 창 지우기
 displayP.prototype.clearInventory = function() {
@@ -754,20 +718,11 @@ displayP.prototype.addWish = function(id) {
         });
     } else {
         //찜 설정 사운드
-        if (user.sfx && !sfxObj.setWish.playing()) sfxObj.setWish.play();
+        if (user.option.sfx) sfxObj.setWish.play();
         //찜 등록, 아이콘 표시
         user.wish.push(id);
-        $("#wish_item_icon" + (user.wish.indexOf(id)+1).toString()).style.backgroundPosition =
-            spritePosition(indexArrKey(itemList,"id",id).icon,"rem");
-        //찜 아이템 보유여부 표시
-        if (user.inventory[id] &&
-            user.inventory[id].have > 0) {
-            $("#wish_item_state" + (user.wish.indexOf(id)+1).toString()).classList.remove("no");
-            $("#wish_item_state" + (user.wish.indexOf(id)+1).toString()).classList.add("yes");
-        } else {
-            $("#wish_item_state" + (user.wish.indexOf(id)+1).toString()).classList.remove("yes");
-            $("#wish_item_state" + (user.wish.indexOf(id)+1).toString()).classList.add("no");
-        }
+        //찜 현황 반영
+        display.checkWish();
         //해당 아이템줄 색상 변경
         $("#item_" + id).classList.add("wish");
         //아이콘에 WISH 추가
@@ -776,34 +731,13 @@ displayP.prototype.addWish = function(id) {
     /*게임 저장*/main.saveData();
 };
 //★찜하기 지우기 (특정 위치 기준)
-displayP.prototype.removeWish = function(id) {
+displayP.prototype.removeWish = function(id, cmd) {
     //찜 설정 사운드
-    if (user.sfx && !sfxObj.setWish.playing()) sfxObj.setWish.play();
+    if (cmd !== "noSound" && user.option.sfx) sfxObj.setWish.play();
     //찜 해제
     user.wish.splice(user.wish.indexOf(id),1);
-    //찜 아이콘 재설정
-    for (i = 0;i < wishLimit;i++) {
-        if (user.wish[i]) {
-            //찜 아이콘 표시
-            $("#wish_item_icon" + (i+1).toString()).style.backgroundPosition =
-                spritePosition(indexArrKey(itemList,"id",user.wish[i]).icon,"rem");
-            //찜 아이템 보유여부 표시
-            if (user.inventory[indexArrKey(itemList,"id",user.wish[i])] &&
-                user.inventory[indexArrKey(itemList,"id",user.wish[i])].have > 0) {
-                $("#wish_item_state" + (i+1).toString()).classList.remove("no");
-                $("#wish_item_state" + (i+1).toString()).classList.add("yes");
-            } else {
-                $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
-                $("#wish_item_state" + (i+1).toString()).classList.add("no");
-            }
-        } else {
-            //아이콘 제거
-            $("#wish_item_icon" + (i+1).toString()).style.backgroundPosition = "";
-            //state 제거
-            $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
-            $("#wish_item_state" + (i+1).toString()).classList.remove("no");
-        }
-    }
+    //찜 현황 반영
+    display.checkWish(id);
     //아이콘에 WISH 제거
     $$("#item_" + id + " .wish")[0].classList.remove("show");
 
@@ -812,12 +746,44 @@ displayP.prototype.removeWish = function(id) {
 
     /*게임 저장*/main.saveData();
 };
+//★ 찜 현황 반영
+displayP.prototype.checkWish = function() {
+    var item, id = "", num = 0;
+    for (i = 0;i < wishLimit;i++) {
+        //(찜해둔 칸)
+        if (user.wish[i]) {
+            //변수 지정
+            id = user.wish[i];
+            item = indexArrKey(itemList,"id",id);
+            //찜 아이콘 체크
+            $("#wish_item_icon" + (i+1).toString()).style.backgroundPosition =
+                spritePosition(item.icon,"rem");
+            //찜 아이템 보유여부 체크
+            if (user.inventory[id] && user.inventory[id].have > 0) {
+                $("#wish_item_state" + (i+1).toString()).classList.remove("no");
+                $("#wish_item_state" + (i+1).toString()).classList.add("yes");
+            } else {
+                $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
+                $("#wish_item_state" + (i+1).toString()).classList.add("no");
+            }
+        //(찜 안해둔 칸)
+        } else {
+            //아이콘 제거
+            $("#wish_item_icon" + (i+1).toString()).style.backgroundPosition = "";
+            //찜 아이템 보유여부 : OFF
+            $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
+            $("#wish_item_state" + (i+1).toString()).classList.remove("no");
+        }
+    }
+};
 //★찜하기 초기화
 displayP.prototype.clearWish = function() {
     var length = user.wish.length;
     for (var it = length - 1;it >= 0;it--) {
-        this.removeWish(user.wish[it]);
+        this.removeWish(user.wish[it],"noSound");
     }
+    //초기화 별도 사운드
+    if (user.option.sfx) sfxObj.setWish.play();
 };
 var display = new displayP();
 
@@ -833,6 +799,8 @@ mainP.prototype.loadData = function() {
         } else {
             //있으면 불러오기
             user = deepCopy(localGet("minihell"));
+            //데이터 정제
+            this.maintainData();
             //불러온 파일 적용
                 //회차
                 $("#board_count_num").innerHTML = thousand(user.count);
@@ -841,7 +809,7 @@ mainP.prototype.loadData = function() {
                 //캐릭터 (랜덤 X)
                 main.changeCharacter();
                 //사운드 모드
-                switch (user.bgm) {
+                switch (user.option.bgm) {
                     case 1:
                         $("#main_sound_change").innerHTML = "사운드 <span class='color_red'>OFF</span>";
 
@@ -853,6 +821,11 @@ mainP.prototype.loadData = function() {
                 }
         }
     }
+};
+//※ 데이터 정제 (이전 버전 데이터)
+mainP.prototype.maintainData = function() {
+    if (user.bgm) user.option.bgm = user.bgm;
+    if (user.sfx) user.option.sfx = user.sfx;
 };
 //※ 데이터 세이브
 mainP.prototype.saveData = function(cmd) {
@@ -937,7 +910,7 @@ mainP.prototype.loadAudio = function(target, callback) {//로딩 이미지 준�
                 break;
             default:
                 //BGM은 사운드 활성화했을 때만 로딩 (게이트 빼고)
-                if ((target === "gate" || user.bgm) && !bgmObj[target].loadCompleted) audioObj[target] = bgmObj[target];
+                if ((target === "gate" || user.option.bgm) && !bgmObj[target].loadCompleted) audioObj[target] = bgmObj[target];
 
                 break;
         }
@@ -1026,7 +999,7 @@ mainP.prototype.createInventory = function() {
     function createItem(num) {
         //아이템 선정
         item = itemList[num];
-        //85, 90레벨 장비만 생성
+        //(아직은) 85, 90레벨 장비만 생성
         if (item.level !== 85 && item.level !== 90) return false;
         //ID, 등급 기억
         id = item.id;
@@ -1079,6 +1052,13 @@ mainP.prototype.createInventory = function() {
                         el_level.innerHTML = "[Lv." + item.level.toString() + "]";
                     var el_type = document.createElement("span.right.color_white");
                         el_type.innerHTML =  "[" + ttype + "]";
+        //★아이템이 찜한건 지 체크
+        if (user.wish.indexOf(id) >= 0) {
+            //해당 아이템 색상 변경
+            el_item.classList.add("wish");
+            //아이콘에 WISH 추가
+            el_wish.classList.add("show");
+        }
         //★아이템 element 모으기
         el_item.appendChild(el_icon);
         el_item.appendChild(el_wish);
@@ -1089,12 +1069,6 @@ mainP.prototype.createInventory = function() {
             el_under.appendChild(el_right);
                 el_right.appendChild(el_level);
                 el_right.appendChild(el_type);
-        //★ el_item에 클릭 이벤트 추가(찜하기)
-        (function(i) {
-            el_item.onclick = function() {
-                display.clickWish(el_item.id.replace("item_",""));
-            };
-        })(i);
         fragment.appendChild(el_item);
     }
     //아이템 줄 생성 개시
@@ -1102,8 +1076,26 @@ mainP.prototype.createInventory = function() {
         createItem(i);
     }
     //텍스트 출력
-    $("#inventory_box").appendChild(fragment);
-    //$("#inventory_box").innerHTML = text;
+    $("#inventory_scroll").appendChild(fragment);
+    //클러스터 생성 (부드로운 스크롤)
+    var clusterize = new Clusterize({
+        scrollId: 'inventory_box',
+        contentId: 'inventory_scroll',
+        //하단 1번 : 1 블록에 들어가는 최대 row 수 (디폴트 : 50)
+        //하단 2번 : 1 클러스터에 들어가는 최대 블록 수 (디폴트 : 4)
+        rows_in_block:20,
+        blocks_in_cluster:Math.ceil($("#inventory_scroll").childNodes.length / 20)
+    });
+    //★ (클러스터 생성 후) 각 아이템에 클릭 이벤트 추가 (찜하기)
+    var nodes = $("#inventory_scroll").childNodes;
+    var length = nodes.length;
+    for (i = 0;i < nodes.length;i++) {
+        (function(i) {
+            nodes[i].onclick = function() {
+                display.clickWish(nodes[i].id.replace("item_",""));
+            };
+        })(i);
+    }
 };
 //★ 첫 실행
 mainP.prototype.init = function() {
@@ -1173,7 +1165,7 @@ mainP.prototype.init = function() {
                     title:"이어서 하기",
                     html:"이어서 하시겠습니까?<br/>" +
                     "(플레이 진행 : " + thousand(JSON.parse(localStorage.minihell).count) + "회차,<br/>" +
-                    "(획득 에픽 : " + thousand(JSON.parse(localStorage.minihell).holding.epic.get) + "개)",
+                    "획득 에픽 : " + thousand(JSON.parse(localStorage.minihell).holding.epic.get) + "개)",
                     type:"info",
                     showCancelButton:true,
                     confirmButtonText: '예',
@@ -1265,7 +1257,7 @@ mainP.prototype.setButton = function(situation) {
 //★ 마을/던전 진입하기
 mainP.prototype.enterMap = function(target) {
     //입장 사운드
-    if (user.sfx) sfxObj.map_show.play();
+    if (user.option.sfx) sfxObj.map_show.play();
     //메인 버튼 문구 변경
     $("#button_main").innerHTML = "입장 중...";
     //던전 정보 변경
@@ -1278,7 +1270,7 @@ mainP.prototype.enterMap = function(target) {
     //입장 사운드 로딩
     main.loadAudio(target,function() {
         //던전 입장 사운드
-        if (user.sfx) sfxObj.map_enter.play();
+        if (user.option.sfx) sfxObj.map_enter.play();
         //블랙 아웃 딜레이
         setTimeout(function() {
             //===============================================================
@@ -1323,7 +1315,7 @@ mainP.prototype.enterMap = function(target) {
                     bgmObj[selectedDungeon.before].stop();
                 //새 브금 실행
                 if (selectedDungeon.before !== selectedDungeon.after)
-                    if (user.bgm) bgmObj[selectedDungeon.after].play();
+                    if (user.option.bgm) bgmObj[selectedDungeon.after].play();
                 setTimeout(function() {
                     //던전 변경 완료
                     selectedDungeon.before = selectedDungeon.after;
@@ -1375,7 +1367,7 @@ mainP.prototype.setMenuButton = function() {
         $("#frame_slot_left").style.display = "block";
         TweenMax.to($("#frame_slot_left"),0.3,{xPercent:100});
         //메뉴창 열기 사운드
-        if (user.sfx) sfxObj.slot_open.play();
+        if (user.option.sfx) sfxObj.slot_open.play();
         //획득내용 보여주기
         display.showRecord();
         //닫기 버튼
@@ -1392,7 +1384,7 @@ mainP.prototype.setMenuButton = function() {
                 }
             });
             //메뉴창 닫기 사운드
-            if (user.sfx) sfxObj.slot_close.play();
+            if (user.option.sfx) sfxObj.slot_close.play();
         };
     };
 
@@ -1404,7 +1396,7 @@ mainP.prototype.setMenuButton = function() {
         $("#frame_slot_right").style.display = "block";
         TweenMax.to($("#frame_slot_right"),0.3,{xPercent:-100});
         //메뉴창 열기 사운드
-        if (user.sfx) sfxObj.slot_open.play();
+        if (user.option.sfx) sfxObj.slot_open.play();
         //던전 교체
         for (i=0;i<$$(".dg_list").length;i++) {
             (function() {
@@ -1432,14 +1424,14 @@ mainP.prototype.setMenuButton = function() {
                 }
             });
             //메뉴창 닫기 사운드
-            if (user.sfx) sfxObj.slot_close.play();
+            if (user.option.sfx) sfxObj.slot_close.play();
         };
     };
 
     //※ 버튼 : 탐색 개시
     $("#button_main").onclick = function() {
         //버튼 사운드
-        if (user.sfx) sfxObj.slot_open.play();
+        if (user.option.sfx) sfxObj.slot_open.play();
         switch (state) {
             case "waiting":
                 //실행상태 변경
@@ -1465,7 +1457,7 @@ mainP.prototype.setMenuButton = function() {
     //※ 버튼 : 캐릭터 변경
     $("#main_character_change").onclick = function() {
         //사운드
-        if (user.sfx) sfxObj.map_enter.play();
+        if (user.option.sfx) sfxObj.map_enter.play();
         //실행
         main.changeCharacter("random");
 
@@ -1473,19 +1465,19 @@ mainP.prototype.setMenuButton = function() {
     };
     //※ 버튼 : 사운드 변경
     $("#main_sound_change").onclick = function() {
-        switch (user.bgm) {
+        switch (user.option.bgm) {
             case 1:
-                user.bgm = 0;
-                user.sfx = 0;
+                user.option.bgm = 0;
+                user.option.sfx = 0;
                 $("#main_sound_change").innerHTML = "사운드 <span class='color_green'>ON</span>";
                 bgmObj[selectedDungeon.before].stop();
 
                 break;
             case 0:
-                user.bgm = 1;
-                user.sfx = 1;
+                user.option.bgm = 1;
+                user.option.sfx = 1;
                 $("#main_sound_change").innerHTML = "사운드 <span class='color_red'>OFF</span>";
-                if (user.bgm) bgmObj[selectedDungeon.before].play();
+                if (user.option.bgm) bgmObj[selectedDungeon.before].play();
 
                 break;
         }
@@ -1499,27 +1491,16 @@ mainP.prototype.setMenuButton = function() {
         //메뉴창 열기
         $("#frame_slot_left").style.display = "block";
         TweenMax.to($("#frame_slot_left"),0.3,{xPercent:100});
-        //찜하기 창 열기
-        $("#inventory_wish").style.display = "block";
-            //찜 아이템 상태 확인
-            for (i = 0;i < user.wish.length;i++) {
-                //찜 아이템 보유여부 표시
-                $("#wish_item_icon" + (i+1).toString()).style.backgroundPosition =
-                    spritePosition(indexArrKey(itemList,"id",user.wish[i]).icon,"rem");
-                //찜 아이템 보유여부 표시
-                if (user.inventory[user.wish[i]] &&
-                    user.inventory[user.wish[i]].have > 0) {
-                    $("#wish_item_state" + (i+1).toString()).classList.remove("no");
-                    $("#wish_item_state" + (i+1).toString()).classList.add("yes");
-                } else {
-                    $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
-                    $("#wish_item_state" + (i+1).toString()).classList.add("no");
-                }
-            }
-        //메뉴창 열기 사운드
-        if (user.sfx) sfxObj.slot_open.play();
-        //획득 도감 보여주기
-        display.showInventory();
+            //메뉴창 열기 사운드
+            if (user.option.sfx) sfxObj.slot_open.play();
+            //좌측 메뉴창 제목 석정
+            $("#slot_title_left").innerHTML = "에픽아이템 도감";
+            //스크롤 : 내리지 않음
+            //획득기록창 & 설명 열기
+            $("#inventory_box").style.display = "block";
+            $("#inventory_footer").style.display = "block";
+            //찜하기 창 키우기
+            $("#frame_wish").classList.remove("mini");
         //닫기 버튼
         $("#slot_left_close").onclick = function() {
             //메뉴창 닫기
@@ -1527,16 +1508,16 @@ mainP.prototype.setMenuButton = function() {
                 onComplete:function() {
                     //메뉴창 제거
                     $("#frame_slot_left").style.display = "none";
-                    //찜하기 창 제거
-                    $("#inventory_wish").style.display = "none";
                     //획득 도감 지우기
                     display.clearInventory();
                     //버튼들 활성화
                     main.setButton("enableAll");
                 }
             });
+            //찜하기 창 줄이기
+            $("#frame_wish").classList.add("mini");
             //메뉴창 닫기 사운드
-            if (user.sfx) sfxObj.slot_close.play();
+            if (user.option.sfx) sfxObj.slot_close.play();
         };
     };
         //※ 버튼 : 도감 - 찜 개별 초기화
