@@ -824,8 +824,14 @@ mainP.prototype.loadData = function() {
 };
 //※ 데이터 정제 (이전 버전 데이터)
 mainP.prototype.maintainData = function() {
-    if (user.bgm) user.option.bgm = user.bgm;
-    if (user.sfx) user.option.sfx = user.sfx;
+    if (user.bgm) {
+        user.option = {};
+        user.option.bgm = user.bgm;
+    }
+    if (user.sfx) {
+        user.option = {};
+        user.option.sfx = user.sfx;
+    }
 };
 //※ 데이터 세이브
 mainP.prototype.saveData = function(cmd) {
