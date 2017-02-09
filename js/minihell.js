@@ -985,14 +985,14 @@ mainP.prototype.loadAudio = function(target, callback) {//로딩 이미지 준�
 //★도감 창 생성 (나중에 하면 렉걸리니)
 mainP.prototype.createInventory = function() {
     //var text = "";
-    var fragment = document.createDocumentFragment();
+    var scrollArr = [];
     var item;
     var id = "";
     var rarity = "";
     var set = "";
     var setKey = "";
     var line = "";
-    var have = 0;
+    var amount = 0;
     var icon = "";
         var icon_position = "";
     //아이템 줄 생성 함수
@@ -1004,7 +1004,8 @@ mainP.prototype.createInventory = function() {
         //ID, 등급 기억
         id = item.id;
         rarity = (item.set === "") ? "epic" : "set";
-        if (have === 0) rarity = "nothing";
+        amount = (user.inventory[id]) ? user.inventory[id].have : 0;
+        if (amount === 0) rarity = "nothing";
         //세트 키워드
         if (item.set !== "") {
             if (item.set !== set) {
@@ -1044,7 +1045,7 @@ mainP.prototype.createInventory = function() {
                 el_name.innerHTML = setKey + item.name;
             var el_under = document.createElement("p");
                 var el_amount = document.createElement("span.amount.color_skyblue." + rarity);
-                    el_amount.innerHTML = "[x0]";
+                    el_amount.innerHTML = "[x" + amount + "]";
                 var el_firstGet = document.createElement("span.firstGet.color_gray." + rarity);
                     el_firstGet.innerHTML = "";
                 var el_right = document.createElement("span.right");
@@ -1069,22 +1070,22 @@ mainP.prototype.createInventory = function() {
             el_under.appendChild(el_right);
                 el_right.appendChild(el_level);
                 el_right.appendChild(el_type);
-        fragment.appendChild(el_item);
+        //아이템 줄 미리 붙여두기
+        scrollArr.push(el_item.outerHTML);
     }
-    //아이템 줄 생성 개시
-    for (i = 0;i < itemList.length;i++) {
-        createItem(i);
-    }
-    //텍스트 출력
-    $("#inventory_scroll").appendChild(fragment);
+        //아이템 줄 생성 개시
+        for (i = 0;i < itemList.length;i++) {
+            createItem(i);
+        }
         //클러스터 생성 (부드로운 스크롤)
         var clusterize = new Clusterize({
+            rows:scrollArr,
             scrollId: 'inventory_box',
             contentId: 'inventory_scroll',
             //하단 1번 : 1 블록에 들어가는 최대 row 수 (디폴트 : 50)
             //하단 2번 : 1 클러스터에 들어가는 최대 블록 수 (디폴트 : 4)
             rows_in_block:20,
-            blocks_in_cluster:Math.ceil($("#inventory_scroll").childNodes.length / 20)
+            blocks_in_cluster:Math.ceil(scrollArr.length / 20)
         });
         //★ (클러스터 생성 후) 각 아이템에 클릭 이벤트 추가 (찜하기)
         var nodes = $("#inventory_scroll").childNodes;
@@ -1492,7 +1493,7 @@ mainP.prototype.setMenuButton = function() {
         main.setButton("disableAll");
         //메뉴창 열기
         $("#frame_slot_left").style.display = "block";
-        TweenMax.to($("#frame_slot_left"),0.3,{xPercent:100});
+        TweenMax.to($("#frame_slot_left"),0.3,{xPercent:100,force3D:true});
             //메뉴창 열기 사운드
             if (user.option.sfx) sfxObj.slot_open.play();
             //좌측 메뉴창 제목 석정
