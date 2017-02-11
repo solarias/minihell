@@ -24,6 +24,18 @@
 				<div id="cover_notice">
 					<p title>2017-2-10</p>
 					<p content>
+						- 찜하기 개수 : 5 → 8개<br/>
+						- 탐색모드 추가 (탐색모드가 '찜'이라면 찜한 아이템만 탐색가능)<br/>
+						- 캐릭터 직접 선택 가능<br/>
+						- 특수장비 드랍률 100% 증가<br/>
+						- 도감 최적화 1차<br/>
+						- 에픽 출현 이펙트 최적화 1차<br/>
+						 (최적화는 더 진행할 에정입니다.)<br/>
+						- 어플 실행 대기시간 증가 (오류 방지)<br/>
+						- 어플 화면을 끈 상태에서도 음악이 나오는 현상 수정
+					</p>
+					<p title>2017-2-10</p>
+					<p content>
 						- 이어서 할 때 도감이 제대로 갱신되지 않는 문제 수정<br/>
 						(현재 도감 최적화 연구중입니다.)
 					</p>
@@ -58,15 +70,16 @@
 			<div id="frame_main">
 				<div id="main_channel" class="font_shadow">채널 : <span id="channel_text">???</span></div>
 				<div id="main_npc_text">
-					게이트에서는 캐릭터 변경, 사운드 설정을 할 수 있어요.
+					게이트에서는 캐릭터 변경, 게임 설정을 할 수 있어요.
 					<br/>
 					도감에서 아이템을 등록하면, 찜빔을 감상할 수 있어요.
 				</div>
-				<div id="main_npc" class="npc_seria"></div>
+				<div id="main_npc" class="npc_erze"></div>
 				<div id="main_character" class="gate wait" gpuaccel></div>
 
 				<button id="main_inventory" class="main_option">도감</button>
-				<button id="main_sound_change" class="main_option">사운드 <span class='color_red'>OFF</span></button>
+				<button id="main_search_change" class="main_option">탐색모드 : <span id="searchMode_text" class='color_blue'>에픽</span></button>
+				<button id="main_sound_change" class="main_option">사운드 <span class='color_red'>끄기</span></button>
 				<button id="main_character_change" class="main_option">캐릭터 변경</button>
 
 				<div id="main_crack" gpuaccel></div>
@@ -78,15 +91,10 @@
 					<div id="item_img1" class="item_img"></div>
 					<div id="effect_appear1" class="item_effect effect_appear"></div>
 					<div id="effect_land1" class="item_effect effect_land"></div>
-						<div id="effect_land_wish11" class="item_effect effect_land_wish1"></div>
-						<div id="effect_land_wish21" class="item_effect effect_land_wish2"></div>
-						<div id="effect_land_wish31" class="item_effect effect_land_wish3"></div>
+						<div id="effect_land_wish1" class="item_effect effect_land_wish"></div>
 					<div id="effect_wait1" class="item_effect effect_wait"></div>
-						<div id="effect_wait_wish11" class="item_effect effect_wait_wish1"></div>
-						<div id="effect_wait_wish21" class="item_effect effect_wait_wish2"></div>
-						<div id="effect_wait_wish31" class="item_effect effect_wait_wish3"></div>
-						<div id="effect_wait_wish41" class="item_effect effect_wait_wish4"></div>
-						<div id="effect_wait_wish51" class="item_effect effect_wait_wish5"></div>
+						<div id="effect_wait_wish1" class="item_effect effect_wait_wish1"></div>
+						<div id="effect_wait_wish2" class="item_effect effect_wait_wish2"></div>
 				</div>
 			</div>
 
@@ -115,10 +123,10 @@
 				<div id="slot_title_left" class="slot_title font_shadow blue">에픽아이템 획득 기록</div>
 				<div class="slot_content">
 					<!--획득기록창-->
-					<div id="record_box" class="frame_area scroll"></div>
+					<div id="record_box" class="frame_area list_box scroll"></div>
 					<!--도감창 (clusterize.js 활용)-->
-					<div id="inventory_box" class="frame_area clusterize-scroll">
-						<div id="inventory_scroll" class="clusterize-content"></div>
+					<div id="inventory_box" class="frame_area list_box clusterize-scroll">
+						<ul id="inventory_scroll" class="clusterize-content"></ul>
 					</div>
 					<!--찜빔-->
 				</div>
@@ -129,46 +137,81 @@
 				</div>
 				<button id="slot_left_close" class="slot_close hover_inset">닫기</button>
 			</div>
-			<div id="frame_wish" class="mini">
-				<div id="wish_cover"></div>
-				<div id="wish_title">찜하기</div>
-				<div id="wish_item1" class="wish_item">
-					<div id="wish_item_icon1" class="wish_item_icon"></div>
-					<div id="wish_item_state1" class="wish_item_state"></div>
-				</div>
-				<div id="wish_item2" class="wish_item">
-					<div id="wish_item_icon2" class="wish_item_icon"></div>
-					<div id="wish_item_state2" class="wish_item_state"></div>
-				</div>
-				<div id="wish_item3" class="wish_item">
-					<div id="wish_item_icon3" class="wish_item_icon"></div>
-					<div id="wish_item_state3" class="wish_item_state"></div>
-				</div>
-				<div id="wish_item4" class="wish_item">
-					<div id="wish_item_icon4" class="wish_item_icon"></div>
-					<div id="wish_item_state4" class="wish_item_state"></div>
-				</div>
-				<div id="wish_item5" class="wish_item">
-					<div id="wish_item_icon5" class="wish_item_icon"></div>
-					<div id="wish_item_state5" class="wish_item_state"></div>
-				</div>
-				<div id="wish_clear"><p>선택<br/>초기화</p></div>
-			</div>
 
 			<div id="frame_slot_right">
 				<div id="slot_title_right" class="slot_title font_shadow black">행선지 선택</div>
-				<div class="slot_content"><div id="dg_box" class="frame_area scroll">
-					<div class="slot_area">마을</div>
-					<button id="gate" data-target="gate" class="slot_list dg_list"></button>
-					<div class="slot_area">메트로센터</div>
-					<button id="dg1" data-target="metro_1" class="slot_list dg_list"></button>
-					<button id="dg2" data-target="metro_2" class="slot_list dg_list"></button>
-					<button id="dg3" data-target="metro_3" class="slot_list dg_list"></button>
-					<button id="dg4" data-target="metro_4" class="slot_list dg_list"></button>
-					<button id="dg5" data-target="metro_5" class="slot_list dg_list"></button>
-					<button id="dg6" data-target="metro_6" class="slot_list dg_list"></button>
-				</div></div>
-				<button id="slot_right_close" class="slot_close hover_inset">선택 취소</button>
+				<div class="slot_content">
+					<!--던전 선택창-->
+					<div id="dg_box" class="frame_area scroll list_box">
+						<div class="slot_area">마을</div>
+						<button id="gate" data-target="gate" class="slot_list dg_list"></button>
+						<div class="slot_area">메트로센터</div>
+						<button id="dg1" data-target="metro_1" class="slot_list dg_list"></button>
+						<button id="dg2" data-target="metro_2" class="slot_list dg_list"></button>
+						<button id="dg3" data-target="metro_3" class="slot_list dg_list"></button>
+						<button id="dg4" data-target="metro_4" class="slot_list dg_list"></button>
+						<button id="dg5" data-target="metro_5" class="slot_list dg_list"></button>
+						<button id="dg6" data-target="metro_6" class="slot_list dg_list"></button>
+					</div>
+					<!--캐릭터 선택창-->
+					<div id="cha_box" class="frame_area list_box scroll">
+						<button id="cha1" data-target="swordman_m" class="slot_list cha_list">귀검사(남)</button>
+						<button id="cha2" data-target="swordman_f" class="slot_list cha_list">귀검사(여)</button>
+						<button id="cha3" data-target="darkknight_m" class="slot_list cha_list">다크나이트(남)</button>
+						<button id="cha4" data-target="fighter_m" class="slot_list cha_list">격투가(남)</button>
+						<button id="cha5" data-target="fighter_f" class="slot_list cha_list">격투가(여)</button>
+						<button id="cha6" data-target="gunner_m" class="slot_list cha_list">거너(남)</button>
+						<button id="cha7" data-target="gunner_f" class="slot_list cha_list">거너(여)</button>
+						<button id="cha8" data-target="mage_m" class="slot_list cha_list">마법사(남)</button>
+						<button id="cha9" data-target="mage_f" class="slot_list cha_list">마법사(여)</button>
+						<button id="cha10" data-target="creator_f" class="slot_list cha_list">크리에이터(여)</button>
+						<button id="cha11" data-target="priest_m" class="slot_list cha_list">프리스트(남)</button>
+						<button id="cha12" data-target="priest_f" class="slot_list cha_list">프리스트(여)</button>
+						<button id="cha13" data-target="thief_f" class="slot_list cha_list">도적(여)</button>
+						<button id="cha14" data-target="knight_f" class="slot_list cha_list">나이트(여)</button>
+						<button id="cha15" data-target="lancer_m" class="slot_list cha_list">마창사(남)</button>
+						<button id="cha16" data-target="beckey" class="slot_list cha_list">베키</button>
+					</div>
+				</div>
+				<button id="slot_right_close" class="slot_close hover_inset">닫기</button>
+			</div>
+
+			<div id="frame_wish" class="mini">
+				<div id="wish_cover"></div>
+				<div id="wish_title">찜하기</div>
+				<div id="wish_item1" class="wish_item">1
+					<div id="wish_item_icon1" class="wish_item_icon"></div>
+					<div id="wish_item_state1" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item2" class="wish_item">2
+					<div id="wish_item_icon2" class="wish_item_icon"></div>
+					<div id="wish_item_state2" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item3" class="wish_item">3
+					<div id="wish_item_icon3" class="wish_item_icon"></div>
+					<div id="wish_item_state3" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item4" class="wish_item">4
+					<div id="wish_item_icon4" class="wish_item_icon"></div>
+					<div id="wish_item_state4" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item5" class="wish_item">5
+					<div id="wish_item_icon5" class="wish_item_icon"></div>
+					<div id="wish_item_state5" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item6" class="wish_item">6
+					<div id="wish_item_icon6" class="wish_item_icon"></div>
+					<div id="wish_item_state6" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item7" class="wish_item">7
+					<div id="wish_item_icon7" class="wish_item_icon"></div>
+					<div id="wish_item_state7" class="wish_item_state"></div>
+				</div>
+				<div id="wish_item8" class="wish_item">8
+					<div id="wish_item_icon8" class="wish_item_icon"></div>
+					<div id="wish_item_state8" class="wish_item_state"></div>
+				</div>
+				<div id="wish_clear"><p>선택<br/>초기화</p></div>
 			</div>
 		</div>
 
