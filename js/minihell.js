@@ -852,14 +852,10 @@ mainP.prototype.loadData = function() {
 };
 //※ 데이터 정제 (이전 버전 데이터)
 mainP.prototype.maintainData = function() {
-    if (user.bgm) {
-        user.option = {};
-        user.option.bgm = user.bgm;
-    }
-    if (user.sfx) {
-        user.option = {};
-        user.option.sfx = user.sfx;
-    }
+    if (!user.option) user.option = {};
+    if (!user.option.bgm) user.option.bgm = user.bgm;
+    if (!user.option.bgm) user.option.sfx = user.sfx;
+    if (!user.option.searchMode) user.option.searchMode = "에픽";
 };
 //※ 데이터 세이브
 mainP.prototype.saveData = function(cmd) {
@@ -1631,13 +1627,27 @@ var main = new mainP();
 //=====================================================================
 //※ 실행
 //=====================================================================
+    //오류 취급 (출처 : http://stackoverflow.com/questions/951791/javascript-global-error-handling)
+    window.onerror = function(msg, url, line, col, error) {
+        var extra = !col ? '' : ', Column : ' + col;
+        extra += !error ? '' : '\n * 에러 : ' + error;
+        var notice = " * 내용 : " + msg + "\n * Line : " + line + extra;
+        if (swal) {
+            swal({
+                title:"오류 발생",
+                type:"error",
+                html:"아래의 내용을 제보해주시면 감사하겠습니다.<br>" +
+                "(<a href='http://blog.naver.com/ansewo/220924971980' target='_blank'>클릭하면 블로그로 이동합니다</a>)<br/>" +
+                notice.replaceAll("\n","<br>")
+            });
+        } else alert("아래의 내용을 제보해주시면 감사하겠습니다.(http://blog.naver.com/ansewo/220924971980)\n" + notice);
+        var suppressErrorAlert = true;
+        return suppressErrorAlert;
+    };
+//★ 실행
 document.addEventListener("DOMContentLoaded", function(e) {
     //초기 함수
-    try {
-        main.init();
-    } catch(err) {
-        alert(err.message);
-    }
+    main.init();
 
     //강제 스크롤링 (터치 한정)
     var touchY = 0;//첫 터치 Y좌표 기억(스크립트 스크롤 용)

@@ -9,13 +9,6 @@
 
 	font-family:"Nanum Gothic", sans-serif;
 	text-decoration:none;
-    /*드래그 방지*/
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 
@@ -266,7 +259,7 @@ html, body {
             margin-left:0.2rem;
         }
         a {
-            color:yellow;
+            color:blue;
         }
     #cover_google {
         position:relative;
@@ -1053,7 +1046,16 @@ html, body {
             line-height:0.45rem;
         }
             /*아이템 내 요소들은 모두 선택불가*/
-            .item_li * {pointer-events: none;}
+            .item_li * {
+                pointer-events: none;
+                /*드래그 방지*/
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
             /*외각*/
             .item_li.line_set {
                 border-bottom:0.02rem gray dotted;
