@@ -274,13 +274,22 @@
 
 .swal2-radio {
   border: 0;
-  margin: 20px auto; }
-  .swal2-radio label:not(:first-child) {
-    margin-left: 20px; }
+  margin: 0px auto; }
+  .swal2-radio label {
+    display:block }
+    .swal2-radio label:hover {
+      cursor:pointer; }
   .swal2-radio input, .swal2-radio span {
+    pointer-events: none;
+    font-size:20px;
+    line-height:20px;
     vertical-align: middle; }
   .swal2-radio input {
-    margin: 0 3px 0 0; }
+    width:30px;
+    height:30px;
+    margin: 0 5px 0 0; }
+  .swal2-radio input:checked + span {
+    font-weight:bold; }
 
 .swal2-checkbox {
   color: #555;
