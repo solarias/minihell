@@ -22,11 +22,18 @@
 			<div id="frame_cover"><div id="frame_cover_bg">
 				<div id="cover_title">에픽의 균열</div>
 				<div id="cover_notice">
+					<p title>2017-2-16</p>
+					<p content>
+						- '죽은 자의 성' 던전 추가<br/>
+						- 지역 선택 : 빠른 변경 버튼 추가<br/>
+						- 탐색모드 추가 : 찜한 장비 '모두' 탐색<br/>
+						- 무한 탐색모드에서 찜빔 등장 시 간혹 멈추는 현상 수정
+					</p>
 					<p title>2017-2-12</p>
 					<p content>
 						- 메뉴 열 때 여백 어두워짐 효과 적용<br/>
 						- 에픽 소울, 지옥 구슬 드랍 적용<br/>
-						- 어플 아이콘 변경<br/>
+						- 어플 아이콘 변경
 					</p>
 					<p title>2017-2-11</p>
 					<p content>
@@ -101,7 +108,7 @@
 				<!--드랍 아이템-->
 				<!--버튼들-->
 				<button id="main_inventory" class="main_option">도감</button>
-				<button id="main_search_change" class="main_option">탐색모드 : <span id="searchMode_text" class='color_blue'>에픽</span></button>
+				<button id="main_search_change" class="main_option">탐색모드 설정<br>[<span id="searchMode_text" class='color_blue'>에픽</span>]</button>
 				<button id="main_sound_change" class="main_option">사운드 <span class='color_red'>끄기</span></button>
 				<button id="main_character_change" class="main_option">캐릭터 변경</button>
 				<!--버튼들-->
@@ -153,38 +160,36 @@
 
 			<div id="frame_slot_right">
 				<div id="slot_title_right" class="slot_title font_shadow black">행선지 선택</div>
-				<div id="dg_header">
-					<button id="dg_gate" data-target="gate" class="slot_list dg_list"></button>
-					<div class="slot_area">메트로센터</div>
-				</div>
 				<div class="slot_content">
+					<div id="dg_header">
+						<button id="dg_gate" data-dungeon="gate" data-area="gate" class="slot_list dg_list"></button>
+						<div id="dg_box_title" class="slot_area">
+							<button id="dg_box_arrow_down" class="dg_box_arrow"></button>
+							<div id="dg_box_title_name"></div>
+							<button id="dg_box_arrow_up" class="dg_box_arrow"></button>
+						</div>
+					</div>
 					<!--던전 선택창-->
 					<div id="dg_box" class="frame_area scroll list_box">
-						<button id="dg1" data-target="metro_1" class="slot_list dg_list"></button>
-						<button id="dg2" data-target="metro_2" class="slot_list dg_list"></button>
-						<button id="dg3" data-target="metro_3" class="slot_list dg_list"></button>
-						<button id="dg4" data-target="metro_4" class="slot_list dg_list"></button>
-						<button id="dg5" data-target="metro_5" class="slot_list dg_list"></button>
-						<button id="dg6" data-target="metro_6" class="slot_list dg_list"></button>
 					</div>
 					<!--캐릭터 선택창-->
 					<div id="cha_box" class="frame_area list_box scroll">
-						<button id="cha1" data-target="swordman_m" class="slot_list cha_list">귀검사(남)</button>
-						<button id="cha2" data-target="swordman_f" class="slot_list cha_list">귀검사(여)</button>
-						<button id="cha3" data-target="darkknight_m" class="slot_list cha_list">다크나이트(남)</button>
-						<button id="cha4" data-target="fighter_m" class="slot_list cha_list">격투가(남)</button>
-						<button id="cha5" data-target="fighter_f" class="slot_list cha_list">격투가(여)</button>
-						<button id="cha6" data-target="gunner_m" class="slot_list cha_list">거너(남)</button>
-						<button id="cha7" data-target="gunner_f" class="slot_list cha_list">거너(여)</button>
-						<button id="cha8" data-target="mage_m" class="slot_list cha_list">마법사(남)</button>
-						<button id="cha9" data-target="mage_f" class="slot_list cha_list">마법사(여)</button>
-						<button id="cha10" data-target="creator_f" class="slot_list cha_list">크리에이터(여)</button>
-						<button id="cha11" data-target="priest_m" class="slot_list cha_list">프리스트(남)</button>
-						<button id="cha12" data-target="priest_f" class="slot_list cha_list">프리스트(여)</button>
-						<button id="cha13" data-target="thief_f" class="slot_list cha_list">도적(여)</button>
-						<button id="cha14" data-target="knight_f" class="slot_list cha_list">나이트(여)</button>
-						<button id="cha15" data-target="lancer_m" class="slot_list cha_list">마창사(남)</button>
-						<button id="cha16" data-target="beckey" class="slot_list cha_list">베키</button>
+						<button id="cha1" data-character="swordman_m" class="slot_list cha_list">귀검사(남)</button>
+						<button id="cha2" data-character="swordman_f" class="slot_list cha_list">귀검사(여)</button>
+						<button id="cha3" data-character="darkknight_m" class="slot_list cha_list">다크나이트(남)</button>
+						<button id="cha4" data-character="fighter_m" class="slot_list cha_list">격투가(남)</button>
+						<button id="cha5" data-character="fighter_f" class="slot_list cha_list">격투가(여)</button>
+						<button id="cha6" data-character="gunner_m" class="slot_list cha_list">거너(남)</button>
+						<button id="cha7" data-character="gunner_f" class="slot_list cha_list">거너(여)</button>
+						<button id="cha8" data-character="mage_m" class="slot_list cha_list">마법사(남)</button>
+						<button id="cha9" data-character="mage_f" class="slot_list cha_list">마법사(여)</button>
+						<button id="cha10" data-character="creator_f" class="slot_list cha_list">크리에이터(여)</button>
+						<button id="cha11" data-character="priest_m" class="slot_list cha_list">프리스트(남)</button>
+						<button id="cha12" data-character="priest_f" class="slot_list cha_list">프리스트(여)</button>
+						<button id="cha13" data-character="thief_f" class="slot_list cha_list">도적(여)</button>
+						<button id="cha14" data-character="knight_f" class="slot_list cha_list">나이트(여)</button>
+						<button id="cha15" data-character="lancer_m" class="slot_list cha_list">마창사(남)</button>
+						<button id="cha16" data-character="beckey" class="slot_list cha_list">베키</button>
 					</div>
 				</div>
 				<button id="slot_right_close" class="slot_close hover_inset">닫기</button>
@@ -225,7 +230,7 @@
 					<div id="wish_item_icon8" class="wish_item_icon"></div>
 					<div id="wish_item_state8" class="wish_item_state"></div>
 				</div>
-				<div id="wish_clear"><p>선택<br/>초기화</p></div>
+				<div id="wish_clear"><p>찜목록<br/>초기화</p></div>
 			</div>
 		</div>
 
@@ -244,6 +249,7 @@
 				<script src="./package/sweetalert2/node_modules/es6-promise-polyfill/promise.min.js"></script>
 			<!--GSAP-->
 			<script src="./package/tweenMax.min2.js"></script>
+			<script src="./package/scrollToPlugin.min.js"></script>
 			<!--Howler-->
 			<script src="./package/howler.min.js"></script>
 			<!--clusterize-->
@@ -254,6 +260,7 @@
 		<!--채널, 아이템, 스프라이트 정보-->
 		<script src="https://solarias.github.io/dnf/js/fortuneResultList.js"></script>
 		<script src="https://solarias.github.io/dnf/js/hell_itemList.js"></script>
+		<script src="./js/hell_dungeonList.js"></script>
 		<script src="https://solarias.github.io/dnf/sprite/spriteList.js"></script>
 		<script src="https://solarias.github.io/dnf/sprite/sprite_function.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://solarias.github.io/dnf/sprite/spriteCss.css" />

@@ -629,8 +629,8 @@ html, body {
 		visibility:hidden;
 	}
         .appear .effect_appear {
-            -webkit-animation: effect_appear 0.8s steps(11) forwards;
-            animation: effect_appear 0.8s steps(11) forwards;
+            -webkit-animation: effect_appear 0.6s steps(11) forwards;
+            animation: effect_appear 0.6s steps(11) forwards;
 
 		    visibility:visible;
         }
@@ -909,7 +909,7 @@ html, body {
     font-weight:bold;
 }
     #button_main.hide {
-        top:100%;
+        top:120%;
     }
 
 .button_side{
@@ -1060,6 +1060,11 @@ html, body {
 
         display:none;
     }
+    #dg_scroll, #inventory_scroll {
+        position:absolute;
+        left:0;top:0;
+        width:100%;height:100%;
+    }
         .record_item, .record_set {
             margin-left:0.15rem;
             margin-bottom:0.2rem;
@@ -1074,17 +1079,12 @@ html, body {
         #inventory_box {
             height:calc(100% - 1rem);
         }
-        #inventory_scroll {
-            position:absolute;
-            left:0;top:0;
-            width:100%;height:100%;
-        }
         .item_li {
             position:relative;
 
             padding:0.05rem 0.1rem 0.05rem 1.1rem;
             width:100%;
-            height:1.02rem;
+            height:1.04rem;
 
             border-bottom:0.02rem white solid;
             box-sizing: border-box;
@@ -1098,7 +1098,6 @@ html, body {
                 /*드래그 방지*/
                 -webkit-touch-callout: none;
                 -webkit-user-select: none;
-                -khtml-user-select: none;
                 -moz-user-select: none;
                 -ms-user-select: none;
                 user-select: none;
@@ -1174,13 +1173,8 @@ html, body {
                 float:right;
             }
 
-
-        #dg_box {
-            top:3.7rem;
-            height:calc(100% - 3.7rem);
-        }
         .slot_list {
-            margin-bottom:0.05rem;
+            margin-bottom:0.02rem;
             width:100%;
             height:3.2rem;
 
@@ -1197,7 +1191,7 @@ html, body {
                     z-index:1;
                 top:1rem;
                 width:100%;
-                height:3rem;
+                height:3.2rem;
 
                 border-top:0.05rem black solid;
                 box-sizing: border-box;
@@ -1211,7 +1205,41 @@ html, body {
             }
                 #dg_gate{
                     padding-left:2.1rem;
-                    height:2.6rem !important;
+                    height:2.4rem !important;
+                }
+                #dg_box_title {
+                    margin-top:0.1rem;
+                    height:1.3rem;
+                }
+                .dg_box_arrow {
+                    position:absolute;
+                        z-index:2;
+                    top:0.2rem;
+                    width:1.5rem;height:0.9rem;
+                    background-color:transparent;
+                    background-image:url('../img/icon_arrow.png');
+                        background-size:100% 100%;
+                    border:0.04rem white solid;
+                    border-radius:0.2rem;
+                    display:block;
+                }
+                    .dg_box_arrow:active {
+                        background-color:yellow;
+                    }
+                    #dg_box_arrow_down {
+                        left:0.1rem;}
+                    #dg_box_arrow_up {
+                        right:0.1rem;
+                        -webkit-transform:scaleY(-1);
+                                transform:scaleY(-1);}
+                #dg_box_title_name {
+                    position:relative;
+                    width:100%;height:100%;
+                    line-height:1.3rem;
+                }
+                #dg_box {
+                    top:4.1rem;
+                    height:calc(100% - 4.1rem);
                 }
                 .dg_list{height:3.2rem;}
                 .cha_list{
@@ -1232,12 +1260,6 @@ html, body {
                     text-align:center;
                 }
             #dg_gate{background-image:url('../img/slot/gate.png')}
-            #dg1{background-image:url('../img/slot/metro_1.png')}
-            #dg2{background-image:url('../img/slot/metro_2.png')}
-            #dg3{background-image:url('../img/slot/metro_3.png')}
-            #dg4{background-image:url('../img/slot/metro_4.png')}
-            #dg5{background-image:url('../img/slot/metro_5.png')}
-            #dg6{background-image:url('../img/slot/metro_6.png')}
 
             #cha1{background-image:url('../img/character_face/swordman_m_on.png')}
             #cha2{background-image:url('../img/character_face/swordman_f_on.png')}

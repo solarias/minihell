@@ -13,9 +13,6 @@ var goyuList = [];//고유 에픽 리스트
 var weighted_type = [];//에픽 부위 선정 가중치
 var weighted_level = [];//에픽 레벨 선정 가중치
 var current_goyu = [];//현재 지역 고유에픽 리스트
-var searchModeList = [
-    "에픽","찜","무한"
-];
 
 //아이템 관련
 var droprate = {//아이템 드랍률
@@ -23,7 +20,7 @@ var droprate = {//아이템 드랍률
     num:[0.065,0.04,0.0065,0.8885]
 };
 var droprate_special = {//특수지역 에픽 드랍률
-    "metro-5":0.11//이계의 틈
+    "metro_6":0.11//이계의 틈
 };
 var droptype = {//장비 타입별 드랍확률 가중치
     name:["무기","방어구","악세서리","특수장비"],
@@ -37,10 +34,8 @@ var autoWish;//찜목록 늦게출현 오토
 var wishLimit = 8;//찜하기 최대치
 
 //던전 관련
-var selectedDungeon = {before:"",after:""};
-var dungeonList = [
-    "gate","metro_1","metro_2","metro_3","metro_4","metro_5","metro_6"
-];
+var selectedDungeon = {now:{},after:{}};
+var areaList = [];//지역 리스트 (스크롤용)
 
 //캐릭터 리스트
 var characterList = {
@@ -120,8 +115,8 @@ var imageList = [];
     imageList.push("./img/bg/loading_metro.jpg");
     /*던전 슬롯*/
     for(i=0;i<dungeonList.length;i++) {
-        imageList.push("./img/bg/bg_" + dungeonList[i] + ".jpg");
-        imageList.push("./img/slot/" + dungeonList[i] + ".png");
+        imageList.push("./img/bg/bg_" + dungeonList[i].id + ".jpg");
+        imageList.push("./img/slot/" + dungeonList[i].id + ".png");
     }
     /*캐릭터 이미지*/
     for(i in characterList) imageList.push("./img/sprite/character_" + i + ".png");
@@ -142,18 +137,20 @@ var imageList = [];
     imageList.push("./img/icon_soul.png");
     imageList.push("./img/icon_beed.png");
     imageList.push("./img/icon_wished.png");
+    imageList.push("./img/icon_arrow.png");
 //브금
 var bgmObj = {};
 for (i = 0;i < dungeonList.length;i++) {
-    bgmObj[dungeonList[i]] = new Howl({
+    bgmObj[dungeonList[i].id] = new Howl({
         src:[
-            "./sound/bgm/bgm_" + dungeonList[i] + ".ogg",
-            "./sound/bgm/bgm_" + dungeonList[i] + ".mp3"
+            "./sound/bgm/bgm_" + dungeonList[i].id + ".ogg",
+            "./sound/bgm/bgm_" + dungeonList[i].id + ".mp3"
         ],
         preload:false,
         loop:true,
         volume:0.3
     });
+    bgmObj[dungeonList[i].id].loadCompleted = false;
 }
 //효과음
 var itemSfxList = ["epic_appear","epic_land","epic_appear_wish","epic_land_wish","item_appear"];
@@ -168,6 +165,7 @@ for (i = 0;i < itemSfxList.length;i++) {
         loop:false,
         volume:0.2
     });
+    sfxObj[itemSfxList[i]].loadCompleted = false;
 }
 //타격음 업데이트
 for (i = 0;i < hitList.length;i++) {
@@ -177,6 +175,7 @@ for (i = 0;i < hitList.length;i++) {
         loop:false,
         volume:0.6
     });
+    sfxObj[hitList[i]].loadCompleted = false;
 }
     //일부 큰 소리 작게
     sfxObj.hit_hit.volume(0.2);
@@ -189,6 +188,7 @@ for (i = 0;i < sfxList.length;i++) {
         loop:false,
         volume:0.5
     });
+    sfxObj[sfxList[i]].loadCompleted = false;
 }
 //유저 정보(세이브 가능)
 var user = {
@@ -225,8 +225,8 @@ var user = {
 //=====================================================================
 //탐색 관련
 function simulateP() {}
-//★탐색 전 부위/레벨 가중치 구축
-simulateP.prototype.build = function() {
+//★탐색 전 입장 던전 기준 부위/레벨 가중치 구축
+simulateP.prototype.build = function(target) {
     //1. 부위 구축
         //a. 장비 종류만큼 칸 설정
         var arr_num = [];
@@ -256,22 +256,28 @@ simulateP.prototype.build = function() {
         //x - 부위별로 레벨 가중치 구축
         weighted_level = [];
         for (k=0;k<droptype.name.length;k++) {
-            //a. 레벨 종류만큼 칸 설정
-            var level_arr = [0, 0];//85레벨, 90레벨
+            //던전 정보 잠시 가져오기 (for 레벨)
+            var dg = indexArrKey(dungeonList,"id",target);
+            //a. 드랍레벨 종류만큼 칸 설정
+            var level_arr = [];
+            for (i = 0;i < dg.level.length;i++) {
+                level_arr[i] = 0;
+            }
             //b. 해당 칸은 특정 레벨 & 특정 장비의 개수만큼 숫자가 증가
             for (i=0;i<itemList.length;i++) {
-                for (j=0;j<droplevel.name.length;j++) {
+                for (j=0;j<dg.level.length;j++) {
                     //앞에서 선택된 장비이고 레벨이 맞을 경우, 해당 레벨 칸 +1
                     if ((itemList[i]["sort1"] === droptype.name[k] //무기, 방어구 전용 : 대분류
                     || itemList[i]["sort2"] === droptype.name[k])//악세사리, 특수장비 : 1차 소분류
-                    && itemList[i]["level"] === droplevel.name[j]) {
+                    && itemList[i]["level"] === dg.level[j]) {
                         level_arr[j] += 1;
                     }
                 }
             }
             //c. 추가 가중치 계산
-            level_arr[0] = level_arr[0] * droplevel.num[0];
-            level_arr[1] = level_arr[1] * droplevel.num[1];
+            for (i = 0;i < dg.level.length;i++) {
+                level_arr[i] = level_arr[i] * dg.level_weight[i];
+            }
             //d. 해당 부위 레벨 가중치 기억
             weighted_level[k] = level_arr;
         }
@@ -292,6 +298,11 @@ simulateP.prototype.ready = function() {
 };
 //★1회 탐색 중
 simulateP.prototype.run = function() {
+    //종료 대기중이라면 실행하지 않고 즉각 종료시킴
+    if (state === "waiting") {
+        this.end();
+        return;
+    }
     //회차 증가
     user.count += 1;
         //변경 회차 반영
@@ -309,11 +320,8 @@ simulateP.prototype.run = function() {
             //아이템 드랍 승인 -> 아이템 선정
             this.getItem(result);
             //탐색 종료 여부 : 탐색모드 및 찜 여부에 따라 차후 결정
-        } else if (state === "waiting") {
-            //탐색 종료
-            this.end();
         } else {
-            //탐색 지속
+            //아니라면 탐색 지속
             this.run();
         }
     }.bind(this),125);
@@ -323,8 +331,8 @@ simulateP.prototype.result = function() {
     //확률 가져오기
     var thisrate = deepCopy(droprate);
     //특수지역이라면 해당 확률 변경된
-    if (Object.keys(droprate_special).indexOf(selectedDungeon.before) >= 0)
-        thisrate.num[0] = droprate_special[selectedDungeon.before];
+    if (Object.keys(droprate_special).indexOf(selectedDungeon.now.id) >= 0)
+        thisrate.num[0] = droprate_special[selectedDungeon.now.id];
     //드랍 결과 반환 (랜덤)
     return thisrate.name[rand(thisrate.num)];
 };
@@ -368,8 +376,13 @@ simulateP.prototype.getItem = function(str) {
 };
 //★아이템 선정결과 반영
 simulateP.prototype.applyItem = function(item) {
-    //(공통) 획득/보유량 증가
-        if (typeof item !== "string") {
+    //(공통 1) 습득 채널 표시
+    var arr = resultList.channel;
+    user.channel= arr[Math.floor(Math.random() * arr.length)];
+    $("#channel_text").innerHTML = user.channel;
+
+    //(공통 2) 획득/보유량 증가
+    if (typeof item !== "string") {
         user.holding.epic.get += 1;
         user.holding.epic.have += 1;
         $("#board_epic_num").innerHTML = thousand(user.holding.epic.have);
@@ -381,12 +394,7 @@ simulateP.prototype.applyItem = function(item) {
 
     //에픽 한정
     if (typeof item !== "string") {
-        //1. 습득 채널 표시
-        var arr = resultList.channel;
-        user.channel= arr[Math.floor(Math.random() * arr.length)];
-        $("#channel_text").innerHTML = user.channel;
-
-        //2. 아이템 획득/보유량/최초획득시기 기억
+        //1. 아이템 획득/보유량/최초획득시기 기억
         var target;
         if (!user.inventory[item.id]) {
             user.inventory[item.id] = {};
@@ -398,7 +406,7 @@ simulateP.prototype.applyItem = function(item) {
             user.inventory[item.id].have += 1;
         }
 
-        //3. 아이템 획득내역 기록
+        //2. 아이템 획득내역 기록
             //일반 아이템
             if (item.set === "") {
                 //기록 : [회차, 채널, 아이템ID, 보유수]
@@ -436,9 +444,9 @@ simulateP.prototype.applyItem = function(item) {
                     $("#main_set_text").innerHTML = item.set + " (" + temp[0].toString() + "/" +  temp[1].toString() + ")";
             }
 
-        //4. 해당 아이템 도감 업데이트
+        //3. 해당 아이템 도감 업데이트
         display.modifyInventory(item.id);
-        //5. (찜한 아이템이라면) 찜 목록 업데이트
+        //4. (찜한 아이템이라면) 찜 목록 업데이트
         display.checkWish(item.id);
     }
 };
@@ -485,7 +493,7 @@ simulateP.prototype.dropEtc = function(item) {
         case "soul":
             $("#item_name1").innerHTML = "에픽 소울";break;
         case "beed":
-            $("#item_name1").innerHTML = "메트로센터 지옥 구슬";break;
+            $("#item_name1").innerHTML = selectedDungeon.now.area_name + " 지옥 구슬";break;
         default:
             $("#item_name1").innerHTML = "에픽 소울";break;
     }
@@ -548,11 +556,31 @@ simulateP.prototype.dropEpic = function(item) {
     //========================================================
     //★ 종료 여부 설정 (탐색모드에 따라)
     switch (user.option.searchMode) {
-        case "찜":
+        case "찜하나":
             if (!wished) {
                 this.run();//찜한 게 아님 : 지속
             } else {
-                this.readyToEnd();//쨈한 거 : 종료 대기
+                this.readyToEnd();//쨈한 거 : 잠시 후 종료
+            }
+
+            break;
+        case "모든찜":
+            if (!wished) {
+                this.run();//찜한 게 아님 : 지속
+            } else {
+                //쨈한 거
+                var num = 0;
+                for (var i = 0;i < user.wish.length;i++) {
+                    if (user.inventory[user.wish[i]] &&
+                        user.inventory[user.wish[i]].have > 0) num += 1;
+                }
+                if (user.wish.length === num) {
+                    this.readyToEnd();//찜한 거 다 모았음 : 잠시 후 종료
+                } else {
+                    this.run();//찜한 거 아직 다 못 모았음 : 지속
+                }
+
+
             }
 
             break;
@@ -654,8 +682,6 @@ simulateP.prototype.dropEpic = function(item) {
                         //에픽 대기 이펙트 (착지 이펙트 0.6초 종료 후)
                         autoWish = setTimeout(function() {
                             $("#item1").classList.add("wait_wish");
-                            //(wished) : 버튼 활성화 (아직 종료 안했으니)
-                            if (wished) simulate.end();
                         },600);
                     }
                     //균열 사라짐
@@ -684,6 +710,12 @@ simulateP.prototype.readyToEnd = function() {
     //대기 문구
     $("#button_main").innerHTML = "확인 중";
     $("#button_main").disabled = true;
+    //(0.9초 후) 버튼 활성화
+    setTimeout(function() {
+        this.end();
+
+        /*게임 저장*/main.saveData();
+    }.bind(this),900);
 };
 //★탐색 종료
 simulateP.prototype.end = function(wished) {
@@ -823,10 +855,13 @@ displayP.prototype.clickWish = function(tmpid) {
 displayP.prototype.addWish = function(id) {
     //최대치 넘으면 중지
     if (user.wish.length >= wishLimit) {
+        var st = $("#inventory_box").scrollTop;//클릭 당시 스크롤 위치 기억
         swal({
             title:"찜하기 최대치 도달",
             text:"찜하기는 최대 <strong>" + wishLimit.toString() + "</strong>개까지 가능합니다.",
             type:"error"
+        }).then(function() {
+            $("#inventory_box").scrollTop = st;//스크롤 위치 복원
         });
     } else {
         //찜 설정 사운드
@@ -940,6 +975,10 @@ mainP.prototype.loadData = function() {
                         $("#main_sound_change").innerHTML = "사운드 <span class='color_green'>켜기</span>";
 
                         break;
+                    case undefined:
+                        $("#main_sound_change").innerHTML = "사운드 <span class='color_green'>켜기</span>";
+
+                        break;
                 }
                 //캐릭터 설정
                 main.changeCharacter(user.myCharacter);
@@ -1035,8 +1074,8 @@ mainP.prototype.loadAudio = function(target, callback) {//로딩 이미지 준�
 
                 break;
             default:
-                //BGM은 사운드 활성화했을 때만 로딩 (게이트 빼고)
-                if ((target === "gate" || user.option.bgm) && !bgmObj[target].loadCompleted) audioObj[target] = bgmObj[target];
+                //BGM은 사운드 활성화했을 때만 로딩
+                if ((user.option.bgm) && !bgmObj[target].loadCompleted) audioObj[target] = bgmObj[target];
 
                 break;
         }
@@ -1106,6 +1145,61 @@ mainP.prototype.loadAudio = function(target, callback) {//로딩 이미지 준�
                 audioObj[j].loadCompleted = true;
             }
         }
+    }
+};
+//★던전 선택창 생성 (나중에 하면 렉걸리니)
+mainP.prototype.createDungeon = function() {
+    //버튼 임시저장
+    var tagFrag = document.createDocumentFragment();
+    //던전 수량 임시저장
+    var dgNum = 0;
+    //버튼 생성
+    for (i = 0;i < dungeonList.length;i++) {
+        //notCreatable은 생성하지 말 것
+        if (dungeonList[i].notCreatable === 1) continue;
+        //최초 던전 : 게이트 아래에 지역명 표시
+        if (dgNum === 0) {
+            $("#dg_box_title").dataset.area = dungeonList[i].area_id;
+            $("#dg_box_title_name").innerHTML = dungeonList[i].area_name;
+            //지역명 수집
+            areaList.push(dungeonList[i].area_id);
+        }
+        //(최초 던전 제외) 각 지역 첫 던전 : 제목줄 표시
+        if (dgNum !== 0  &
+            (i > 0 && dungeonList[i].area_id !== dungeonList[i-1].area_id)) {
+            var el_area = document.createElement("#area_" + dungeonList[i].area_id + ".slot_area");
+                el_area.dataset.area = dungeonList[i].area_id;
+                el_area.innerHTML = dungeonList[i].area_name;
+            tagFrag.appendChild(el_area);
+            //지역명 수집
+            areaList.push(dungeonList[i].area_id);
+        }
+        var el_button = document.createElement("button#dg_" + dungeonList[i].id +
+            ".slot_list.dg_list[data-target='" + dungeonList[i].id + "']");
+            el_button.dataset.dungeon = dungeonList[i].id;
+            el_button.dataset.area = dungeonList[i].area_id;
+            //각자 배경 지정
+            el_button.style.backgroundImage = "url('./img/slot/" + dungeonList[i].id + ".png')";
+        //던전 추가, 던전 수량 증가
+        tagFrag.appendChild(el_button);
+        dgNum += 1;
+    }
+    //붙여넣기
+    $("#dg_box").appendChild(tagFrag);
+    //던전 스크롤 -> (지역명 변경 시) 지역명 타이틀 변경
+    $("#dg_box").onscroll = function() {
+        main.changeDungeonTitle();
+    };
+};
+//★ 던전 스크롤 -> (지역명 변경 시) 지역명 타이틀 변경
+mainP.prototype.changeDungeonTitle = function() {
+    var mainW = $("#frame_main").offsetWidth;
+    var boxW = $("#dg_box").offsetWidth;
+    var boxT = $("#dg_box").offsetTop;
+    var el = document.elementFromPoint(mainW - boxW/2,boxT);
+    if (el.dataset.area && $("#dg_box_title").dataset.area !== el.dataset.area) {
+        $("#dg_box_title").dataset.area = el.dataset.area;
+        $("#dg_box_title_name").innerHTML = indexArrKey(dungeonList,"area_id",el.dataset.area).area_name;
     }
 };
 //★도감 창 생성 (나중에 하면 렉걸리니)
@@ -1192,8 +1286,8 @@ mainP.prototype.createInventory = function() {
             createItem(i);
         }
         //클러스터 생성 (부드로운 스크롤)
-        var clusterize = new Clusterize({
-            rows:scrollArr,
+        var clusterize_inventory = new Clusterize({
+            rows:[],
             scrollId: 'inventory_box',
             contentId: 'inventory_scroll',
             //하단 1번 : 1 블록에 들어가는 최대 row 수 (디폴트 : 50)
@@ -1201,14 +1295,14 @@ mainP.prototype.createInventory = function() {
             rows_in_block:15,
             blocks_in_cluster:Math.ceil(scrollArr.length / 15)
         });
+        //클러스터 추가
+        clusterize_inventory.append(scrollArr);
         //★ (클러스터 생성 후) 클러스터 클릭 이벤트 추가 (찜하기)
         $("#inventory_scroll").addEventListener("click",function(e) {
-            var st = $("#inventory_scroll").scrollTop;
             e = e || event;
             var target = e.target || e.srcElement;
             if(target.nodeName !== "LI") return;
             display.clickWish(target.id.replace("item_",""));
-            $("#inventory_scroll").scrollTop = st;
         }, false);
     //찜 현황 반영
     display.checkWish();
@@ -1247,8 +1341,9 @@ mainP.prototype.init = function() {
                     $("#cover_google").style.display ="none";
                     //이미지 로딩
                     main.loadImage(imageList, function() {
-                        //아이템 도감 작성
+                        //던전 목록, 아이템 도감 작성
                         setTimeout(function() {
+                            main.createDungeon();
                             main.createInventory();
                         },0);
                         //효과음 로딩
@@ -1304,8 +1399,9 @@ mainP.prototype.init = function() {
                         $("#cover_google").style.display ="none";
                         //이미지 로딩
                         main.loadImage(imageList, function() {
-                            //아이템 도감 작성
+                            //던전 목록, 아이템 도감 작성
                             setTimeout(function() {
+                                main.createDungeon();
                                 main.createInventory();
                             },0);
                             //효과음 로딩
@@ -1363,7 +1459,7 @@ mainP.prototype.setButton = function(situation) {
         //모조리 활성화(게이트 빼고)
         case "enableAll":
             $("#button_left").disabled = false;
-            if (selectedDungeon.before !== "gate")
+            if (selectedDungeon.now.id !== "gate")
                 $("#button_main").disabled = false;
             $("#button_right").disabled = false;
             $("#main_inventory").disabled = false;
@@ -1381,7 +1477,7 @@ mainP.prototype.enterMap = function(target) {
     //메인 버튼 문구 변경
     $("#button_main").innerHTML = "입장 중...";
     //던전 정보 변경
-    selectedDungeon.after = target;
+    selectedDungeon.after = indexArrKey(dungeonList,"id",target);
     //던전 입장 이미지
     $("#frame_cover").style.display = "block";
     $("#frame_cover").style.opacity = "1";
@@ -1398,6 +1494,9 @@ mainP.prototype.enterMap = function(target) {
             $("#frame_cover_bg").style.opacity = "0";
             //던전 배경 변경
             $("#frame_main").style.backgroundImage = "url('./img/bg/bg_" + target + ".jpg')";
+                //배경 미세조정
+                var dg = indexArrKey(dungeonList,"id",target);
+                $("#frame_main").style.backgroundPosition = dg.bgPosition;
             //캐릭터, 아이템 배치
             if (target !== "gate") {
                 //던전 - 캐릭터 배치
@@ -1405,8 +1504,8 @@ mainP.prototype.enterMap = function(target) {
                 $("#main_character").classList.add("dungeon");
                 //던전 - 아이템 원위치
                 simulate.resetItem();
-                //던전 -  아이템 드랍 부위/레벨 가중치 구축
-                simulate.build();
+                //던전 -  (입장하는 던전의) 아이템 드랍 부위/레벨 가중치 구축
+                simulate.build(target);
                 //던전 - NPC 관련 치우기
                 $("#main_npc_text").style.display = "none";
                 $("#main_npc").style.display = "none";
@@ -1433,21 +1532,24 @@ mainP.prototype.enterMap = function(target) {
                 //입장 완료
                 $("#frame_cover").style.opacity = "0";
                 //기존 브금 종료
-                if (selectedDungeon.before !== "" && selectedDungeon.before !== selectedDungeon.after)
-                    bgmObj[selectedDungeon.before].stop();
-                //새 브금 실행
-                if (selectedDungeon.before !== selectedDungeon.after)
-                    if (user.option.bgm) bgmObj[selectedDungeon.after].play();
+                if (selectedDungeon.now.id && selectedDungeon.now.id !== selectedDungeon.after.id)
+                    bgmObj[selectedDungeon.now.id].stop();
+                //새 브금 실행 (브금이 다르거나, 같은데 브금이 미실행중이라면)
+                if (selectedDungeon.now.id !== selectedDungeon.after.id ||
+                    (selectedDungeon.now.id === selectedDungeon.after.id &&
+                    !bgmObj[selectedDungeon.after.id].playing())) {
+                    if (user.option.bgm) bgmObj[selectedDungeon.after.id].play();
+                }
                 setTimeout(function() {
                     //던전 변경 완료
-                    selectedDungeon.before = selectedDungeon.after;
-                    selectedDungeon.after = "";
+                    selectedDungeon.now = selectedDungeon.after;
+                    selectedDungeon.after = {};
                     //클릭 가능
                     $("#frame_cover").style.display = "none";
                     //버튼들 활성화
                     main.setButton("enableAll");
                     //메인 버튼 문구 변경
-                    if (selectedDungeon.before !== "gate") {
+                    if (selectedDungeon.now.id !== "gate") {
                         $("#button_main").innerHTML = user.option.searchMode + " 탐색";
                     }
                     else {
@@ -1614,13 +1716,13 @@ mainP.prototype.setMenuButton = function() {
             //우측 메뉴창 제목 설정
             $("#dg_header").style.display = "block";
             $("#slot_title_right").innerHTML = "이동 지역 선택";
-        //내부 클릭 - 던전 교체
+        //내부 클릭 1 - 던전 교체
         for (i=0;i<$$(".dg_list").length;i++) {
             (function() {
                 var bt = $$(".dg_list")[i];
                 bt.onclick = function() {
                     //마을/던전 입장하기
-                    main.enterMap(bt.dataset.target);
+                    main.enterMap(bt.dataset.dungeon);
                     //메뉴창 닫기
                     main.toggleMenu("right","enter",function() {
                         //던전 선택창 닫기
@@ -1630,6 +1732,43 @@ mainP.prototype.setMenuButton = function() {
                 };
             })();
         }
+        //내부 클릭 2 - 던전 스크롤
+        $("#dg_box_arrow_down").onclick = function() {
+            var pos = areaList.indexOf(dg_box_title.dataset.area);
+            if (pos < areaList.length - 1) {
+                TweenMax.to($("#dg_box"),0.2,{scrollTo:$("#area_" + areaList[pos+1]).offsetTop});
+            } else {
+                TweenMax.to($("#dg_box"),0.2,{scrollTo:$("#dg_box").scrollHeight - $("#dg_box").offsetHeight});
+            }
+            //사운드 출력
+            if (user.option.sfx) sfxObj.slot_close.play();
+            $("#dg_box_arrow_down").blur();
+        };
+        $("#dg_box_arrow_up").onclick = function() {
+            //현재 스크롤 최상단 element 파악
+                var mainW = $("#frame_main").offsetWidth;
+                var boxW = $("#dg_box").offsetWidth;
+                var boxT = $("#dg_box").offsetTop;
+                var el = document.elementFromPoint(mainW - boxW/2,boxT);
+            var pos = areaList.indexOf(dg_box_title.dataset.area);
+            if (pos !== 0) {
+                if (!el.classList.contains("slot_area")) {
+                    TweenMax.to($("#dg_box"),0.2,{scrollTo:$("#area_" + areaList[pos]).offsetTop});
+                } else {
+                    if (pos !== 1) {
+                        TweenMax.to($("#dg_box"),0.2,{scrollTo:$("#area_" + areaList[pos-1]).offsetTop});
+                    } else {
+                        TweenMax.to($("#dg_box"),0.2,{scrollTo:0});
+                    }
+                }
+            } else {
+                TweenMax.to($("#dg_box"),0.2,{scrollTo:0});
+            }
+            //사운드 출력
+            if (user.option.sfx) sfxObj.slot_close.play();
+            $("#dg_box_arrow_down").blur();
+
+        };
     };
     //※ 우측 버튼 2 : 캐릭터 변경
     $("#main_character_change").onclick = function() {
@@ -1645,7 +1784,7 @@ mainP.prototype.setMenuButton = function() {
                 var bt = $$(".cha_list")[i];
                 bt.onclick = function() {
                     //캐릭터 변경
-                    main.changeCharacter(bt.dataset.target);
+                    main.changeCharacter(bt.dataset.character);
                     //효과음
                     if (user.option.sfx) sfxObj.slot_act.play();
                     //메뉴창 닫기
@@ -1662,8 +1801,8 @@ mainP.prototype.setMenuButton = function() {
         //메뉴창 닫기
         main.toggleMenu("right","close",function() {
             //모든 내부선택창 닫기
-            $("#dg_header").style.display = "none";
             $("#cha_box").style.display = "none";
+            $("#dg_header").style.display = "none";
             $("#dg_box").style.display = "none";
         });
     };
@@ -1701,7 +1840,7 @@ mainP.prototype.setMenuButton = function() {
                 user.option.bgm = 0;
                 user.option.sfx = 0;
                 $("#main_sound_change").innerHTML = "사운드 <span class='color_green'>켜기</span>";
-                bgmObj[selectedDungeon.before].stop();
+                bgmObj[selectedDungeon.now.id].stop();
 
                 /*게임 저장*/main.saveData();
                 break;
@@ -1709,7 +1848,16 @@ mainP.prototype.setMenuButton = function() {
                 user.option.bgm = 1;
                 user.option.sfx = 1;
                 $("#main_sound_change").innerHTML = "사운드 <span class='color_red'>끄기</span>";
-                bgmObj[selectedDungeon.before].play();
+                //사운드 비활성화 시
+                if (bgmObj[selectedDungeon.now.id].loadCompleted) {
+                    bgmObj[selectedDungeon.now.id].play();
+                } else {
+                    swal({
+                        title:"불러올 음악이 없음",
+                        text:"현재 지역 재입장 시 배경음악을 들을 수 있습니다.",
+                        type:"info"
+                    });
+                }
 
                 /*게임 저장*/main.saveData();
                 break;
@@ -1718,7 +1866,16 @@ mainP.prototype.setMenuButton = function() {
                 user.option.bgm = 1;
                 user.option.sfx = 1;
                 $("#main_sound_change").innerHTML = "사운드 <span class='color_red'>끄기</span>";
-                bgmObj[selectedDungeon.before].play();
+                //사운드 비활성화 시
+                if (bgmObj[selectedDungeon.now.id].loadCompleted) {
+                    bgmObj[selectedDungeon.now.id].play();
+                } else {
+                    swal({
+                        title:"불러올 음악이 없음",
+                        text:"현재 지역 재입장 시 배경음악을 들을 수 있습니다.",
+                        type:"info"
+                    });
+                }
 
                 /*게임 저장*/main.saveData();
                 break;
@@ -1729,13 +1886,14 @@ mainP.prototype.setMenuButton = function() {
         //탐색모드 선택창 개방
         swal({
             title:"탐색모드 설정",
-            text:"탐색모드가 자동으로 멈추는 시점을 설정해주세요",
+            text:"탐색이 자동으로 멈추는 시점을 설정해주세요",
             input:"radio",
             confirmButtonText:"설정 적용하기",
             inputOptions:{
                 "모두":"아무 아이템 습득 시",
                 "에픽":"에픽 장비 습득 시",
-                "찜":"찜한 장비 습득 시",
+                "찜하나":"찜한 장비 <strong>'하나'</strong> 습득 시",
+                "모든찜":"찜한 장비 <strong>'모두'</strong> 습득 시",
                 "무한":"자동으로 멈추지 않음"
             },
             inputValue:user.option.searchMode
@@ -1784,7 +1942,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
     //초기 함수
     main.init();
 
+
     //강제 스크롤링 (터치 한정)
+    /*
     var touchY = 0;//첫 터치 Y좌표 기억(스크립트 스크롤 용)
     var forcedScroll = [$("#dg_box"),$("#cha_box")];
     var f_len = forcedScroll.length;
@@ -1804,6 +1964,8 @@ document.addEventListener("DOMContentLoaded", function(e) {
                 target.scrollTop = target.scrollTop + (touchY - touchYC);
                 //이동 이후 터치포인트 기억
                 touchY = touchYC;
+                //스크롤 -> (지역명 변경 시) 지역명 타이틀 변경
+                main.changeDungeonTitle();
             },false);
             target.addEventListener("touchend",function(e) {
                 //스크롤 재활성화
@@ -1812,6 +1974,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
         },false);
         })();
     }
+    */
 
     //나가기 경고
         //웹 브라우저
