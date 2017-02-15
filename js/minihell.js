@@ -112,6 +112,7 @@ var characterList = {
 var imageList = [];
     /*로딩 이미지*/
     imageList.push("./img/bg/loading_gate.jpg");
+    imageList.push("./img/bg/loading_death.jpg");
     imageList.push("./img/bg/loading_metro.jpg");
     /*던전 슬롯*/
     for(i=0;i<dungeonList.length;i++) {
@@ -448,6 +449,7 @@ simulateP.prototype.applyItem = function(item) {
         display.modifyInventory(item.id);
         //4. (찜한 아이템이라면) 찜 목록 업데이트
         display.checkWish(item.id);
+
     } else {
         //비에픽 : 세트 정보만 변경
         $("#main_set_text").className = "color_gray";
