@@ -448,6 +448,10 @@ simulateP.prototype.applyItem = function(item) {
         display.modifyInventory(item.id);
         //4. (찜한 아이템이라면) 찜 목록 업데이트
         display.checkWish(item.id);
+    } else {
+        //비에픽 : 세트 정보만 변경
+        $("#main_set_text").className = "color_gray";
+        $("#main_set_text").innerHTML = "정보 없음";
     }
 };
 //★아이템 원위치, 기존 에픽 이펙트 제거
