@@ -977,7 +977,7 @@ html, body {
     width:8rem;
     height:100%;
 
-    background:rgba(0,0,0,0.8);
+    background:rgba(0,0,0,0.6);
     border-right:0.01rem black solid;
     box-sizing: border-box;
 
@@ -992,7 +992,7 @@ html, body {
     width:8rem;
     height:100%;
 
-    background:black;
+    background:rgba(0,0,0,0.6);
     border-left:0.01rem black solid;
     box-sizing: border-box;
 
@@ -1028,23 +1028,6 @@ html, body {
     height:100%;
 
     box-sizing: border-box;
-}
-.slot_area {
-    position:relative;
-
-    margin:0.1rem 0.2rem;
-    width:calc(100% - 0.4rem);
-    height:0.8rem;
-
-    background-color:#606060;
-    border-radius:0.1rem;
-    box-sizing: border-box;
-
-    color:white;
-    font-size:0.6rem;
-    font-weight:normal;
-    line-height:0.8rem;
-    text-align:center;
 }
     .scroll {
         overflow-y:scroll;
@@ -1174,7 +1157,7 @@ html, body {
             }
 
         .slot_list {
-            margin-bottom:0.02rem;
+            margin-bottom:0.1rem;
             width:100%;
             height:3.2rem;
 
@@ -1182,9 +1165,28 @@ html, body {
                 background-position:50% 50%;
                 background-repeat:no-repeat;
                 background-size:100% auto;
+            border:0.06rem #606060 double;
             border-radius: 0.5rem;
+            box-sizing: border-box;
 
             display:block;
+        }
+        .slot_area {
+            position:relative;
+
+            margin:0.1rem 0;
+            width:100%;
+            height:0.8rem;
+
+            background-color:#606060;
+            border-radius:0.1rem;
+            box-sizing: border-box;
+
+            color:white;
+            font-size:0.6rem;
+            font-weight:normal;
+            line-height:0.8rem;
+            text-align:center;
         }
             #dg_header {
                 position:absolute;
@@ -1204,11 +1206,14 @@ html, body {
                 display:none;
             }
                 #dg_gate{
+                    margin:0;
                     padding-left:2.1rem;
-                    height:2.4rem !important;
+                    height:2.4rem;
+                    border:0;
                 }
                 #dg_box_title {
-                    margin-top:0.1rem;
+                    margin:0.1rem;
+                    width:calc(100% - 0.2rem);
                     height:1.3rem;
                 }
                 .dg_box_arrow {
@@ -1238,8 +1243,8 @@ html, body {
                     line-height:1.3rem;
                 }
                 #dg_box {
-                    top:4.1rem;
-                    height:calc(100% - 4.1rem);
+                    top:4rem;
+                    height:calc(100% - 4rem);
                 }
                 .dg_list{height:3.2rem;}
                 .cha_list{

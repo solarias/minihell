@@ -1222,12 +1222,22 @@ mainP.prototype.createInventory = function() {
     var firstGet = 0;
     var icon = "";
         var icon_position = "";
+    //획득 가능 장비 레벨대 파악
+    var levelList = [];
+    for (var i = 0;i < dungeonList.length;i++) {
+        if (!dungeonList[i].level) continue;//획득가능 장비 없으면 패스
+        var levelArr = dungeonList[i].level;
+        for (var j = 0;j < levelArr.length;j++) {
+            if (levelList.indexOf(levelArr[j]) < 0)
+                levelList.push(levelArr[j]);
+        }
+    }
     //아이템 줄 생성 함수
     function createItem(num) {
         //아이템 선정
         item = itemList[num];
-        //(아직은) 85, 90레벨 장비만 생성
-        if (item.level !== 85 && item.level !== 90) return false;
+        //획득 불가 레벨대는 스킵
+        if (levelList.indexOf(item.level) < 0) return false;
         //ID, 등급 기억
         id = item.id;
         rarity = (item.set === "") ? "epic" : "set";
@@ -1295,13 +1305,9 @@ mainP.prototype.createInventory = function() {
         var clusterize_inventory = new Clusterize({
             rows:[],
             scrollId: 'inventory_box',
-            contentId: 'inventory_scroll',
-            //하단 1번 : 1 블록에 들어가는 최대 row 수 (디폴트 : 50)
-            //하단 2번 : 1 클러스터에 들어가는 최대 블록 수 (디폴트 : 4)
-            rows_in_block:15,
-            blocks_in_cluster:Math.ceil(scrollArr.length / 15)
+            contentId: 'inventory_scroll'
         });
-        //클러스터 추가
+        //클러스터에 아이템 추가
         clusterize_inventory.append(scrollArr);
         //★ (클러스터 생성 후) 클러스터 클릭 이벤트 추가 (찜하기)
         $("#inventory_scroll").addEventListener("click",function(e) {
@@ -1620,35 +1626,29 @@ mainP.prototype.toggleMenu = function(target, cmd, callback) {
     //작동 개시
         //(열기라면)
         if (cmd === "open") {
-            //버튼 비황성화
-            main.setButton("disableAll");
             //메뉴 생성
             $("#frame_slot_" + target).style.display = "block";
+            //버튼 비황성화
+            main.setButton("disableAll");
         }
-    //사운드 출력 (act, enter 제외)
-    if (user.option.sfx && cmd !== "act" && cmd !== "enter") sfxObj["slot_" + cmd].stop().play();
     //중앙부 밝기 조절 (frame_main, frame_board, frame_button)
-    var bright = (100 - Math.abs(num) / 1.3).toString() + "%";
+    var bright = (100 - Math.abs(num) / 1.5).toString() + "%";
     $("#frame_main").style.filter = "brightness(" + bright + ")";
     $("#frame_board").style.filter = "brightness(" + bright + ")";
     $("#frame_button").style.filter = "brightness(" + bright + ")";
+    //사운드 출력 (act, enter 제외)
+    if (user.option.sfx && cmd !== "act" && cmd !== "enter") sfxObj["slot_" + cmd].stop().play();
     //메뉴 이동
     TweenMax.to($("#frame_slot_" + target),0.3,{xPercent:num,
         onComplete:function() {
-            //(닫기라면)
-            if (cmd === "close") {
+            var bright = (100 - Math.abs(num) / 1.5).toString() + "%";
+            //(열기, 입장이 아니라면)
+            if (cmd !== "open" && cmd !== "enter") {
                 //메뉴 제거
                 $("#frame_slot_" + target).style.display = "none";
                 //버튼 활성화
                 main.setButton("enableAll");
-            //(적용이라면)
-            } else if (cmd === "act") {
-                //메뉴만 제거
-                $("#frame_slot_" + target).style.display = "none";
-                //버튼 활성화
-                main.setButton("enableAll");
-            //(입장이라면)
-            }else if (cmd === "enter") {
+            } else if (cmd === "enter") {
                 //메뉴 제거
                 $("#frame_slot_" + target).style.display = "none";
             }
@@ -1820,6 +1820,24 @@ mainP.prototype.setMenuButton = function() {
         if (user.option.sfx) sfxObj.slot_open.play();
         switch (state) {
             case "waiting":
+                if (user.option.searchMode === "찜하나" ||user.option.searchMode === "모든찜") {
+                    //쨈한 거
+                    var num = 0;
+                    for (var i = 0;i < user.wish.length;i++) {
+                        if (user.inventory[user.wish[i]] &&
+                            user.inventory[user.wish[i]].have > 0) num += 1;
+                    }
+                    if (user.wish.length === num) {
+                        //모든 찜이고 찜한 거 다 모았으면
+                        swal({
+                            title:"모든 찜 아이템 수집 완료",
+                            text:"탐색을 더 하려면, 찜 아이템 목록을 바꾸거나 게이트에서 탐색모드를 변경해주세요.",
+                            type:"info"
+                        });
+                        //실행하지 않음
+                        return;
+                    }
+                }
                 //실행상태 변경
                 state = "running";
                 //탐색 준비
@@ -2008,6 +2026,8 @@ document.addEventListener("DOMContentLoaded", function(e) {
             document.addEventListener("pause", onPause, false);
             document.addEventListener("resume", onResume, false);
             document.addEventListener("backbutton", onBackKeyDown, false);
+            //화면 꺼짐 방지 플러그인
+            window.plugins.insomnia.keepAwake();
         }, false);
         function onPause() {
             Howler.mute(true);
