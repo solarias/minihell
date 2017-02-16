@@ -804,6 +804,8 @@ displayP.prototype.modifyInventory = function(id) {
     var firstGet = (user.inventory[id]) ? user.inventory[id].firstGet : 0;
     //(보유량 >= 1)
     if (have > 0) {
+        console.log(id);
+        console.log($$("#item_" + id + " .icon"));
         //아이콘 표시
         $$("#item_" + id + " .icon")[0].classList.remove("nothing");
         //아이템 이름 색상 표시
@@ -1305,7 +1307,9 @@ mainP.prototype.createInventory = function() {
         var clusterize_inventory = new Clusterize({
             rows:[],
             scrollId: 'inventory_box',
-            contentId: 'inventory_scroll'
+            contentId: 'inventory_scroll',
+            rows_in_block:15,
+            blocks_in_cluster:Math.ceil(scrollArr.length / 15)+1
         });
         //클러스터에 아이템 추가
         clusterize_inventory.append(scrollArr);
