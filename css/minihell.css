@@ -87,13 +87,6 @@
     text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
 }
 */
-/*버튼 애니메이션*/
-/*
-button {
-    -webkit-transition:all 0.2s;
-    transition:all 0.2s;
-}
-*/
 /*그림자 효과*/
 #wrapper button:hover, #wrapper select:hover, #wrapper label:hover {
     outline:0.15rem white solid !important;
@@ -410,6 +403,37 @@ html, body {
     .npc_erze {
         width:1.2rem;height:2.9rem;background-image:url('../img/npc/erze.gif');
         background-size:100% 100%;}
+#main_crack {
+    position:absolute;
+        z-index:2;
+    left:calc(50% - 1.7rem + 3.1rem);
+    top:0;
+
+    width:3.4rem;
+    height:8rem;
+
+    background-image:url('../img/epic_crack.png');
+    background-repeat: no-repeat;
+        background-size:100% 100%;
+    opacity:0;
+    -webkit-transition:opacity 0.2s;
+    transition:opacity 0.2s;
+}
+    #main_crack.show {
+        opacity:0.8;
+    }
+#canvas_cover {
+    position:absolute;left:50%;top:0;
+    width:16rem;height:12rem;}
+#main_canvas {
+    position:relative;
+        z-index:2;
+    left:-50%;
+    margin:0 auto;
+    width:16.64rem;
+    height:12rem;
+    box-sizing: border-box;
+}
 #main_character {
     position:absolute;
         z-index:3;
@@ -521,25 +545,6 @@ html, body {
 
         font-size:0.6rem;
     }
-#main_crack {
-    position:absolute;
-        z-index:2;
-    left:calc(50% - 1.7rem + 3.1rem);
-    top:0;
-
-    width:3.4rem;
-    height:8rem;
-
-    background-image:url('../img/epic_crack.png');
-    background-repeat: no-repeat;
-        background-size:100% 100%;
-    opacity:0;
-    -webkit-transition:opacity 0.2s;
-    transition:opacity 0.2s;
-}
-    #main_crack.show {
-        opacity:0.8;
-    }
 /*드랍 아이템*/
 .item {
 	position:absolute;
@@ -635,8 +640,8 @@ html, body {
 		    visibility:visible;
         }
         .appear_wish .effect_appear {
-            -webkit-animation: effect_appear 0.8s steps(11) forwards;
-            animation: effect_appear 0.8s steps(11) forwards;
+            -webkit-animation: effect_appear 0.6s steps(11) forwards;
+            animation: effect_appear 0.6s steps(11) forwards;
 
             -webkit-transform:scale(2);
                     transform:scale(2);
@@ -808,6 +813,7 @@ html, body {
     /*세트 정보*/
     #main_set {
         position:absolute;
+            z-index:3;
         left:0;bottom:0;
 
         padding:0.25rem;
@@ -1165,8 +1171,8 @@ html, body {
                 background-position:50% 50%;
                 background-repeat:no-repeat;
                 background-size:100% auto;
-            border:0.06rem #606060 double;
-            border-radius: 0.5rem;
+            border:0.1rem #606060 double;
+            border-radius: 0.4rem;
             box-sizing: border-box;
 
             display:block;
@@ -1256,6 +1262,7 @@ html, body {
                         background-position:0 0;
                         background-repeat:no-repeat;
                         background-size:2.1rem 1.8rem;
+                    border:0;
                     border-radius:0.2rem;
 
                     color:white;
