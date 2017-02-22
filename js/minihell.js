@@ -154,8 +154,15 @@ var imageList = [];
     imageList.push("./img/icon_wished.png");
     imageList.push("./img/icon_arrow.png");
 //애니메이션(PIXI) 준비
-PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
-var app = new PIXI.autoDetectRenderer(540, 405, {view: $("#main_canvas"),transparent: true});
+PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.LINEAR;
+//해상도 설정 (WebGL을 지원하지 않으면 1로 고정)
+var pixi_resolution = 2;
+    if (!PIXI.utils.isWebGLSupported()) {
+        pixi_resolution = 1;
+    }
+var app = new PIXI.autoDetectRenderer(540, 405, {
+    view: $("#main_canvas"), transparent: true,
+    antialias: true, resolution: pixi_resolution});
 var stage = new PIXI.Container();
     //애니메이션 텍스처, 개체 관리
     var textureObj = {};//텍스처
@@ -241,7 +248,7 @@ var user = {
         epic:{get:0,have:0},//에픽템
         soul:{get:0,have:0},//소울
         beed:{get:0,have:0},//구슬
-        invite:{get:0,have:0},//초대장
+        invite:{get:0,have:0,used:0},//초대장
     },
     record:{
         item:[],//획득 기록 - 아이템
@@ -345,6 +352,9 @@ simulateP.prototype.run = function() {
     user.count += 1;
         //변경 회차 반영
         $("#board_count_num").innerHTML = thousand(user.count);
+    //입장비 지불
+    user.holding.invite.used += selectedDungeon.now.cost;
+        $("#board_invite_num").innerHTML = thousand(user.holding.invite.used);
     //0.5초 후(타격 애니메이션 종료 후)
     setTimeout(function() {
         //타격 사운드
@@ -775,17 +785,13 @@ animationP.prototype.init = function() {
             //아이템 이름
             spriteObj.item_name = new PIXI.Text();
             spriteObj.item_name.anchor.set(0.5,0.5);
-            spriteObj.item_name.style.font = "14px Nanum Gothic";
-            spriteObj.item_name.resolution = 2;
+            spriteObj.item_name.style.font = "14px Ariel";
             spriteObj.item_name.zIndex = 7;
             spriteObj.cover.addChild(spriteObj.item_name);
             //아이템 이름 상자
             spriteObj.item_box = new PIXI.Graphics();
-            spriteObj.item_box.beginFill("#000000",0.7);
-            spriteObj.item_box.lineStyle(1, "#B89F7C", 1);
-            spriteObj.item_box.drawRect(0, 0, 20, 21);
-            spriteObj.item_box.endFill();
             spriteObj.item_box.zIndex = 6;
+                //이름 상자는 향후에 그림 (텍스트 채울 때마다 실시간 적용)
             spriteObj.cover.addChild(spriteObj.item_box);
             //에픽 이펙트
             for (i=0;i < spriteInfo.length;i++) {
@@ -892,6 +898,9 @@ animationP.prototype.setItemImage = function(field_name) {
 };
 //★ 아이템 이름 설정
 animationP.prototype.setItemName = function(nameText, colorText) {
+    //이름, 이름 상자 출력
+    spriteObj.item_name.renderable = true;
+    spriteObj.item_box.renderable = true;
     //이름 변경, 색상 설정
     spriteObj.item_name.text = nameText;
     spriteObj.item_name.style.fill = colorObj[colorText];
@@ -900,15 +909,25 @@ animationP.prototype.setItemName = function(nameText, colorText) {
         0,
         -(spriteObj.item.height/2)-14
     );
-    //이름 상자 설정
-    spriteObj.item_box.scale.x = (spriteObj.item_name.width + 5)/ 20;
+    //이름 상자 새로 그리기
+    spriteObj.item_box.clear();
+    spriteObj.item_box.beginFill("#000000",0.7);
+    spriteObj.item_box.lineStyle(1, 0xB89F7C, 1);
+    var rec = spriteObj.item_name.getLocalBounds();
+    spriteObj.item_box.drawRoundedRect(
+        -5, -3,
+        spriteObj.item_name.width + 9, spriteObj.item_name.height + 5, 5);
+    spriteObj.item_box.position.set(
+        spriteObj.item_name.x - spriteObj.item_name.width/2,
+        spriteObj.item_name.y - spriteObj.item_name.height/2);
+    spriteObj.item_box.endFill();
+    //이름 상자 위치 설정
+    /*
     spriteObj.item_box.position.set(
         -(spriteObj.item_name.width/2)-3,
         -(spriteObj.item.height/2)-(spriteObj.item_name.height)-9
     );
-    //이름, 이름 상자 출력
-    spriteObj.item_name.renderable = true;
-    spriteObj.item_box.renderable = true;
+    */
 };
 //★ 아이템 회전, 이동
 animationP.prototype.moveItem = function(type, callback) {
@@ -1312,7 +1331,8 @@ mainP.prototype.loadData = function() {
             //불러온 파일 적용
                 //회차
                 $("#board_count_num").innerHTML = thousand(user.count);
-                //획득 아이템 수 (에픽, 소울, 구슬)
+                //획득/소모 아이템 수 (에픽, 소울, 구슬)
+                    $("#board_invite_num").innerHTML = thousand(user.holding.invite.used);
                     $("#board_epic_num").innerHTML = thousand(user.holding.epic.have);
                     $("#board_soul_num").innerHTML = thousand(user.holding.soul.have);
                     $("#board_beed_num").innerHTML = thousand(user.holding.beed.have);
@@ -1342,6 +1362,7 @@ mainP.prototype.maintainData = function() {
     if (!user.option.bgm) user.option.bgm = user.bgm;
     if (!user.option.bgm) user.option.sfx = user.sfx;
     if (!user.option.searchMode) user.option.searchMode = "에픽";
+    if (!user.holding.invite.used) user.holding.invite.used = 0;
 };
 //※ 데이터 세이브
 mainP.prototype.saveData = function(cmd) {

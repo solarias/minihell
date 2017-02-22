@@ -127,7 +127,7 @@ var dungeonList = [
 		"bgPosition":"50% 80%",
 		"level":[85,90],
 		"level_weight":[3,2],
-		"cost":28,
+		"cost":7,
 		"notCreatable":""
 	}
 ];

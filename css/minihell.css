@@ -424,14 +424,14 @@ html, body {
     }
 #canvas_cover {
     position:absolute;left:50%;top:0;
-    width:16rem;height:12rem;}
+    width:16.64rem;height:12.48rem;}
 #main_canvas {
     position:relative;
         z-index:2;
     left:-50%;
     margin:0 auto;
     width:16.64rem;
-    height:12rem;
+    height:12.48rem;
     box-sizing: border-box;
 }
 #main_character {
@@ -861,14 +861,18 @@ html, body {
             float:left;
             width:0.7rem;
             height:0.7rem;
-            display:block;}
+            display:inline-block;}
         .board_text {
             float:left;
             margin-left:0.2rem;
             height:0.8rem;
             display:block;}
     #board_count {
-        width:50%;}
+        width:40%;}
+    #board_invite {
+        padding-left:0.1rem;
+        width:calc(60% - 0.2rem);
+        border-left:0.02rem white solid;}
     #board_soul, #board_beed {
         margin-top:-0.1rem;
         padding:0.1rem;
