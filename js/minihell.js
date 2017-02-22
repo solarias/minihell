@@ -162,7 +162,7 @@ var pixi_resolution = 2;
     }
 var app = new PIXI.autoDetectRenderer(540, 405, {
     view: $("#main_canvas"), transparent: true,
-    antialias: true, resolution: pixi_resolution});
+    antialias: true,resolution : pixi_resolution});
 var stage = new PIXI.Container();
     //애니메이션 텍스처, 개체 관리
     var textureObj = {};//텍스처
@@ -898,9 +898,6 @@ animationP.prototype.setItemImage = function(field_name) {
 };
 //★ 아이템 이름 설정
 animationP.prototype.setItemName = function(nameText, colorText) {
-    //이름, 이름 상자 출력
-    spriteObj.item_name.renderable = true;
-    spriteObj.item_box.renderable = true;
     //이름 변경, 색상 설정
     spriteObj.item_name.text = nameText;
     spriteObj.item_name.style.fill = colorObj[colorText];
@@ -914,20 +911,17 @@ animationP.prototype.setItemName = function(nameText, colorText) {
     spriteObj.item_box.beginFill("#000000",0.7);
     spriteObj.item_box.lineStyle(1, 0xB89F7C, 1);
     var rec = spriteObj.item_name.getLocalBounds();
-    spriteObj.item_box.drawRoundedRect(
-        -5, -3,
-        spriteObj.item_name.width + 9, spriteObj.item_name.height + 5, 5);
+        //그림 그리기 : border 두께 포함시켜서 좌표/크기 정할 것
+        spriteObj.item_box.drawRoundedRect(
+            -(4+1), -(2+1),
+            spriteObj.item_name.width + (4+1)*2, spriteObj.item_name.height + (2+1)*2, 5);
     spriteObj.item_box.position.set(
         spriteObj.item_name.x - spriteObj.item_name.width/2,
         spriteObj.item_name.y - spriteObj.item_name.height/2);
     spriteObj.item_box.endFill();
-    //이름 상자 위치 설정
-    /*
-    spriteObj.item_box.position.set(
-        -(spriteObj.item_name.width/2)-3,
-        -(spriteObj.item.height/2)-(spriteObj.item_name.height)-9
-    );
-    */
+    //이름, 이름 상자 출력
+    spriteObj.item_name.renderable = true;
+    spriteObj.item_box.renderable = true;
 };
 //★ 아이템 회전, 이동
 animationP.prototype.moveItem = function(type, callback) {
