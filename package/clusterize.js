@@ -1,4 +1,4 @@
-/*! Clusterize.js - v0.17.2 - 2016-10-07
+/*! Clusterize.js - v0.17.5 - 2017-02-25
 * http://NeXTs.github.com/Clusterize.js/
 * Copyright (c) 2015 Denis Lukov; Licensed GPLv3 */
 
@@ -63,7 +63,7 @@
     var rows = isArray(data.rows)
         ? data.rows
         : self.fetchMarkup(),
-      cache = {data: '', bottom: 0},
+      cache = {data: '', top: 0, bottom: 0},
       scroll_top = self.scroll_elem.scrollTop;
 
     // append initial data
@@ -177,6 +177,8 @@
       if( ! rows.length) return;
       var nodes = this.content_elem.children;
       var node = nodes[Math.floor(nodes.length / 2)];
+      // don't measure height if element is hidden. fixes #98
+      if( ! node.offsetParent) return;
       opts.item_height = node.offsetHeight;
       // consider table's border-spacing
       if(opts.tag == 'tr' && getStyle('borderCollapse', this.content_elem) != 'collapse')
@@ -260,11 +262,12 @@
       var data = this.generate(rows, this.getClusterNum()),
         this_cluster_rows = data.rows.join(''),
         this_cluster_content_changed = this.checkChanges('data', this_cluster_rows, cache),
+        top_offset_changed = this.checkChanges('top', data.top_offset, cache),
         only_bottom_offset_changed = this.checkChanges('bottom', data.bottom_offset, cache),
         callbacks = this.options.callbacks,
         layout = [];
 
-      if(this_cluster_content_changed) {
+      if(this_cluster_content_changed || top_offset_changed) {
         if(data.top_offset) {
           this.options.keep_parity && layout.push(this.renderExtraTag('keep-parity'));
           layout.push(this.renderExtraTag('top-space', data.top_offset));

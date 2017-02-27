@@ -71,7 +71,7 @@ var dungeonList = [
 		"area_name":"메트로센터",
 		"bgPosition":"50% 80%",
 		"level":[85,90],
-		"level_weight":[3,2],
+		"level_weight":[2,1],
 		"cost":28,
 		"notCreatable":""
 	}, 
@@ -82,7 +82,7 @@ var dungeonList = [
 		"area_name":"메트로센터",
 		"bgPosition":"50% 80%",
 		"level":[85,90],
-		"level_weight":[3,2],
+		"level_weight":[2,1],
 		"cost":28,
 		"notCreatable":""
 	}, 
@@ -93,7 +93,7 @@ var dungeonList = [
 		"area_name":"메트로센터",
 		"bgPosition":"50% 80%",
 		"level":[85,90],
-		"level_weight":[3,2],
+		"level_weight":[2,1],
 		"cost":28,
 		"notCreatable":""
 	}, 
@@ -104,7 +104,7 @@ var dungeonList = [
 		"area_name":"메트로센터",
 		"bgPosition":"50% 80%",
 		"level":[85,90],
-		"level_weight":[3,2],
+		"level_weight":[2,1],
 		"cost":28,
 		"notCreatable":""
 	}, 
@@ -115,7 +115,7 @@ var dungeonList = [
 		"area_name":"메트로센터",
 		"bgPosition":"50% 80%",
 		"level":[85,90],
-		"level_weight":[3,2],
+		"level_weight":[2,1],
 		"cost":28,
 		"notCreatable":""
 	}, 
@@ -126,7 +126,7 @@ var dungeonList = [
 		"area_name":"메트로센터",
 		"bgPosition":"50% 80%",
 		"level":[85,90],
-		"level_weight":[3,2],
+		"level_weight":[2,1],
 		"cost":7,
 		"notCreatable":""
 	}

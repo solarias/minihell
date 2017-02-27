@@ -22,6 +22,14 @@
 			<div id="frame_cover"><div id="frame_cover_bg">
 				<div id="cover_title">에픽의 균열</div>
 				<div id="cover_notice">
+					<p title>2017-2-27</p>
+					<p content>
+						- 아이템 다중 드랍 구현 (최대 4개)<br/>
+						- 마계 85/90레벨 드랍비율 조절 (2:1)<br/>
+						- 이미지 로딩속도 개선<br/>
+						- 퍼펙트 모드(드랍률 100%) 추가<br/>
+						(게이트에서 NPC를 클릭해주세요.)
+					</p>
 					<p title>2017-2-23</p>
 					<p content>
 						- 필드 아이템 이름 폰트 선명도 개선<br/>
@@ -96,6 +104,9 @@
 				<div id="cover_google">
 					<a target="_blank" href='https://play.google.com/store/apps/details?id=crakcofepic.io.github.solarias&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'></a>
 				</div>
+				<div id="cover_text">
+					이 곳에 사용된 대부분의 이미지/사운드의 저작권은 (주)네오플에게 있습니다.
+				</div>
 				<div id="cover_loading" class="hidden2">
 					<p id="cover_loading_text"></p>
 					<div id="cover_loading_bar"></div>
@@ -104,10 +115,13 @@
 			<div id="frame_main">
 				<!--인터페이스-->
 				<div id="main_channel" class="font_shadow">채널 : <span id="channel_text">???</span></div>
+				<!--세트 정보-->
+				<div id="main_set"></div>
+				<!--NPC, 균열-->
 				<div id="main_npc_text">
-					게이트에서는 캐릭터 변경, 게임 설정을 할 수 있어요.
-					<br/>
 					도감에서 아이템을 등록하면, 찜빔을 감상할 수 있어요.
+					<br/>
+					저를 클릭하면 퍼펙트 모드를 이용할 수 있습니다.
 				</div>
 				<div id="main_npc" class="npc_erze"></div>
 				<div id="main_crack" gpuaccel></div>
@@ -120,17 +134,17 @@
 				<button id="main_search_change" class="main_option">탐색모드 설정<br>[<span id="searchMode_text" class='color_blue'>에픽</span>]</button>
 				<button id="main_sound_change" class="main_option">사운드 <span class='color_red'>끄기</span></button>
 				<button id="main_character_change" class="main_option">캐릭터 변경</button>
-				<!--기타 정보-->
-				<div id="main_set">세트 :  <span id="main_set_text" class="color_gray">정보 없음</span></div>
 			</div>
 
 			<div id="frame_board">
 				<div id="board_count" class="board_section">제 <span id="board_count_num" class="color_epic">0</span>회</div>
 				<div id="board_invite" class="board_section"><img class="board_img" src="./img/icon_invite.png">&nbsp;소모 : <span id="board_invite_num" class="color_epic">0</span></div>
+				<div id="board_perfect1" class="board_section">에픽 드랍률 100%!</div>
 				<hr/>
 				<div id="board_epic" class="board_section">에픽 <span id="board_epic_num" class="color_epic">0</span></div>
 				<div id="board_soul" class="board_section"><img class="board_img" src="./img/icon_soul.png"> <span id="board_soul_num" class="board_text color_soul">0</span></div>
 				<div id="board_beed" class="board_section"><img class="board_img" src="./img/icon_beed.png"> <span id="board_beed_num" class="board_text color_beed">0</span></div>
+				<div id="board_perfect2" class="board_section">(퍼펙트모드 해제 : NPC 클릭)</div>
 			</div>
 
 			<div id="frame_button"><div class="frame_area">
@@ -153,7 +167,7 @@
 					<!--획득기록창-->
 					<div id="record_box" class="frame_area list_box scroll"></div>
 					<!--도감창 (clusterize.js 활용)-->
-					<div id="inventory_box" class="frame_area list_box clusterize-scroll">
+					<div id="inventory_box" class="frame_area list_box scroll clusterize-scroll">
 						<ul id="inventory_scroll" class="clusterize-content"></ul>
 					</div>
 					<!--찜빔-->
@@ -238,6 +252,10 @@
 					<div id="wish_item_icon8" class="wish_item_icon"></div>
 					<div id="wish_item_state8" class="wish_item_state"></div>
 				</div>
+				<div id="wish_item9" class="wish_item">9
+					<div id="wish_item_icon9" class="wish_item_icon"></div>
+					<div id="wish_item_state9" class="wish_item_state"></div>
+				</div>
 				<div id="wish_clear"><p>찜목록<br/>초기화</p></div>
 			</div>
 		</div>
@@ -257,9 +275,9 @@
 				<script src="./package/sweetalert2/node_modules/es6-promise-polyfill/promise.min.js"></script>
 			<!--애니메이션 (GSAP, PIXI.js)-->
 			<script src="./package/TweenMax.min.js"></script>
-			<script src="./package/scrollToPlugin.min.js"></script>
+				<script src="./package/scrollToPlugin.min.js"></script>
 			<script src="./package/pixi.min.js"></script>
-			<script src="./package/PixiPlugin.js"></script>
+				<script src="./package/pixi-layers.js"></script>
 			<!--Howler-->
 			<script src="./package/howler.min.js"></script>
 			<!--clusterize-->

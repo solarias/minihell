@@ -278,6 +278,20 @@ html, body {
             height:100%;
             display:block;
         }
+    #cover_text {
+        margin:-0.2rem auto;
+        padding:0.1rem 0.2rem;
+        width:9rem;
+
+        background-color:rgba(255,255,255,0.7);
+        border-radius:0.2rem;
+        box-sizing: border-box;
+
+        color:black;
+        font-size:0.3rem;
+        font-weight:bold;
+        display:block;
+    }
     #cover_loading {
         position:absolute;
         left:0;right:0;
@@ -398,6 +412,9 @@ html, body {
 
     background-position:0 0;
 }
+        #main_npc:hover {
+            cursor:pointer;
+        }
     .npc_seria {width:1.7rem;height:3.3rem;background-image:url('../img/npc/seria.png');
         background-size:100% 100%;}
     .npc_erze {
@@ -424,7 +441,10 @@ html, body {
     }
 #canvas_cover {
     position:absolute;left:50%;top:0;
-    width:16.64rem;height:12.48rem;}
+    width:16.64rem;height:12.48rem;
+    /*캔버스 클릭 방지*/
+    pointer-events: none;}
+/*캐릭터/아이템 - 캔버스에서 처리*/
 #main_canvas {
     position:relative;
         z-index:2;
@@ -434,62 +454,7 @@ html, body {
     height:12.48rem;
     box-sizing: border-box;
 }
-#main_character {
-    position:absolute;
-        z-index:3;
 
-    width:15rem;
-    height:12rem;
-
-    background-size:180rem 24rem;
-}
-    #main_character.gate {
-        left:calc(50% - 10rem);
-        top:0rem;
-    }
-    #main_character.dungeon {
-        left:calc(50% - 8rem);
-        top:-2.8rem;
-    }
-    /*캐릭터 이미지 : 공용 클래스 스타일 적용*/
-    #main_character.left {
-    }
-    #main_character.right {
-        -webkit-transform: scaleX(-1);
-        transform: scaleX(-1);
-        -webkit-filter: FlipH;
-                filter: FlipH;
-        -ms-filter: "FlipH";
-    }
-        /*대기모션은 자체적인 애니메이셔으로 소화*/
-        #main_character.wait {
-            -webkit-animation: sprite_wait 2s steps(12) infinite;
-            animation: sprite_wait 2s steps(12) infinite;
-
-            opacity:1;
-        }
-            @-webkit-keyframes sprite_wait {
-                0% {background-position:0 0;}
-                100% {background-position:-180rem 0;}
-            }
-            @keyframes sprite_wait {
-                100% {background-position:-180rem 0;}
-            }
-        #main_character.attack {
-            -webkit-animation: sprite_attack 0.5s steps(12) infinite;
-            animation: sprite_attack 0.5s steps(12) infinite;
-            will-change:background-position;
-
-            opacity:1;
-        }
-            @-webkit-keyframes sprite_attack {
-                0% {background-position:0rem -12rem;}
-                100% {background-position:-180rem -12rem;}
-            }
-            @keyframes sprite_attack {
-                0% {background-position:0rem -12rem;}
-                100% {background-position:-180rem -12rem;}
-            }
 .main_option {
     position:absolute;
     z-index:10;
@@ -512,21 +477,21 @@ html, body {
         opacity:1;
     }
     #main_search_change {
-        bottom:4.4rem;
+        bottom:3.6rem;
         right:0;
 
         border-top-right-radius:0;
         border-bottom-right-radius:0;
     }
     #main_sound_change {
-        bottom:2.7rem;
+        bottom:1.9rem;
         right:0;
 
         border-top-right-radius:0;
         border-bottom-right-radius:0;
     }
     #main_character_change {
-        bottom:1rem;
+        bottom:0.2rem;
         right:0;
 
         border-top-right-radius:0;
@@ -535,7 +500,7 @@ html, body {
         font-size:0.5rem;
     }
     #main_inventory {
-        bottom:1rem;
+        bottom:0.2rem;
         left:0;
 
         width:2rem;
@@ -545,289 +510,25 @@ html, body {
 
         font-size:0.6rem;
     }
-/*드랍 아이템*/
-.item {
-	position:absolute;
-        z-index:5;
-    left: 3.5rem;
-    top: 2.1rem;
-
-	width:100%;/*10rem*/
-	height:10rem;/*2rem*/
-
-	text-align:center;
-}
-        .item_container {position:relative;width:100%;height:100%;}
-	.item_description {
-        position:absolute;
-            z-index:4;
-        left:0;
-        top:0;
-        margin-bottom:0.2rem;
-        width:100%;
-    }
-	.item_name {
-        position:relative;
-		margin:0 auto;
-		padding:0.06rem 0.1rem;
-
-		width:auto;
-		white-space: nowrap;
-
-		background:rgba(0,0,0,0.7);
-		border:0.04rem #B89F7C solid;
-		border-radius:0.15rem;
-
-		font-size:0.4rem;
-		font-weight: 600;;
-		white-space:nowrap;
-
-        display:inline-block;
-		visibility:hidden;
-	}
-		.item_name.type_normal {
-			display:none;
-		}
-		.item_name.type_jogak {
-			display:none;
-		}
-	.item_img {
-		position:absolute;
-            z-index:3;
-        left:0;
-        right:0;
-        margin:auto;
-        top:1.5rem;
-
-		width:0.01rem;
-		height:0.01rem;
-
-		background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_item.png');
-		    background-position:0 0;
-            background-size:auto 21.6rem;
-		-webkit-transition: none;
-		transition: none;
-
-		visibility:hidden;
-	}
-		.item_img.rotate {
-			-webkit-transform:rotate(-360deg);
-			transform:rotate(-360deg);
-			-webkit-transition: -webkit-transform 0.55s linear;
-			transition:-webkit-transform 0.55s linear;
-			transition:transform 0.55s linear;
-			transition: transform 0.55s linear, -webkit-transform 0.55s linear;
-		}
-
-	.effect_appear {
-		position:absolute;
-            z-index:4;
-		left: calc(50% - 5.1rem + 0.7rem);/*0.65rem*/
-		top: -5.3rem;
-
-		width:10.2rem;
-		height:11.9rem;
-
-		background-image:url('../img/epic_appear.png');
-            background-size:122.4rem 11.9rem;
-
-		visibility:hidden;
-	}
-        .appear .effect_appear {
-            -webkit-animation: effect_appear 0.6s steps(11) forwards;
-            animation: effect_appear 0.6s steps(11) forwards;
-
-		    visibility:visible;
-        }
-        .appear_wish .effect_appear {
-            -webkit-animation: effect_appear 0.6s steps(11) forwards;
-            animation: effect_appear 0.6s steps(11) forwards;
-
-            -webkit-transform:scale(2);
-                    transform:scale(2);
-            -webkit-transform-origin: 42% 58%;
-                    transform-origin: 42% 58%;
-
-        	visibility:visible;
-        }
-            @-webkit-keyframes effect_appear {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-112.2rem 0rem;}
-            }
-            @keyframes effect_appear {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-112.2rem 0rem;}
-            }
-
-	.effect_land {
-		position:absolute;
-            z-index:2;
-		left: calc(50% - 9rem);/*3.7rem*/
-        top: -3rem;
-
-		width:18rem;
-		height:9.5rem;
-
-		background-image:url('../img/epic_land.png');
-            background-size:145.1rem 9.5rem;
-
-		visibility:hidden;
-	}
-        .land .effect_land {
-            -webkit-animation: effect_land 0.6s steps(7) forwards !important;
-            animation: effect_land 0.6s steps(7) forwards !important;
-
-		    visibility:visible;
-        }
-            @-webkit-keyframes effect_land {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-127.1rem 0rem;}
-            }
-            @keyframes effect_land {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-127.1rem 0rem;}
-            }
-    /*========찜빔========*/
-        .effect_land_wish {
-    		position:absolute;
-                z-index:4;
-    		left: calc(50% - 8.5rem);
-            top: -6rem;
-
-    		width:17rem;
-    		height:13rem;
-
-    		background-image:url('../img/epic_land_wish.png');
-                background-size:306rem 13rem;
-
-    		visibility:hidden;
-    	}
-            .land_wish .effect_land_wish {
-                -webkit-animation: effect_land_wish 0.9s steps(17) forwards !important;
-                animation: effect_land_wish 0.9s steps(17) forwards !important;
-
-    		    visibility:visible;
-            }
-                @-webkit-keyframes effect_land_wish {
-                    0% {background-position:0rem 0rem;}
-                    100% {background-position:-289rem 0rem;}
-                }
-                @keyframes effect_land_wish {
-                    0% {background-position:0rem 0rem;}
-                    100% {background-position:-289rem 0rem;}
-                }
-	.effect_wait {
-		position:absolute;
-            z-index:2;
-		left:calc(50% - 2.82rem - 0.3rem);/*2rem*/
-        top:-1rem;
-
-		width:5.64rem;
-		height:5.64rem;
-
-		background-image:url('../img/epic_wait.png');
-            background-size:67.72rem 5.64rem;
-
-		visibility:hidden;
-	}
-        .wait .effect_wait {
-            -webkit-animation: effect_wait 1.2s steps(11) infinite;
-            animation: effect_wait 1.2s steps(11) infinite;
-
-		    visibility:visible;
-        }
-            @-webkit-keyframes effect_wait {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-62.0rem 0rem;}
-            }
-            @keyframes effect_wait {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-62.0rem 0rem;}
-            }
-    /*========찜빔========*/
-    .effect_wait_wish1 {
-        position:absolute;
-            z-index:2;
-        left:calc(50% - 4rem);/*2rem*/
-        top:-0.2rem;
-
-        width:8rem;
-        height:4rem;
-
-        background-image:url('../img/epic_wait_wish1.png');
-            background-size:64rem 4rem;
-        opacity:0.1;
-        -webkit-transition:opacity 0.9s;
-            transition:opacity 0.9s;
-
-        visibility:hidden;
-    }
-        .wait_wish .effect_wait_wish1 {
-            -webkit-animation: effect_wait_wish1 0.8s steps(7) infinite;
-            animation: effect_wait_wish1 0.8s steps(7) infinite;
-            opacity:1;
-
-            visibility:visible;
-        }
-            @-webkit-keyframes effect_wait_wish1 {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-56rem 0rem;}
-            }
-            @keyframes effect_wait_wish1 {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-56rem 0rem;}
-            }
-    .effect_wait_wish2 {
-        position:absolute;
-            z-index:3;
-        left:calc(50% - 5rem);/*2rem*/
-        top:-1rem;
-
-        width:10rem;
-        height:5rem;
-
-        background-image:url('../img/epic_wait_wish2.png');
-            background-size:160rem 5rem;
-        opacity:0.1;
-        -webkit-transition:opacity 0.9s;
-            transition:opacity 0.9s;
-
-        visibility:hidden;
-    }
-        .wait_wish .effect_wait_wish2 {
-            -webkit-animation: effect_wait_wish2 0.8s steps(15) infinite;
-            animation: effect_wait_wish2 0.8s steps(15) infinite;
-            opacity:1;
-
-            visibility:visible;
-        }
-            @-webkit-keyframes effect_wait_wish2 {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-150rem 0rem;}
-            }
-            @keyframes effect_wait_wish2 {
-                0% {background-position:0rem 0rem;}
-                100% {background-position:-150rem 0rem;}
-            }
 
     /*세트 정보*/
     #main_set {
         position:absolute;
             z-index:3;
-        left:0;bottom:0;
+        right:0;top:1.2rem;
 
-        padding:0.25rem;
-        width:100%;
-        height:1rem;
+        padding:0.1rem 0.2rem;
+        width:6rem;
+        height:auto;
 
-        background: -webkit-linear-gradient(transparent 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.6) 100%);
-        background: linear-gradient(transparent 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.6) 100%);
-        box-sizing: border-box;
+        background-color: rgba(0,0,0,0.7);
+        border-bottom-left-radius: 0.3rem;
 
-        color:white;
-        font-size:0.5rem;
+        font-size:0.35rem;
         font-weight:normal;
         text-align:left;
+
+        display:none;
     }
 /*보드 프레임*/
 #frame_board {
@@ -869,10 +570,14 @@ html, body {
             display:block;}
     #board_count {
         width:40%;}
-    #board_invite {
+    #board_invite, #board_perfect1, #board_perfect2 {
         padding-left:0.1rem;
         width:calc(60% - 0.2rem);
         border-left:0.02rem white solid;}
+        #board_perfect1 {color:yellow;display:none;}
+        #board_perfect2 {width:calc(66% - 0.2rem);
+            color:yellow;font-size:0.4rem;line-height:0.6rem;
+            display:none;}
     #board_soul, #board_beed {
         margin-top:-0.1rem;
         padding:0.1rem;
@@ -1058,16 +763,23 @@ html, body {
         left:0;top:0;
         width:100%;height:100%;
     }
-        .record_item, .record_set {
-            margin-left:0.15rem;
-            margin-bottom:0.2rem;
+        .record_header:not(:first-child) {
+            margin-top:0.2rem;}
+        .record_item, .record_complete {
+            margin-left:0.15rem
         }
-        .record_set {
-            font-size:0.4rem;
-        }
-        .record_head .font_small, .record_item .font_small {
+        .record_amount {color:skyblue}
+        .record_level, .record_type, .record_set {
+            color:white;
             font-size:0.25rem;
             line-height:0.3rem;
+        }
+        .record_set {
+            color:#59FF00;
+        }
+        .record_complete {
+            color:yellow;
+            font-size:0.4rem;
         }
         #inventory_box {
             height:calc(100% - 1rem);
@@ -1297,11 +1009,11 @@ html, body {
     position:absolute;
         z-index:100;
     left:8rem;
-    top:0.2rem;
+    top:0;
 
     padding:0.05rem;
     width:2rem;
-    height:15.8rem;
+    height:16.6rem;
 
     background-color:#696969;
     border:0.02rem black solid;
@@ -1311,14 +1023,14 @@ html, body {
         #frame_wish.mini {
             z-index:90;
             left:0rem;
-            top:0.5rem;
+            top:0.2rem;
 
             padding:0;
                 padding-top:0.05rem;
             width:calc(2rem * 0.55);
-            height:calc(16.2rem * 0.55);
+            height:calc(16.6rem * 0.6);
 
-            opacity:0.7;
+            opacity:0.6;
         }
         #frame_wish.mini #wish_cover {display:block;}
         #frame_wish.mini #wish_title {display:none;}
@@ -1342,7 +1054,7 @@ html, body {
     .wish_item {
         position:relative;
 
-        margin:0.2rem auto 0.35rem auto;
+        margin:0.2rem auto 0.3rem auto;
         width:1rem;
         height:1.13rem;
 
@@ -1391,7 +1103,7 @@ html, body {
     #wish_clear {
         position:relative;
 
-        margin:0.5rem auto 0 auto;
+        margin:0.3rem auto 0 auto;
         width:1.6rem;
         height:2rem;
 

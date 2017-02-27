@@ -13,14 +13,18 @@ var goyuList = [];//고유 에픽 리스트
 var weighted_type = [];//에픽 부위 선정 가중치
 var weighted_level = [];//에픽 레벨 선정 가중치
 var current_goyu = [];//현재 지역 고유에픽 리스트
+var searchList = [
+    "모두","에픽","찜하나","모든찜","무한"
+];
 
 //아이템 관련
-var droprate = {//아이템 드랍률
+var droprate = {//아이템 드랍률 (합산 기준)
     name:["epic","soul","beed",false],//에픽, 소울, 구슬, 꽝
     num:[0.065,0.04,0.0065,0.8885]
 };
-var droprate_special = {//특수지역 에픽 드랍률
-    "metro_6":[0.11,0,0,0.89]//이계의 틈
+var droprate_special = {//특수 에픽 드랍률
+    "metro_6":[0.11,0,0,0.89],//이계의 틈
+    "$perfect":[1,0,0,0]//퍼펙트 모드
 };
 var droptype = {//장비 타입별 드랍확률 가중치
     name:["무기","방어구","악세서리","특수장비"],
@@ -30,12 +34,23 @@ var droplevel = {
     name:[85,90],
     num:[60,40]
 };
-//인벤토리
+var droparea = [/*오브젝트 수 = 드랍 가능 아이템 수량*/
+    {x:130,y1:20,y2:110},//1번 아이템
+    {x:60,y1:16,y2:140},//2번 아이템
+    {x:160,y1:14,y2:170},//3번 아이템
+    {x:100,y1:12,y2:200}//4번 아이템
+];
+//기록, 인벤토리
+var recordInfo = document.createDocumentFragment();//획득기록 정보
 var invenInfo = document.createDocumentFragment();//인벤토리 정보
+var clusterize_record;//획득기록 클러스터
 var clusterize_inventory;//인벤토리 클러스터
 //찜
-var autoWish;//찜목록 늦게출현 오토
-var wishLimit = 8;//찜하기 최대치
+var autoWish = [];//찜목록 늦게출현 오토
+    for (var i = 0;i < droparea.length;i++) {
+        autoWish[i];
+    }
+var wishLimit = 9;//찜하기 최대치
 
 
 //던전 관련
@@ -163,12 +178,20 @@ var pixi_resolution = 2;
 var app = new PIXI.autoDetectRenderer(540, 405, {
     view: $("#main_canvas"), transparent: true,
     antialias: true,resolution : pixi_resolution});
-var stage = new PIXI.Container();
+var stage = new PIXI.display.Stage();
     //애니메이션 텍스처, 개체 관리
     var textureObj = {};//텍스처
     var spriteObj = {};//개체
+    //종합 레이어
+    var globalLayer = new PIXI.display.Layer();
+        globalLayer.group.enableSort = true;
+        stage.addChild(globalLayer);
     //GSAP 개체
     var auto = {};
+        auto.epic = [];
+        for (i = 0;i < droparea.length;i++) {
+            auto.epic[i] = {};
+        }
     //컬러 개체
     var colorObj = {
         epic:"#E5B64A",
@@ -176,6 +199,7 @@ var stage = new PIXI.Container();
         beed:"#FF00FF"
     };
     //개체 zIndex 조절 함수
+    /*
     PIXI.Container.prototype.updateLayersOrder = function () {
         this.children.sort(function(a,b) {
             a.zIndex = a.zIndex || 0;
@@ -183,6 +207,7 @@ var stage = new PIXI.Container();
             return a.zIndex - b.zIndex;
         });
     };
+    */
 
 //브금
 var bgmObj = {};
@@ -263,7 +288,9 @@ var user = {
         sfx:1,
         //탐색
         searchMode:"에픽"
-    }
+    },
+    //기타
+    perfectMode:false
 };
 
 //=====================================================================
@@ -352,9 +379,11 @@ simulateP.prototype.run = function() {
     user.count += 1;
         //변경 회차 반영
         $("#board_count_num").innerHTML = thousand(user.count);
-    //입장비 지불
-    user.holding.invite.used += selectedDungeon.now.cost;
+    //입장비 지불 (퍼펙트모드 제외)
+    if (!user.perfectMode) {
+        user.holding.invite.used += selectedDungeon.now.cost;
         $("#board_invite_num").innerHTML = thousand(user.holding.invite.used);
+    }
     //0.5초 후(타격 애니메이션 종료 후)
     setTimeout(function() {
         //타격 사운드
@@ -362,74 +391,172 @@ simulateP.prototype.run = function() {
             var sd = sfxObj["hit_" + characterList[user.myCharacter].hittype];
             sd.play();
         }
-        //탐색 결과 확인
-        var result = this.result();
-        if (result !== false) {
-            //아이템 드랍 승인 -> 아이템 선정
-            this.getItem(result);
-            //탐색 종료 여부 : 탐색모드 및 찜 여부에 따라 차후 결정
+        //(모든 라인) 탐색 결과 확인
+        var todayArr = [];//모든 탐색결과
+        var epicArr = [];//에픽템 결과물
+        var wishedArr = [];//희망템 결과물
+        var falseNum = 0;
+        for (var i = 0;i < droparea.length;i++) {
+            //개별 탐색 결과 확인
+            var result = simulate.getResult();
+            //탐색 결과 임시저장
+            todayArr.push(result);
+            //false라면 falseNum 증가
+            if (result === false) falseNum += 1;
+        }
+        //(false가 하나라도 없다면) 드랍 개시
+        if (todayArr.length > falseNum) {
+            //습득 채널 표시
+            var arr = resultList.channel;
+            user.channel= arr[Math.floor(Math.random() * arr.length)];
+            $("#channel_text").innerHTML = user.channel;
+            //아이템 리셋
+            animation.resetItem();
+            //균열 등장
+            $("#main_crack").classList.add("show");
+            //종류별 / 라인별 드랍 개시
+            for (var i = 0;i < todayArr.length;i++) {
+                (function(i) {
+                    //object (에픽) 아이템)
+                    if (typeof todayArr[i] === "object") {
+                        if (todayArr[i][1] === "epic") {
+                            epicArr.push(todayArr[i][0]);
+                        } else {
+                            wishedArr.push(todayArr[i][0]);
+                        }
+                        //->아이템 선정결과 반영
+                        this.applyItem(todayArr[i][0], todayArr[i][1]);
+                        //->아이템 드랍
+                        this.dropEpic(i, todayArr[i][0], todayArr[i][1]);
+                    //그 외 false가 아닌 것 (기타 아이템)
+                    } else if (todayArr[i] !== false) {
+                        //->아이템 선정결과 반영
+                        this.applyItem(todayArr[i]);
+                        //->기타아이템 드랍
+                        this.dropEtc(i, todayArr[i]);
+                    }
+
+                    return;
+                }.bind(this))(i);
+            }
+            //탐색모드별 재탐색모드 결정
+            switch (user.option.searchMode) {
+                case "찜하나":
+                    if (wishedArr.length <= 0) {
+                        this.run();//찜한 게 아님 : 지속
+                    } else {
+                        this.readyToEnd();//쨈한 거 : 잠시 후 종료
+                    }
+
+                    break;
+                case "모든찜":
+                    if (wishedArr.length <= 0) {
+                        this.run();//찜한 게 아님 : 지속
+                    } else {
+                        //쨈한 거
+                        var num = 0;
+                        for (var i = 0;i < user.wish.length;i++) {
+                            if (user.inventory[user.wish[i]] &&
+                                user.inventory[user.wish[i]].have > 0) num += 1;
+                        }
+                        if (user.wish.length === num) {
+                            this.readyToEnd();//찜한 거 다 모았음 : 잠시 후 종료
+                        } else {
+                            this.run();//찜한 거 아직 다 못 모았음 : 지속
+                        }
+                    }
+
+                    break;
+                case "에픽":
+                    if (epicArr.length <= 0 && wishedArr.length <= 0) {
+                        this.run();//찜 or 에픽이 아님 : 지속
+                    } else if (wishedArr.length > 0) {
+                        this.readyToEnd();//쨈 : 잠시 후 종료
+                    } else {
+                        this.end();//에픽 : 종료
+                    }
+
+                    break;
+                case "무한":
+                    //무조건 재실행
+                    this.run();
+
+                    break;
+                default://그 외 = "모두"
+                    //무조건 멈춤
+                    this.end();
+
+                    break;
+            }
+        //(전부다 false라면)
         } else {
-            //아니라면 탐색 지속
+            //즉시 재개
             this.run();
         }
     }.bind(this),125);
 };
 //★탐색 결과 판별
-simulateP.prototype.result = function() {
-    //확률 가져오기
-    var thisrate = deepCopy(droprate);
+simulateP.prototype.getResult = function() {
+    //합산 확률 가져오기
+    var thisrate = [];
+    thisrate[0] = deepCopy(droprate);
+    thisrate[1] = {name:[],num:[]};
     //특수지역이라면 해당 확률 변경된
     if (Object.keys(droprate_special).indexOf(selectedDungeon.now.id) >= 0)
-        thisrate.num = droprate_special[selectedDungeon.now.id];
-    //드랍 결과 반환 (랜덤)
-    return thisrate.name[rand(thisrate.num)];
-};
-//★아이템 선정 (차후 세련되게 개선)
-simulateP.prototype.getItem = function(str) {
-    //변수 준비
-    var item;
-    //에픽이라면 아이템을 고를 것
-    if (str === "epic") {
-        //아이템 부위 선정
-        var type_num = rand(weighted_type);
-        var type = droptype.name[type_num];
-        //아이템 레벨 선정
-        var lv = droplevel.name[rand(weighted_level[type_num])];
-        //아이템 최종 선정
-        var tempArr = [];
-        for (i=0;i<itemList.length;i++) {
-            if ((itemList[i].sort1 === type || /*종류-무기*/
-            itemList[i].sort2 === type ||/*종류-방어구*/
-            itemList[i].sort3 === type) &&/*종류-악세서리&특수장비*/
-            itemList[i].level === lv)/*레벨*/ {
-                tempArr.push(itemList[i]);
-            }
-        }
-        //미리 리스트에서 랜덤으로 선정
-        item = tempArr[Math.floor(Math.random() * tempArr.length)];
-        //->아이템 선정결과 반영
-        this.applyItem(item);
-        //->아이템 드랍
-        this.dropEpic(item);
-    //아니라면 그냥 str 집어넣기
-    } else {
-        item = str;
-        //->아이템 선정결과 반영
-        this.applyItem(item);
-        //->기타아이템 드랍
-        this.dropEtc(item);
+        thisrate[0].num = deepCopy(droprate_special[selectedDungeon.now.id]);
+    //퍼펙트모드라면 별도 확률 처리
+    if (user.perfectMode) thisrate[0].num = deepCopy(droprate_special.$perfect);
+    //개별 드랍률로 치환
+    for (i = 0;i < thisrate[0].num.length;i++) {
+        var num = thisrate[0].num[i];
+        thisrate[1].name[i] = thisrate[0].name[i];
+        thisrate[1].num[i] = 1 - Math.pow((1 - num), 1/droparea.length);
     }
-
-
+    //드랍 결과 반환 (랜덤)
+    var result = thisrate[1].name[rand(thisrate[1].num)];
+    //(결과 : 에픽)
+    if (result === "epic") {
+        //에픽 아이템 선정
+        var item = this.getEpic();
+        //찜한 아이템인지 & 미보유 아이템인지 판별
+        if (user.wish.indexOf(item.id) >= 0 && !user.inventory[item.id]) {
+            //찜한 아이템이라면 결과는 "찜했음"이 됨
+            result = "wished";
+        }
+        //결과 키워드 반환 (일반 에픽은 epic, 찜한 에픽은 "wished")
+        return [item, result];
+    //(결과 : Not 에픽, Not 꽝)
+    } else if (result !== false) {
+        //"기타" 키워드 반환
+        return result;
+    //(결과 : 꽝)
+    } else {
+        return result;
+    }
+};
+//★에픽아이템 선정
+simulateP.prototype.getEpic = function() {
+    //아이템 종류 선정
+    var type_num = rand(weighted_type);
+    var type = droptype.name[type_num];
+    //아이템 레벨 선정
+    var lv = droplevel.name[rand(weighted_level[type_num])];
+    //아이템 최종 선정
+    var tempArr = [];
+    for (i=0;i<itemList.length;i++) {
+        if ((itemList[i].sort1 === type || /*종류-무기*/
+        itemList[i].sort2 === type ||/*종류-방어구*/
+        itemList[i].sort3 === type) &&/*종류-악세서리&특수장비*/
+        itemList[i].level === lv)/*레벨*/ {
+            tempArr.push(itemList[i]);
+        }
+    }
+    //미리 리스트에서 랜덤으로 선정, 반환
+    return tempArr[Math.floor(Math.random() * tempArr.length)];
 };
 //★아이템 선정결과 반영
-simulateP.prototype.applyItem = function(item) {
-    //(공통 1) 습득 채널 표시
-    var arr = resultList.channel;
-    user.channel= arr[Math.floor(Math.random() * arr.length)];
-    $("#channel_text").innerHTML = user.channel;
-
-    //(공통 2) 획득/보유량 증가
+simulateP.prototype.applyItem = function(item, wished) {
+    //(공통) 획득/보유량 증가
     if (typeof item !== "string") {
         user.holding.epic.get += 1;
         user.holding.epic.have += 1;
@@ -455,17 +582,26 @@ simulateP.prototype.applyItem = function(item) {
         }
 
         //2. 아이템 획득내역 기록
+            var itemObj = {};
+            var wish = (wished !== "wished") ? false : true;
             //일반 아이템
             if (item.set === "") {
                 //기록 : [회차, 채널, 아이템ID, 보유수]
-                user.record.item.push([user.count, user.channel, item.id, user.inventory[item.id].have]);
-                //세트 정보 출력
-                $("#main_set_text").className = "color_gray";
-                $("#main_set_text").innerHTML = "정보 없음";
-
+                itemObj = {
+                    type:"epic",
+                    wished:wish,
+                    count:user.count,
+                    channel:user.channel,
+                    id:item.id,
+                    have:user.inventory[item.id].have
+                };
+                //획득기록 업데이트
+                user.record.item.push(itemObj);
+                display.addRecord(itemObj);
+                //세트 정보 : 미출력
             //세트 아이템
             } else {
-                var temp = [0,0];//해당 세트 아이템 수, 수집 수
+                var temp = [0,0,""];//해당 세트 아이템 수, 수집 수, 완료여부
                 for (i = 0;i < itemList.length;i++) {
                     if (itemList[i].set === item.set) {
                         temp[1] += 1;
@@ -475,53 +611,60 @@ simulateP.prototype.applyItem = function(item) {
                     }
                 }
                 //기록 : [회차, 채널, 아이템ID, 보유수, 세트 확보량]
-                user.record.item.push([user.count, user.channel, item.id, user.inventory[item.id].have, temp[0] + "/" + temp[1]]);
+                itemObj = {
+                    type:"epic",
+                    wished:wish,
+                    count:user.count,
+                    channel:user.channel,
+                    id:item.id,
+                    have:user.inventory[item.id].have,
+                    setState:temp[0] + "/" + temp[1]
+                };
+                //획득기록 업데이트
+                user.record.item.push(itemObj);
+                display.addRecord(itemObj);
 
                 //이전까지 세트 미완성 시 : 완성여부 파악
                 if (item.set !== "" && user.record.set.indexOf(item.set) < 0) {
                     if (temp[1] === temp[0]) {
                         //record_set 등록하기
                         user.record.set.push(item.set);
-                        //recor_item 등록하기
-                        user.record.item.push(item.set);
+                        //recor_item 등록 : [회차, 세트명]
+                        itemObj = {
+                            type:"set",
+                            count:user.count,
+                            set:item.set
+                        };
+                        //획득기록 업데이트
+                        user.record.item.push(itemObj);
+                        display.addRecord(itemObj);
+                        //완성했다고 기록
+                        temp[2] = "<span class='color_yellow'>완성!</span>";
                     }
                 }
 
                 //세트 정보 출력
-                    $("#main_set_text").className = "color_set";
-                    $("#main_set_text").innerHTML = item.set + " (" + temp[0].toString() + "/" +  temp[1].toString() + ")";
+                    $("#main_set").style.display = "block";
+                    $("#main_set").className = "color_set";
+                    $("#main_set").innerHTML +=
+                        item.set +
+                        " (" + temp[0].toString() + "/" +  temp[1].toString() + ") " +
+                        temp[2] + "<br>";
             }
 
-        //3. 해당 아이템 도감 업데이트
+        //3. 도감 업데이트
         display.modifyInventory(item.id);
         //4. (찜한 아이템이라면) 찜 목록 업데이트
         display.checkWish(item.id);
 
-    } else {
-        //비에픽 : 세트 정보만 변경
-        $("#main_set_text").className = "color_gray";
-        $("#main_set_text").innerHTML = "정보 없음";
     }
+    //비에픽 : 세트 정보 미출력
 };
 //★ 기타아이템 드랍 (간략)
-simulateP.prototype.dropEtc = function(item) {
-    //★ 종료 여부 설정 (탐색모드에 따라)
-    switch (user.option.searchMode) {
-        case "모두":
-            this.end();
-
-            break;
-        default://그 외 = "에픽", "찜", "무한"
-            //무조건 달림
-            this.run();
-
-            break;
-    }
-    //아이템 원위치
-    animation.resetItem();
+simulateP.prototype.dropEtc = function(pos, item) {
     //아이템 이미지 출력
     var field_name = "field_기타";
-    animation.setItemImage(field_name);
+    animation.setItemImage(pos, field_name);
     //아이템 이름 변경
     var nameText = "";
     switch (item) {
@@ -532,122 +675,61 @@ simulateP.prototype.dropEtc = function(item) {
         default:
             nameText = "에픽 소울";break;
     }
-    animation.setItemName(nameText, item);
+    animation.setItemName(pos, nameText, item);
     //기타아이템 등장 사운드
-    if (user.option.sfx) sfxObj.item_appear.stop().play();
-    //균열 등장
-    $("#main_crack").classList.add("show");
+    if (user.option.sfx && !sfxObj.item_appear.playing()) sfxObj.item_appear.stop().play();
     //아이템 회전 & 루팅 시작
-    animation.moveItem("etc",function() {
-        //콜백 : 균열 사라짐
+    animation.moveItem(pos,"etc", function() {
+        //균열 사라짐
         $("#main_crack").classList.remove("show");
         void $("#main_crack").offsetWidth;
     });
 };
 //★ 에픽템 드랍
-simulateP.prototype.dropEpic = function(item) {
-    //찜한 아이템인지 & 1개만 보유한 아이템인지 판별 (첫 획득이면 개수는 1개)
-    var wished = false;
-    if (user.wish.indexOf(item.id) >= 0 &&
-    (user.inventory[item.id].have <= 1)) wished = true;
-    //아이템 원위치, 기존 에픽 이펙트 제거
-    animation.resetItem();
-    //========================================================
-    //★ 종료 여부 설정 (탐색모드에 따라)
-    switch (user.option.searchMode) {
-        case "찜하나":
-            if (!wished) {
-                this.run();//찜한 게 아님 : 지속
-            } else {
-                this.readyToEnd();//쨈한 거 : 잠시 후 종료
-            }
-
-            break;
-        case "모든찜":
-            if (!wished) {
-                this.run();//찜한 게 아님 : 지속
-            } else {
-                //쨈한 거
-                var num = 0;
-                for (var i = 0;i < user.wish.length;i++) {
-                    if (user.inventory[user.wish[i]] &&
-                        user.inventory[user.wish[i]].have > 0) num += 1;
-                }
-                if (user.wish.length === num) {
-                    this.readyToEnd();//찜한 거 다 모았음 : 잠시 후 종료
-                } else {
-                    this.run();//찜한 거 아직 다 못 모았음 : 지속
-                }
-
-
-            }
-
-            break;
-        case "무한"://
-            //재실행
-            this.run();
-
-            break;
-        default://그 외 = "모두", "에픽"
-            //무조건 멈춤
-            this.end();
-
-            break;
-    }
-    //========================================================
+simulateP.prototype.dropEpic = function(pos,item,wished) {
     //아이템 이미지 출력
     var field_name = "field_" + item.sort1 + "_" + item.sort2 + "_" + item.sort3;
-    animation.setItemImage(field_name);
+    animation.setItemImage(pos,field_name);
 
     //아이템 이름 변경
     var nameText = item.name;
-    animation.setItemName(nameText, "epic");
+    animation.setItemName(pos, item.name, "epic");
 
     //에픽 등장 사운드
     if (user.option.sfx) {
-        if (!wished) {
-            //일반 에픽사운드
-            sfxObj.epic_appear.stop().play();
-            //불필요 사운드 중단
-            sfxObj.epic_appear_wish.stop();
+        if (wished !== "wished") {
+            //일반 에픽사운드 (아직 미출력이면)
+            if (!sfxObj.epic_appear.playing())
+                sfxObj.epic_appear.play();
         } else {
-            //찜빔 에픽사운드
-            sfxObj.epic_appear_wish.stop().play();
-            //불필요 사운드 중단
-            sfxObj.epic_appear.stop();
+            //찜빔 에픽사운드 (아직 미출력이면)
+            if (!sfxObj.epic_appear_wish.playing())
+                sfxObj.epic_appear_wish.play();
         }
-        //불필요 사운드 중단
-        sfxObj.epic_land.stop();
-        sfxObj.epic_land_wish.stop();
     }
-
-    //균열 등장
-    $("#main_crack").classList.add("show");
-    void $("#main_crack").offsetWidth;
     //에픽 등장 이펙트
-    if (!wished) {
-        animation.epicBeam("epic_appear");
+    if (wished !== "wished") {
+        animation.epicBeam(pos, "epic_appear");
     } else {
-        animation.epicBeam("epic_appear_wish",{flip:true});
+        animation.epicBeam(pos, "epic_appear_wish", {flip:true});
     }
     //아이템 회전 & 루팅 시작
-    var moveType = (!wished) ? "epic" : "wished";
-    animation.moveItem(moveType,function() {
+    animation.moveItem(pos, wished, function() {
         //콜백
-        if (!wished) {
+        if (wished !== "wished") {
         //일반 이펙트
             //에픽 착지 이펙트
-            animation.epicBeam("epic_land");
+            animation.epicBeam(pos, "epic_land");
             //에픽 대기 이펙트 (즉시 실행)
-            animation.epicBeam("epic_wait",{repeat:true});
+            animation.epicBeam(pos, "epic_wait",{repeat:true});
         //찜빔 이펙트
         } else {
             //에픽 착지 이펙트
-            animation.epicBeam("epic_land_wish");
+            animation.epicBeam(pos, "epic_land_wish");
             //에픽 대기 이펙트 (착지 이펙트 0.6초 종료 후)
-            autoWish = setTimeout(function() {
-                animation.epicBeam("epic_wait_wish1",{repeat:true,alpha:true});
-                animation.epicBeam("epic_wait_wish2",{repeat:true,alpha:true});
+            autoWish[pos] = setTimeout(function() {
+                animation.epicBeam(pos, "epic_wait_wish1",{repeat:true,alpha:true});
+                animation.epicBeam(pos, "epic_wait_wish2",{repeat:true,alpha:true});
             },600);
         }
         //균열 사라짐
@@ -655,7 +737,7 @@ simulateP.prototype.dropEpic = function(item) {
         void $("#main_crack").offsetWidth;
         //에픽 착지 사운드
         if (user.option.sfx) {
-            if (!wished) {
+            if (wished !== "wished") {
                 //일반 에픽사운드
                 sfxObj.epic_land.play();
             } else {
@@ -703,7 +785,7 @@ animationP.prototype.loop = function() {
 };
 //★ 애니메이션 초기설정
 animationP.prototype.init = function() {
-    var i, name, info, url, texture;
+    var i, j, name, info, url, texture;
     //캐릭터 텍스처 생성
     for (var key in characterList) {
         //텍스처 정보 저장
@@ -737,81 +819,101 @@ animationP.prototype.init = function() {
                 })(i);
             }
     }
-    //나머지 텍스처 생성
-    for (i = 0;i < spriteInfo.length;i++) {
-        //"에팍", "아이템"만 생성하기
-        var available = ["epic", "item"];
-        if (available.indexOf(spriteInfo[i].type) < 0) continue;
-        //텍스처 정보 저장
-        name = spriteInfo[i].name;
-        info = spriteInfo[i];
+    //나머지 텍스처 생성 (아이템 수량만큼)
+    //텍스처 생성 준비
+    textureObj.other = [];
+    for (var i = 0;i < droparea.length;i++) {
         //텍스처 생성 준비
-        textureObj[name] = [];
-        //나머지 텍스처 생성
-        if (info.c > 1) {
-            url = "./img/sprite/" + name + "/sprite_";
-            for (var j = 0;j < info.c;j++) {
-                (function(j) {
-                    texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(url + j.toString() + ".png"));
-                    textureObj[name].push(texture);
-                })(j);
+        textureObj.other[i] = {};
+        for (var j = 0;j < spriteInfo.length;j++) {
+            //"에팍", "아이템"만 생성하기
+            var available = ["epic", "item"];
+            if (available.indexOf(spriteInfo[j].type) < 0) continue;
+            //텍스처 정보 저장
+            name = spriteInfo[j].name;
+            info = spriteInfo[j];
+            //텍스처 생성 준비
+            textureObj.other[i][name] = [];
+            //나머지 텍스처 생성
+            if (info.c > 1) {
+                url = "./img/sprite/" + name + "/sprite_";
+                for (k = 0;k < info.c;k++) {
+                    (function(k) {
+                        texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(url + k.toString() + ".png"));
+                        textureObj.other[i][name].push(texture);
+                    })(k);
+                }
+            } else {
+                url = spriteInfo[j].url;
+                texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(url));
+                textureObj.other[i][name].push(texture);
             }
-        } else {
-            url = spriteInfo[i].url;
-            texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(url));
-            textureObj[name].push(texture);
         }
     }
     //스프라이트 생성
         //캐릭터
         spriteObj.character = new PIXI.Sprite();
         spriteObj.character.frameIndex = 0;
+        //레이어 설정
+        spriteObj.character.parentLayer = globalLayer;
         spriteObj.character.zIndex = 3;
         stage.addChild(spriteObj.character);
-        //아이템
-            spriteObj.epic = {};
-            //묶음(컨테이너) 생성
-            spriteObj.cover = new PIXI.Container();
-            spriteObj.cover.width = 0;
-            spriteObj.cover.height = 0;
-            spriteObj.cover.zIndex = 4;
-            stage.addChild(spriteObj.cover);
-            //아이템 이미지
-            spriteObj.item = new PIXI.Sprite();
-            spriteObj.item.anchor.set(0.5,0.5);
-            spriteObj.item.texture = textureObj.item[0];
-            spriteObj.item.zIndex = 4;
-            spriteObj.cover.addChild(spriteObj.item);
-            //아이템 이름
-            spriteObj.item_name = new PIXI.Text();
-            spriteObj.item_name.anchor.set(0.5,0.5);
-            spriteObj.item_name.style.font = "14px Ariel";
-            spriteObj.item_name.zIndex = 7;
-            spriteObj.cover.addChild(spriteObj.item_name);
-            //아이템 이름 상자
-            spriteObj.item_box = new PIXI.Graphics();
-            spriteObj.item_box.zIndex = 6;
-                //이름 상자는 향후에 그림 (텍스트 채울 때마다 실시간 적용)
-            spriteObj.cover.addChild(spriteObj.item_box);
-            //에픽 이펙트
-            for (i=0;i < spriteInfo.length;i++) {
-                if (spriteInfo[i].type === "epic") {
-                    spriteObj.epic[spriteInfo[i].name] = new PIXI.Sprite();
-                    var target = spriteObj.epic[spriteInfo[i].name];
-                    target.frameIndex = 0;
-                    target.texture = textureObj[spriteInfo[i].name][0];
-                    //좌표, 확대 정보
-                    target.anchor.set(0.5,0.5);
-                    target.zIndex = spriteInfo[i].z;
-                    target.width = spriteInfo[i].w;
-                    target.height = spriteInfo[i].h;
-                    //집어넣기
-                    spriteObj.cover.addChild(target);
+        //아이템 (4개)
+            spriteObj.epic = [];
+            var rng = droparea.length;
+            for (i = 0;i < rng;i++) {
+                spriteObj.epic[i] = {};
+                //묶음(컨테이너) 생성 (4개) - 오직 "좌표 공유"를 위해서 사용
+                spriteObj.epic[i].cover = new PIXI.Container();
+                spriteObj.epic[i].cover.width = 0;
+                spriteObj.epic[i].cover.height = 0;
+                stage.addChild(spriteObj.epic[i].cover);
+                //아이템 이미지 (4개)
+                spriteObj.epic[i].item = new PIXI.Sprite();
+                spriteObj.epic[i].item.anchor.set(0.5,0.5);
+                spriteObj.epic[i].item.texture = textureObj.other[i].item[0];
+                spriteObj.epic[i].item.parentLayer = globalLayer;
+                spriteObj.epic[i].item.zIndex = 4;
+                spriteObj.epic[i].cover.addChild(spriteObj.epic[i].item);
+                //아이템 이름 (4개)
+                spriteObj.epic[i].item_name = new PIXI.Text();
+                spriteObj.epic[i].item_name.anchor.set(0.5,0.5);
+                spriteObj.epic[i].item_name.style.font = "12px Ariel";
+                spriteObj.epic[i].item_name.parentLayer = globalLayer;
+                spriteObj.epic[i].item_name.zIndex = 7;
+                spriteObj.epic[i].cover.addChild(spriteObj.epic[i].item_name);
+                //아이템 이름 상자 (4개)
+                spriteObj.epic[i].item_box = new PIXI.Graphics();
+                spriteObj.epic[i].item_box.parentLayer = globalLayer;
+                spriteObj.epic[i].item_box.zIndex = 6;
+                    //이름 상자는 향후에 그림 (텍스트 채울 때마다 실시간 적용)
+                spriteObj.epic[i].cover.addChild(spriteObj.epic[i].item_box);
+                //에픽 이펙트 (4개)
+                spriteObj.epic[i].effect = {};
+                for (j = 0;j < spriteInfo.length;j++) {
+                    if (spriteInfo[j].type === "epic") {
+                        spriteObj.epic[i].effect[spriteInfo[j].name] = new PIXI.Sprite();
+                        var target = spriteObj.epic[i].effect[spriteInfo[j].name];
+                        target.frameIndex = 0;
+                        target.texture = textureObj.other[i][spriteInfo[j].name][0];
+                        //좌표, 확대 정보
+                        target.anchor.set(0.5,0.5);
+                        target.width = spriteInfo[j].w;
+                        target.height = spriteInfo[j].h;
+                        target.parentLayer = globalLayer;
+                        target.zIndex = spriteInfo[j].z;
+                        //집어넣기
+                        spriteObj.epic[i].cover.addChild(target);
+                    }
                 }
             }
+
+
         //스프라이트 정렬
+        /*
         stage.updateLayersOrder();
         spriteObj.cover.updateLayersOrder();
+        */
     //애니메이션 루프 작동개시
     this.loop();
 };
@@ -830,7 +932,6 @@ animationP.prototype.setCharacter = function(character, stat) {
     } else {
         target.position.set(info.x, info.y);
     }
-    target.zIndex = info.z;
     //캐릭터 작동 개시
     auto.character = TweenMax.fromTo(target,info.t,
         {frameIndex:0},
@@ -839,41 +940,49 @@ animationP.prototype.setCharacter = function(character, stat) {
         target.texture = textureObj[name][target.frameIndex];
     });
 };
-//★ 아이템 스프라이트 초기화
+//★ 아이템 초기화 (스프라이트, 사운드, 세트 정보)
 animationP.prototype.resetItem = function() {
-    //아이템 이름*, 필드 아이템 이미지 비가시화
-    spriteObj.item.renderable = false;
-    spriteObj.item_name.renderable = false;
-    spriteObj.item_box.renderable = false;
-    //기존 아이템 이펙트 제거
-    for (i=0;i < spriteInfo.length;i++) {
-        if (spriteInfo[i].type === "epic") {
-            spriteObj.epic[spriteInfo[i].name].renderable = false;
-            //GSAP 중단
-            if (auto[spriteInfo[i].name]) auto[spriteInfo[i].name].kill();
+    //(모든 드랍위치에 적용)
+    for (i = 0;i < droparea.length;i++) {
+        //아이템 이름*, 필드 아이템 이미지 비가시화
+        spriteObj.epic[i].item.renderable = false;
+        spriteObj.epic[i].item_name.renderable = false;
+        spriteObj.epic[i].item_box.renderable = false;
+        //기존 아이템 이펙트 제거
+        for (var key in spriteObj.epic[i].effect) {
+            spriteObj.epic[i].effect[key].renderable = false;
         }
-    }
-    //setTimeout 중단
-    clearTimeout(autoWish);
-    //GSAP 중단
-    if (auto.item) auto.item.kill();
-        spriteObj.item.rotation = 0;
-    if (auto.cover) {
-        //아이템 이동
-        if (auto.cover.x) auto.cover.x.kill();
-        if (auto.cover.y1) auto.cover.y1.kill();
-        if (auto.cover.y2) auto.cover.y2.kill();
-        //에픽빔
-        for (var key in spriteObj.epic) {
-            if (spriteObj.epic[key] && auto[key]) auto[key].kill();
+        //setTimeout 중단
+        clearTimeout(autoWish[i]);
+        //GSAP 중단
+        if (auto.epic[i].item) auto.epic[i].item.kill();
+            spriteObj.epic[i].item.rotation = 0;
+        if (auto.epic[i].cover) {
+            //아이템 이동
+            if (auto.epic[i].cover.x) auto.epic[i].cover.x.kill();
+            if (auto.epic[i].cover.y1) auto.epic[i].cover.y1.kill();
+            if (auto.epic[i].cover.y2) auto.epic[i].cover.y2.kill();
+            //에픽빔
+            for (var key in spriteObj.epic[i].effect) {
+                if (auto.epic[i][key]) auto.epic[i][key].kill();
+            }
         }
+        //아이템 커버 원위치
+        var info = indexArrKey(spriteInfo,"name","cover");
+        spriteObj.epic[i].cover.position.set(info.x,info.y);
     }
-    //아이템 커버 원위치
-    var info = indexArrKey(spriteInfo,"name","cover");
-    spriteObj.cover.position.set(info.x,info.y);
+    //모든 에픽 사운드 중단
+    sfxObj.epic_appear.stop();
+    sfxObj.epic_appear_wish.stop();
+    sfxObj.epic_land.stop();
+    sfxObj.epic_land_wish.stop();
+    //세트정보 초기화
+    $("#main_set").innerHTML = "";
+    $("#main_set").style.display = "none";
 };
 //★ 아이템 이미지 설정
-animationP.prototype.setItemImage = function(field_name) {
+animationP.prototype.setItemImage = function(pos,field_name) {
+    var tempItem = spriteObj.epic[pos].item;
     //아이템 이미지 분석
     var tempEl = document.createElement("");
         tempEl.className = field_name;
@@ -886,69 +995,71 @@ animationP.prototype.setItemImage = function(field_name) {
     ];
     document.body.removeChild(tempEl);
     //아이템 이미지 적용
-    spriteObj.item.texture.frame = new PIXI.Rectangle(
+    tempItem.texture.frame = new PIXI.Rectangle(
         parseInt(tempArr[0].split(" ")[0]), parseInt(tempArr[0].split(" ")[1]),
         parseInt(tempArr[1]), parseInt(tempArr[2]));
-    spriteObj.item.width = parseInt(tempArr[1]);
-    spriteObj.item.height = parseInt(tempArr[2]);
+    tempItem.width = parseInt(tempArr[1]);
+    tempItem.height = parseInt(tempArr[2]);
     //아이템 위치 변경
-    spriteObj.item.position.set(0,0);
+    tempItem.position.set(0,0);
     //아이템 이미지 가시화
-    spriteObj.item.renderable = true;
+    tempItem.renderable = true;
 };
 //★ 아이템 이름 설정
-animationP.prototype.setItemName = function(nameText, colorText) {
+animationP.prototype.setItemName = function(pos,nameText,colorText) {
+    var tempName = spriteObj.epic[pos].item_name;
+    var tempBox = spriteObj.epic[pos].item_box;
+
     //이름 변경, 색상 설정
-    spriteObj.item_name.text = nameText;
-    spriteObj.item_name.style.fill = colorObj[colorText];
+    tempName.text = nameText;
+    tempName.style.fill = colorObj[colorText];
     //(이름 변경에 따른) 위치 설정
-    spriteObj.item_name.position.set(
-        0,
-        -(spriteObj.item.height/2)-14
+    tempName.position.set(
+        0, -(spriteObj.epic[pos].item.height/2)-14
     );
     //이름 상자 새로 그리기
-    spriteObj.item_box.clear();
-    spriteObj.item_box.beginFill("#000000",0.7);
-    spriteObj.item_box.lineStyle(1, 0xB89F7C, 1);
-    var rec = spriteObj.item_name.getLocalBounds();
+    tempBox.clear();
+    tempBox.beginFill(0x000000,0.7);
+    tempBox.lineStyle(1, 0xB89F7C, 1);
+    var rec = tempName.getLocalBounds();
         //그림 그리기 : border 두께 포함시켜서 좌표/크기 정할 것
-        spriteObj.item_box.drawRoundedRect(
+        tempBox.drawRoundedRect(
             -(4+1), -(2+1),
-            spriteObj.item_name.width + (4+1)*2, spriteObj.item_name.height + (2+1)*2, 5);
-    spriteObj.item_box.position.set(
-        spriteObj.item_name.x - spriteObj.item_name.width/2,
-        spriteObj.item_name.y - spriteObj.item_name.height/2);
-    spriteObj.item_box.endFill();
+            tempName.width + (4+1)*2, tempName.height + (2+1)*2, 5);
+    tempBox.position.set(
+        tempName.x - tempName.width/2, tempName.y - tempName.height/2);
+    tempBox.endFill();
     //이름, 이름 상자 출력
-    spriteObj.item_name.renderable = true;
-    spriteObj.item_box.renderable = true;
+    tempName.renderable = true;
+    tempBox.renderable = true;
 };
 //★ 아이템 회전, 이동
-animationP.prototype.moveItem = function(type, callback) {
-    //딜레이 결정
+animationP.prototype.moveItem = function(pos,type,callback) {
+    //딜레이 결정 (찜빔 : 0.9츠, 나머지 : 0.6초)
     var aniDelay = (type === "wished") ? 0.9 : 0.6;
     //아이템 회전
-    auto.item = TweenMax.fromTo(spriteObj.item,aniDelay,
-        {pixi:{rotation:0}},
-        {pixi:{rotation:-Math.PI * 2}});
+    auto.epic[pos].item = TweenMax.fromTo(spriteObj.epic[pos].item,aniDelay,
+        {rotation:0},
+        {rotation:-Math.PI * 2});
     //아이템 이동
-    auto.cover = {};
-    auto.cover.x = new TweenMax.fromTo(spriteObj.cover.position,aniDelay,
-        {x:380},
-        {x:270,ease:Power0.easeNone});
-    auto.cover.y1 = new TweenMax.fromTo(spriteObj.cover,aniDelay/3,
-        {pixi:{y:140}},
-        {pixi:{y:120},ease:Circ.easeOut});
-    auto.cover.y2 = new TweenMax.to(spriteObj.cover,aniDelay*2/3,
-        {pixi:{y:280},ease:Circ.easeIn,delay:aniDelay/3,
+    var tempArea = droparea[pos];
+    auto.epic[pos].cover = {};
+    new TweenMax.set(spriteObj.epic[pos].cover,aniDelay,
+        {x:380,y:140});
+    auto.epic[pos].cover.x = new TweenMax.to(spriteObj.epic[pos].cover,aniDelay,
+        {x:"-=" + tempArea.x.toString(),ease:Power0.easeNone});
+    auto.epic[pos].cover.y1 = new TweenMax.to(spriteObj.epic[pos].cover,aniDelay/3,
+        {y:"-=" + tempArea.y1.toString(),ease:Circ.easeOut});
+    auto.epic[pos].cover.y2 = new TweenMax.to(spriteObj.epic[pos].cover,aniDelay*2/3,
+        {y:"+=" + tempArea.y2.toString(),ease:Circ.easeIn,delay:aniDelay/3,
         //콜백
         onComplete:callback});
 };
 //★ 에픽 이펙트 스프라이트
-animationP.prototype.epicBeam = function(name, option) {
+animationP.prototype.epicBeam = function(pos,name,option) {
     //대상 설정
     var info = indexArrKey(spriteInfo,"name",name);
-    var target = spriteObj.epic[name];
+    var target = spriteObj.epic[pos].effect[name];
     //이펙트 좌표 설정 및 가시화
     target.position.set(info.x,info.y);
     target.renderable = true;
@@ -958,69 +1069,138 @@ animationP.prototype.epicBeam = function(name, option) {
     var r = 0;
     if (option && option.repeat === true) r =-1;
     //GSAP 가동
-    auto[name] = TweenMax.fromTo(target,info.t,
+    auto.epic[pos][name] = TweenMax.fromTo(target,info.t,
         {frameIndex:0},
         {frameIndex:info.c-1,
             ease:SteppedEase.config(info.c-1),repeat:r});
-    auto[name].eventCallback("onUpdate",function() {
-        target.texture = textureObj[name][Math.round(target.frameIndex)];
+    auto.epic[pos][name].eventCallback("onUpdate",function() {
+        target.texture = textureObj.other[pos][name][Math.round(target.frameIndex)];
     });
     //Alpha 처리 GSAP
     if (option && option.alpha === true) {
         TweenMax.fromTo(target,0.9,
-            {pixi:{alpha:0}},
-            {pixi:{alpha:1},ease:Power0.easeNone});
+            {alpha:0},
+            {alpha:1,ease:Power0.easeNone});
     }
 };
-//
-//
-//
 var animation = new animationP();
 
 
 //아이템 출력 관련
 function displayP() {}
-//★획득기록 창 출력
-displayP.prototype.showRecord = function() {
-    //텍스트 생성
-    var text = "";
-    for (i = 0;i < user.record.item.length;i++) {
-        switch(typeof user.record.item[i]) {
-            case "object":
-                var itemInfo = indexArrKey(itemList,"id",user.record.item[i][2]);
-                var itemNum = user.inventory[user.record.item[i][2]];
-                var name = indexArrKey(itemList,"id",user.record.item[i][2]).name;
-                var tmp = user.record.item[i];
-                var ttype = (itemInfo.sort1 === "방어구") ? itemInfo.sort2 : itemInfo.sort3;
-                text += "<p class='record_head'>" + thousand(user.record.item[i][0]) +
-                    "회차 <span class='font_small color_gray'>(" + user.record.item[i][1] + ")</span></p>";
-                if (itemInfo.set === ""){
-                    text += "<p class='record_item color_epic'>" + name +
-                        "<span class='color_skyblue'> [x" + thousand(user.record.item[i][3]) + "]</span>" +
-                        "<span class='color_white font_small'> [Lv." + itemInfo.level.toString() + "]</span>" +
-                        "<span class='color_white font_small'>[" + ttype + "]</span>" +
-                        "</p>";
-                } else {
-                    text += "<p class='record_item color_set'>" + name +
-                        "<span class='color_skyblue'> [x" + thousand(user.record.item[i][3]) + "]</span> " +
-                        "<span class='color_white font_small'> [Lv." + itemInfo.level.toString() + "]</span>" +
-                        "<span class='color_white font_small'>[" + ttype + "]</span>" +
-                        "<span class='font_small'>(세트 : " +  user.record.item[i][4] + ")</span>" +
-                        "</p>";
-                }
-                break;
-            case "string":
-                text += "<p class='record_set color_yellow'>\"" + user.record.item[i] + "\" 완성!</p>";
-
-                break;
+//★획득기록 창 생성
+displayP.prototype.createRecord = function() {
+    //기록 생성
+    var rng = user.record.item.length;
+    for (i = 0;i < rng;i++) {
+        //구버전 호환 - Array -> Object
+        if (user.record.item[i] instanceof Array) {
+            var itemObj = {
+                type:"epic",
+                wished:false,
+                count:user.record.item[i][0],
+                channel:user.record.item[i][1],
+                id:user.record.item[i][2],
+                have:user.record.item[i][3]
+            };
+            if (user.record.item[i][4]) {
+                itemObj.setState = user.record.item[i][4];
+            }
+            user.record.item[i] = itemObj;
+        //구버전 호환 - string -> Object
+        } else if (typeof user.record.item[i] === "string") {
+            var itemObj = {
+                type:"set",
+                count:user.record.item[i-1][0],
+                set:user.record.item[i]
+            };
+            user.record.item[i] = itemObj;
         }
+        this.addRecord(user.record.item[i]);
     }
-    //텍스트 출력
-    $("#record_box").innerHTML = text;
-    //좌측 메뉴창 제목 석정
-    $("#slot_title_left").innerHTML = "에픽아이템 획득 기록";
-    //획득기록창 열기
-    $("#record_box").style.display = "block";
+};
+//★획득기록 창 변경
+displayP.prototype.addRecord = function(item) {
+    //라인넘버 체크
+    var row = user.record.item.indexOf(item);
+    switch(item.type) {
+        //아이템 정보
+        case "epic":
+            //관련 정보 수집
+            var info = indexArrKey(itemList,"id",item.id);
+            var itemNum = user.inventory[item.id];
+            var name = info.name;
+            var count = item.count;
+            var ttype = (info.sort1 === "방어구") ? info.sort2 : info.sort3;
+            //기록 만들기
+            var el_item = document.createElement("p.record_item");
+                //세트 컬러
+                if (info.set === "") el_item.classList.add("color_epic");
+                    else el_item.classList.add("color_set");
+                //찜 마크
+                if (item.wished === true) name = "<span class='color_yellow'>★ </span>" + name;
+                el_item.innerHTML = name;
+            var el_amount = document.createElement("span.record_amount");
+                el_amount.innerHTML = " [x" + thousand(item.have) + "]";
+                el_item.appendChild(el_amount);
+            var el_level = document.createElement("span.record_level");
+                el_level.innerHTML = " [Lv." + info.level.toString() + "]";
+                el_item.appendChild(el_level);
+            var el_type = document.createElement("span.record_type");
+                el_type.innerHTML = "[" + ttype + "]";
+                el_item.appendChild(el_type);
+            if (info.set !== "") {
+                var el_set = document.createElement("span.record_set");
+                    el_set.innerHTML = "(세트 : " +  item.setState + ")";
+                    el_item.appendChild(el_set);
+            }
+            //(첫 회차 or 회차가 달라졌다면)
+            if (!recordInfo.querySelector("#record_header_" + count.toString())) {
+                //헤더 만들기
+                var el_header = document.createElement("#record_header_" + count.toString() + ".record_header");
+                    el_header.innerHTML = thousand(count) + "회차 ";
+                var el_count = document.createElement("span.font_small.color_gray");
+                    el_count.innerHTML = "(" + item.channel + ")";
+                    el_header.appendChild(el_count);
+                //헤더에 기록 집어넣기
+                el_header.appendChild(el_item);
+                //헤더 등록
+                recordInfo.appendChild(el_header);
+            //(아직 회차 진행중)
+            } else {
+                //이전 헤더에 기록 집어넣기
+                recordInfo.querySelector("#record_header_" + count.toString()).appendChild(el_item);
+            }
+
+            break;
+        //세트 정보
+        case "set":
+            //변수 준비
+            var count = item.count;
+            //기록 만들기
+            var el_complete = document.createElement("p.record_complete");
+                el_complete.innerHTML = "\"" + item.set + "\" 완성!";
+            //(첫 회차 or 회차가 달라졌다면)
+            if (!recordInfo.querySelector("#record_footer_" + count.toString())) {
+                //푸터 만들기
+                var el_footer = document.createElement("#record_footer_" + count.toString());
+                //푸터에 세트 기록 집어넣기
+                el_footer.appendChild(el_complete);
+                //푸터 등록
+                recordInfo.appendChild(el_footer);
+            //(아직 회차 진행중)
+            } else {
+                //이전 푸터에 기록 집어넣기
+                recordInfo.querySelector("#record_footer_" + count.toString()).appendChild(el_complete);
+            }
+
+            break;
+    }
+};
+//★획득기록 창 업데이트
+displayP.prototype.updateRecord = function() {
+    //획득기록 업데이트
+    $("#record_box").appendChild(recordInfo.cloneNode(true));
     //스크롤 내리기
     $("#record_box").scrollTop = $("#record_box").scrollHeight;
 };
@@ -1029,9 +1209,9 @@ displayP.prototype.clearRecord = function() {
     //획득기록창 닫기
     $("#record_box").style.display = "none";
     //획득기록창 내용물 지우기
-    var myNode = $("#record_box");
-    while (myNode.firstChild) {
-        myNode.removeChild(myNode.firstChild);
+    var myDiv = $("#record_box");
+    while( myDiv.hasChildNodes() ){
+        myDiv.removeChild(myDiv.lastChild);
     }
 };
 //★도감 창 생성 (나중에 하면 렉걸리니)
@@ -1126,8 +1306,8 @@ displayP.prototype.createInventory = function() {
     clusterize_inventory = new Clusterize({
         scrollId: 'inventory_box',
         contentId: 'inventory_scroll',
-        rows_in_block:15,
-        blocks_in_cluster:17
+        tag:"li",
+        rows_in_block:16
     });
     //(클러스터 생성 후) 클러스터 클릭 이벤트 추가 (찜하기)
     $("#inventory_scroll").addEventListener("click",function(e) {
@@ -1148,17 +1328,24 @@ displayP.prototype.createInventory = function() {
 };
 //★ 도감 업데이트
 displayP.prototype.updateInventory = function() {
-    //업데이트할 정보 정리
-    var arr = [];
-    var fragList = invenInfo.childNodes;
-    for (var i = 0;i < fragList.length;i++) {
-        arr.push(fragList[i].outerHTML);
+    //(도감이 눈에 보인다면)
+    if ($("#inventory_box").offsetWidth > 0 && $("#inventory_box").offsetHeight > 0) {
+        //업데이트할 정보 정리
+        var arr = [];
+        var fragList = invenInfo.childNodes;
+        for (var i = 0;i < fragList.length;i++) {
+            arr.push(fragList[i].outerHTML);
+        }
+        //업데이트 전 현위치 파악
+        var tempTop = $("#inventory_box").scrollTop;
+        //업데이트 실시
+        clusterize_inventory.update(arr);
+        //위치 복귀
+        $("#inventory_box").scrollTop = tempTop;
+
     }
-    //업데이트 실시
-    var st = $("#inventory_box").scrollTop;
-    clusterize_inventory.update(arr);
-    $("#inventory_box").scrollTop = st;
 };
+
 //★ 도감정보 수정 (documentFragment 활용)
 displayP.prototype.modifyInventory = function(id) {
     //아이템 지정
@@ -1347,6 +1534,15 @@ mainP.prototype.loadData = function() {
 
                         break;
                 }
+                //특수 모드
+                if (user.perfectMode) {
+                    //모드 활성화
+                    $("#board_invite").style.display = "none";
+                    $("#board_soul").style.display = "none";
+                    $("#board_beed").style.display = "none";
+                    $("#board_perfect1").style.display = "block";
+                    $("#board_perfect2").style.display = "block";
+                }
         }
     }
 };
@@ -1355,7 +1551,8 @@ mainP.prototype.maintainData = function() {
     if (!user.option) user.option = {};
     if (!user.option.bgm) user.option.bgm = user.bgm;
     if (!user.option.bgm) user.option.sfx = user.sfx;
-    if (!user.option.searchMode) user.option.searchMode = "에픽";
+    if (!user.option.searchMode || searchList.indexOf(user.option.searchMode) < 0)
+        user.option.searchMode = "에픽";
     if (!user.holding.invite.used) user.holding.invite.used = 0;
 };
 //※ 데이터 세이브
@@ -1379,46 +1576,42 @@ mainP.prototype.loadImage = function(arr, callback) {
     var img;
     var initial = arr.length;
     var remaining = arr.length;
+    var styleText = "";
     //이미지
-    setTimeout(function() {
-        for (i = 0; i < arr.length; i++) {
-            img = new Image();
-            img.onload = function() {
-                //내부 처리
-                --remaining;
-                //외부 처리
-                $("#cover_loading_bar").style.width = (((initial - remaining)/initial)*100).toString() + "%";
-                //향후
-                if (remaining <= 0) {
-                    //로딩 이미지 수정 (텍스처 등록)
-                    $("#cover_loading_bar").style.width = "0%";
-                    $("#cover_loading_text").innerHTML = "이미지 텍스처 작성 중...";
-                    //콜백
-                    setTimeout(callback,100);
-                }
-            };
-            img.onerror = function() {
-                //내부 처리
-                --remaining;
-                //외부 처리
-                $("#cover_loading_bar").style.width = (((initial - remaining)/initial)*100).toString() + "%";
-                //향후
-                if (remaining <= 0) {
-                    //로딩 이미지 수정 (텍스처 등록)
-                    $("#cover_loading_bar").style.width = "0%";
-                    $("#cover_loading_text").innerHTML = "이미지 텍스처 작성 중...";
-                    //콜백
-                    setTimeout(callback,100);
-                }
-            };
-            //이미지 처리
-            img.src = arr[i];
-            $("#imagePreloader").innerHTML += "<img src='" + arr[i] + "' />";
-            imagesArray.push(img);
-                //PIXI 불러오기
-                PIXI.loader.add(arr[i]);
-        }
-    },300);
+    for (i = 0; i < arr.length; i++) {
+        img = new Image();
+        img.onload = function() {
+            //내부 처리
+            --remaining;
+            //외부 처리
+            $("#cover_loading_bar").style.width = (((initial - remaining)/initial)*100).toString() + "%";
+            //향후
+            if (remaining <= 0) {
+                //통합된 이미지 스타일 적용
+                styleText = styleText.slice(0, -1);
+                $("#imagePreloader").style.backgroundImage = styleText;
+                //콜백
+                callback();
+            }
+        };
+        img.onerror = function() {
+            //내부 처리
+            --remaining;
+            //외부 처리
+            $("#cover_loading_bar").style.width = (((initial - remaining)/initial)*100).toString() + "%";
+            //향후
+            if (remaining <= 0) {
+                //통합된 이미지 스타일 적용
+                styleText = styleText.slice(0, -1);
+                $("#imagePreloader").style.backgroundImage = styleText;
+                //콜백
+                callback();
+            }
+        };
+        //이미지 처리
+        img.src = arr[i];
+        styleText += "url('" + arr[i] + "'),";
+    }
 };
 //★ 오디오 선로딩
 mainP.prototype.loadAudio = function(target, callback) {//로딩 이미지 준비
@@ -1650,15 +1843,17 @@ mainP.prototype.initLatter = function() {
     $("#button_right").disabled = true;
     $("#button_main").disabled = true;
     $("#button_main").innerHTML = "입장 중...";
-    ///구글 플레이 버튼 지우기
+    ///구글 플레이 버튼 및 기타 텍스트 지우기
     $("#cover_google").style.display ="none";
+    $("#cover_text").style.display ="none";
     //이미지 로딩
     this.loadImage(imageList, function() {
         //(이미지 로딩 이후) 애니메이션 초기설정
         animation.init();
-        //던전 목록, 아이템 도감 작성
+        //던전 목록, 획득기록, 아이템 도감 작성
         setTimeout(function() {
             this.createDungeon();
+            display.createRecord();
             display.createInventory();
         }.bind(this),0);
         //효과음 로딩
@@ -1895,11 +2090,11 @@ mainP.prototype.setMenuButton = function() {
         //메뉴창 열기
         main.toggleMenu("left","open");
         //좌측 메뉴창 제목 설정
-        $("#slot_title_left").innerHTML = "에픽아이템 도감";
+        $("#slot_title_left").innerHTML = "에픽아이템 획득 기록";
         //획득기록창 열기
         $("#record_box").style.display = "block";
-        //획득내용 보여주기
-        display.showRecord();
+        //획득내용 갱신
+        display.updateRecord();
     };
     //※ 좌측 버튼 2 : 도감
     $("#main_inventory").onclick = function() {
@@ -1910,6 +2105,8 @@ mainP.prototype.setMenuButton = function() {
         //도감창 & 설명 열기
         $("#inventory_box").style.display = "block";
         $("#inventory_footer").style.display = "block";
+        //도감 창 최신화 (스크롤 조절을 위해)
+        display.updateInventory();
         //찜하기 창 키우기
         $("#frame_wish").classList.remove("mini");
     };
@@ -2126,8 +2323,11 @@ mainP.prototype.setMenuButton = function() {
                 } else {
                     swal({
                         title:"불러올 음악이 없음",
-                        text:"현재 던전/게이트를 다시 입장하면 배경음악을 들을 수 있습니다.",
+                        text:"음악을 불러오기 위해 해당 지역에 다시 입장합니다.",
                         type:"info"
+                    }).then(function(confirmed) {
+                        //게이트 입장
+                        main.enterMap(selectedDungeon.now.id);
                     });
                 }
 
@@ -2165,6 +2365,67 @@ mainP.prototype.setMenuButton = function() {
         });
 
     };
+    //※ 기타 버튼 : NPC 클릭 (퍼펙트 모드)
+    $("#main_npc").onclick = function() {
+        if (!user.perfectMode) {
+            swal({
+                title:"퍼펙트 모드 돌입",
+                text:"에픽 드랍률이 100%가 되며, 입장료를 계산하지 않습니다.\n" +
+                    "(NPC를 다시 클릭하면 퍼펙트 모드가 종료됩니다.)",
+                imageUrl: './img/icon_crack.png',
+                imageWidth: 128,
+                imageHeight: 128,
+                showCancelButton:true,
+                confirmButtonText: '예',
+                cancelButtonText: '아니요',
+                cancelButtonColor: '#d33'
+            }).then(function(isConfirm){
+                if (isConfirm) {
+                    //모드 활성화
+                    user.perfectMode = true;
+                    $("#board_invite").style.display = "none";
+                    $("#board_soul").style.display = "none";
+                    $("#board_beed").style.display = "none";
+                    $("#board_perfect1").style.display = "block";
+                    $("#board_perfect2").style.display = "block";
+                    //에픽 이펙트
+                    spriteObj.epic[0].cover.position.set(270,120);
+                    animation.epicBeam(0,"epic_appear_wish");
+                    if (user.option.sfx)
+                        sfxObj.epic_appear_wish.play();
+
+                    /*게임 저장*/main.saveData();
+                }
+            });
+        } else {
+            swal({
+                html:"<strong>퍼펙트 모드를 종료하시겠습니까?</strong><br>" +
+                    "(NPC를 다시 클릭하면 퍼펙트 모드에 돌입합니다.)",
+                type:"warning",
+                showCancelButton:true,
+                confirmButtonText: '예',
+                cancelButtonText: '아니요',
+                cancelButtonColor: '#d33'
+            }).then(function(isConfirm){
+                if (isConfirm) {
+                    //모드 비활성화
+                    user.perfectMode = false;
+                    $("#board_invite").style.display = "block";
+                    $("#board_soul").style.display = "block";
+                    $("#board_beed").style.display = "block";
+                    $("#board_perfect1").style.display = "none";
+                    $("#board_perfect2").style.display = "none";
+                    //에픽 이펙트
+                    spriteObj.epic[0].cover.position.set(270,120);
+                    animation.epicBeam(0,"epic_land");
+                    if (user.option.sfx)
+                        sfxObj.epic_land.play();
+
+                    /*게임 저장*/main.saveData();
+                }
+            });
+        }
+    };
 
 
 };
@@ -2195,40 +2456,6 @@ var main = new mainP();
 document.addEventListener("DOMContentLoaded", function(e) {
     //초기 함수
     main.init();
-
-
-    //강제 스크롤링 (터치 한정)
-    /*
-    var touchY = 0;//첫 터치 Y좌표 기억(스크립트 스크롤 용)
-    var forcedScroll = [$("#dg_box"),$("#cha_box")];
-    var f_len = forcedScroll.length;
-    for (i=0;i<f_len;i++) {
-        (function() {
-            var target = forcedScroll[i];
-            target.addEventListener("touchstart",function(e) {
-                //스크롤 비활성화
-                target.style.overflowY = "hidden";
-                //$("#dg_box").classList.remove("scroll");
-                //터치포인트 기억
-                touchY = e.touches[0].clientY - target.offsetTop;
-            },false);
-            target.addEventListener("touchmove",function(e) {
-                //스크롤 적용
-                var touchYC = e.touches[0].clientY - target.offsetTop;
-                target.scrollTop = target.scrollTop + (touchY - touchYC);
-                //이동 이후 터치포인트 기억
-                touchY = touchYC;
-                //스크롤 -> (지역명 변경 시) 지역명 타이틀 변경
-                main.changeDungeonTitle();
-            },false);
-            target.addEventListener("touchend",function(e) {
-                //스크롤 재활성화
-                target.style.overflowY = "scroll";
-                //$("#dg_box").classList.add("scroll");
-        },false);
-        })();
-    }
-    */
 
     //나가기 경고
         //웹 브라우저
