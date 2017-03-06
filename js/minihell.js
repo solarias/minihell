@@ -1128,9 +1128,10 @@ displayP.prototype.createRecord = function() {
             user.record.item[i] = itemObj;
         //구버전 호환 - string -> Object
         } else if (typeof user.record.item[i] === "string") {
+            var countInfo = user.record.item[i-1][0] || user.record.item[i-1].count;
             var itemObj = {
                 type:"set",
-                count:user.record.item[i-1][0],
+                count:countInfo,
                 set:user.record.item[i]
             };
             user.record.item[i] = itemObj;
