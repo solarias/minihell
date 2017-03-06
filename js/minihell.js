@@ -1452,7 +1452,7 @@ displayP.prototype.clearProgress = function() {
     this.showProgress();
     //알림 (사운드, 팝업)
     if (user.option.sfx) sfxObj.wish_set.play();
-    
+
     swal({
         title:"획득기록 초기화 완료",
         text:"초기화를 되돌리고 싶으면 지금 바로 사이트(어플)을 재실행한 후 이어하기를 해주세요.",
@@ -1625,8 +1625,12 @@ mainP.prototype.loadData = function() {
 mainP.prototype.maintainData = function() {
     //옵션
     if (!user.option) user.option = {};
-    if (!user.option.bgm) user.option.bgm = user.bgm;
-    if (!user.option.bgm) user.option.sfx = user.sfx;
+    if (user.option.bgm === "undefined")
+        if (user.bgm) user.option.bgm = user.bgm;
+            else user.option.bgm = 1;
+    if (user.option.sfx === "undefined")
+        if (user.sfx) user.option.sfx = user.sfx;
+            else user.option.sfx = 1;
     if (!user.option.searchMode || searchList.indexOf(user.option.searchMode) < 0)
         user.option.searchMode = "에픽";
     if (!user.option.channel) user.option.channel = ["랜덤",""];
