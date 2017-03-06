@@ -1452,6 +1452,7 @@ displayP.prototype.clearProgress = function() {
     this.showProgress();
     //알림 (사운드, 팝업)
     if (user.option.sfx) sfxObj.wish_set.play();
+    
     swal({
         title:"획득기록 초기화 완료",
         text:"초기화를 되돌리고 싶으면 지금 바로 사이트(어플)을 재실행한 후 이어하기를 해주세요.",
