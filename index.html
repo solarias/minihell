@@ -22,6 +22,13 @@
 			<div id="frame_cover"><div id="frame_cover_bg">
 				<div id="cover_title">에픽의 균열</div>
 				<div id="cover_notice">
+					<p title>2017-3-6</p>
+					<p content>
+						- 옵션 버튼 추가<br>
+						- 획득기록 초기화 기능 추가<br>
+						- (요청) 에픽 아이템 드랍 시간 증가<br>
+						- 에픽 드랍률이 '2배'였던 버그 수정
+					</p>
 					<p title>2017-2-27</p>
 					<p content>
 						- 아이템 다중 드랍 구현 (최대 4개)<br/>
@@ -129,9 +136,6 @@
 					<canvas id="main_canvas" width="540px" height="405px"></canvas>
 				</div>
 				<!--버튼들-->
-				<button id="main_inventory" class="main_option">도감</button>
-				<button id="main_search_change" class="main_option">탐색모드 설정<br>[<span id="searchMode_text" class='color_blue'>에픽</span>]</button>
-				<button id="main_sound_change" class="main_option">사운드 <span class='color_red'>끄기</span></button>
 				<button id="main_character_change" class="main_option">캐릭터 변경</button>
 			</div>
 
@@ -147,17 +151,13 @@
 			</div>
 
 			<div id="frame_button"><div class="frame_area">
-				<button id="button_left" class="button_side hide">획득<br/>기록</button>
-				<!--
-				<button id="button_left_bottom" class="button_side">탐색설정</button>
-				-->
+				<button id="button_left_top" class="button_side hide">도감</button>
+				<button id="button_left_bottom" class="button_side hide">기록</button>
 
 				<button id="button_main" disabled>로딩 중...</button>
 
-				<button id="button_right" class="button_side hide">지역<br/>선택</button>
-				<!--
-				<button id="button_right_bottom" class="button_side font_shadow">옵션</button>
-				-->
+				<button id="button_right_top" class="button_side hide">이동</button>
+				<button id="button_right_bottom" class="button_side hide">옵션</button>
 			</div></div>
 
 			<div id="frame_slot_left">
@@ -182,6 +182,7 @@
 			<div id="frame_slot_right">
 				<div id="slot_title_right" class="slot_title font_shadow black">행선지 선택</div>
 				<div class="slot_content">
+					<!--헤더 : 던전 선택장-->
 					<div id="dg_header">
 						<button id="dg_gate" data-dungeon="gate" data-area="gate" class="slot_list dg_list"></button>
 						<div id="dg_box_title" class="slot_area">
@@ -191,26 +192,51 @@
 						</div>
 					</div>
 					<!--던전 선택창-->
-					<div id="dg_box" class="frame_area scroll list_box">
+					<div id="dg_box" class="frame_area list_box scroll">
+					</div>
+					<!--옵션-->
+					<div id="option_box" class="frame_area list_box scroll">
+						<button id="option_character" class="option_button">
+							캐릭터 변경
+						</button>
+						<button id="option_searchMode" class="option_button">
+							탐색모드 설정 [<span id="option_searchMode_text" class='color_skyblue'>에픽</span>]
+						</button>
+						<button id="option_channel" class="option_button">
+							획득채널 설정 [<span id="option_channel_text" class='color_skyblue'>랜덤</span>]
+						</button>
+						<input id="option_bgm" class="option_checkbox" type="checkbox" checked="checked">
+						<label for="option_bgm" class="option_label">
+							배경음 출력
+						</label>
+						<input id="option_sfx" class="option_checkbox" type="checkbox" checked="checked">
+						<label for="option_sfx" class="option_label">
+							효과음 출력
+						</label>
+					</div>
+					<div id="option_side">
+						<button id="option_clearRecord" class="option_button">
+							획득<br>기록<br>초기화
+						</button>
 					</div>
 					<!--캐릭터 선택창-->
 					<div id="cha_box" class="frame_area list_box scroll">
-						<button id="cha1" data-character="swordman_m" class="slot_list cha_list">귀검사(남)</button>
-						<button id="cha2" data-character="swordman_f" class="slot_list cha_list">귀검사(여)</button>
-						<button id="cha3" data-character="darkknight_m" class="slot_list cha_list">다크나이트(남)</button>
-						<button id="cha4" data-character="fighter_m" class="slot_list cha_list">격투가(남)</button>
-						<button id="cha5" data-character="fighter_f" class="slot_list cha_list">격투가(여)</button>
-						<button id="cha6" data-character="gunner_m" class="slot_list cha_list">거너(남)</button>
-						<button id="cha7" data-character="gunner_f" class="slot_list cha_list">거너(여)</button>
-						<button id="cha8" data-character="mage_m" class="slot_list cha_list">마법사(남)</button>
-						<button id="cha9" data-character="mage_f" class="slot_list cha_list">마법사(여)</button>
-						<button id="cha10" data-character="creator_f" class="slot_list cha_list">크리에이터(여)</button>
-						<button id="cha11" data-character="priest_m" class="slot_list cha_list">프리스트(남)</button>
-						<button id="cha12" data-character="priest_f" class="slot_list cha_list">프리스트(여)</button>
-						<button id="cha13" data-character="thief_f" class="slot_list cha_list">도적(여)</button>
-						<button id="cha14" data-character="knight_f" class="slot_list cha_list">나이트(여)</button>
-						<button id="cha15" data-character="lancer_m" class="slot_list cha_list">마창사(남)</button>
-						<button id="cha16" data-character="beckey" class="slot_list cha_list">베키</button>
+						<button id="cha1" data-character="swordman_m" class="cha1 slot_list cha_list">귀검사(남)</button>
+						<button id="cha2" data-character="swordman_f" class="cha2 slot_list cha_list">귀검사(여)</button>
+						<button id="cha3" data-character="darkknight_m" class="cha3 slot_list cha_list">다크나이트(남)</button>
+						<button id="cha4" data-character="fighter_m" class="cha4 slot_list cha_list">격투가(남)</button>
+						<button id="cha5" data-character="fighter_f" class="cha5 slot_list cha_list">격투가(여)</button>
+						<button id="cha6" data-character="gunner_m" class="cha6 slot_list cha_list">거너(남)</button>
+						<button id="cha7" data-character="gunner_f" class="cha7 slot_list cha_list">거너(여)</button>
+						<button id="cha8" data-character="mage_m" class="cha8 slot_list cha_list">마법사(남)</button>
+						<button id="cha9" data-character="mage_f" class="cha9 slot_list cha_list">마법사(여)</button>
+						<button id="cha10" data-character="creator_f" class="cha10 slot_list cha_list">크리에이터(여)</button>
+						<button id="cha11" data-character="priest_m" class="cha11 slot_list cha_list">프리스트(남)</button>
+						<button id="cha12" data-character="priest_f" class="cha12 slot_list cha_list">프리스트(여)</button>
+						<button id="cha13" data-character="thief_f" class="cha13 slot_list cha_list">도적(여)</button>
+						<button id="cha14" data-character="knight_f" class="cha14 slot_list cha_list">나이트(여)</button>
+						<button id="cha15" data-character="lancer_m" class="cha15 slot_list cha_list">마창사(남)</button>
+						<button id="cha16" data-character="beckey" class="cha16 slot_list cha_list">베키</button>
 					</div>
 				</div>
 				<button id="slot_right_close" class="slot_close hover_inset">닫기</button>
@@ -263,12 +289,16 @@
 		<div id="imagePreloader"></div>
 		<!--이미지 임시저장소-->
 
+		<!--추가 스타일-->
+		<style id="extraStyle"></style>
+		<!--추가 스타일-->
+
 		<!--외부  라이브러리-->
 			<!-- vunit polyfill -->
 			<script src="./package/prefixfree.min.js"></script>
 			<script src="./package/vunit.js"></script>
 			<!-- sweetAlert -->
-			<script src="./package/sweetalert2/dist/sweetalert2.min.js"></script>
+			<script src="./package/sweetalert2/dist/sweetalert2.js"></script>
 			<link rel="stylesheet" href="./package/sweetalert2/dist/sweetalert2.css">
 				<!-- for Promise support -->
 				<script src="./package/sweetalert2/node_modules/es6-promise-polyfill/promise.min.js"></script>

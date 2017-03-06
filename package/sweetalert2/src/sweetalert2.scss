@@ -1,85 +1,122 @@
 // SweetAlert2
 // github.com/limonte/sweetalert2
 
-.swal2-overlay {
-  background-color: rgba(#000, .4);
+$white: #fff;
+$black: #000;
+$roman: #d55;
+$sienna: #f06e57;
+$tulip: #c4e6f5;
+$spindle: #b4dbed;
+$apricot: #ea7d7d;
+$corn: #f8d486;
+$manhattan: #f8bb86;
 
+$success:  #a5dc86;
+$error:    #f27474;
+$warning:  #f8bb86;
+$info:     #3fc3ee;
+$question: #87adbd;
+$success-border: rgba($success, .2);
+
+$overlay: rgba($black, .4);
+$input-box-shadow: rgba($black, .06);
+
+$transparent: rgba($black, 0);
+
+body {
+  &.swal2-shown {
+    overflow-y: hidden;
+  }
+
+  &.swal2-iosfix {
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+}
+
+.swal2-container {
+  // centering
+  display: flex;
+  align-items: center;
   position: fixed;
-  left: 0;
-  right: 0;
   top: 0;
+  left: 0;
   bottom: 0;
+  right: 0;
+  padding: 10px;
 
-  display: none;
-  z-index: 1000;
+  // backdrop
+  background-color: transparent;
+
+  z-index: 1060;
+
+  &.swal2-fade {
+    transition: background-color .1s;
+  }
+
+  &.swal2-shown {
+    background-color: $overlay;
+  }
 }
 
 .swal2-modal {
-  background-color: #fff;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: $white;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   border-radius: 5px;
   box-sizing: border-box;
   text-align: center;
-
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  margin-top: -200px;
-
-  max-height: 90%;
+  margin: auto;
   overflow-x: hidden;
   overflow-y: auto;
   display: none;
-  z-index: 2000;
+  position: relative;
 
   &:focus {
     outline: none;
   }
 
-  &.loading {
+  &.swal2-loading {
     overflow-y: hidden;
   }
 
-  h2 {
-    color: #575757;
+  .swal2-title {
+    color: lighten($black, 35);
     font-size: 30px;
     text-align: center;
     font-weight: 600;
     text-transform: none;
     position: relative;
-    margin: 0;
+    margin: 0 0 .4em;
     padding: 0;
-    line-height: 60px;
     display: block;
   }
 
-  hr {
+  .swal2-spacer {
     height: 10px;
     color: transparent;
     border: 0;
   }
 
-  button.styled {
-    color: #fff;
+  .swal2-styled {
     border: 0;
+    border-radius: 3px;
     box-shadow: none;
+    color: $white;
+    cursor: pointer;
     font-size: 17px;
     font-weight: 500;
-    border-radius: 5px;
-    padding: 10px 32px;
     margin: 0 5px;
-    cursor: pointer;
+    padding: 10px 32px;
 
-    &:focus {
-      outline: none;
+    &:not(.swal2-loading) {
+      &[disabled] {
+        opacity: .4;
+        cursor: no-drop;
+      }
     }
 
-    &[disabled] {
-      opacity: .4;
-      cursor: no-drop;
-    }
-
-    &.loading {
+    &.swal2-loading {
       box-sizing: border-box;
       border: 4px solid transparent;
       border-color: transparent;
@@ -93,16 +130,34 @@
       cursor: default;
       border-radius: 100%;
       animation: rotate-loading 1.5s linear 0s infinite normal;
+      user-select: none;
     }
+  }
 
-    // Remove selection outline in Firefox
-    &::-moz-focus-inner {
-      border: 0;
+  .swal2-styled + .swal2-styled {
+    margin-top: 15px;
+  }
+
+  :not(.swal2-styled) {
+    &.swal2-loading {
+      &::after {
+        display: inline-block;
+        content: '';
+        margin-left: 5px;
+        vertical-align: -1px;
+        height: 6px;
+        width: 6px;
+        border: 3px solid lighten($black, 60);
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: rotate-loading 1.5s linear 0s infinite normal;
+      }
     }
   }
 
   .swal2-image {
     margin: 20px auto;
+    max-width: 100%;
   }
 
   .swal2-close {
@@ -113,55 +168,216 @@
     top: 5px;
     right: 13px;
     cursor: pointer;
-    color: #cfcfcf;
-    transition: all 0.1s ease;
+    color: lighten($black, 80);
+    transition: color .1s ease;
 
     &:hover {
-      color: #d55;
+      color: $roman;
     }
   }
 
+  > .swal2-input,
+  > .swal2-file,
+  > .swal2-textarea,
+  > .swal2-select,
+  > .swal2-radio,
+  > .swal2-checkbox {
+    display: none;
+  }
+
+  .swal2-content {
+    font-size: 18px;
+    text-align: center;
+    font-weight: 300;
+    position: relative;
+    float: none;
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    color: lighten($black, 33);
+  }
+
+  .swal2-input,
+  .swal2-file,
+  .swal2-textarea,
+  .swal2-select,
+  .swal2-radio,
+  .swal2-checkbox {
+    margin: 20px auto;
+  }
+
+  .swal2-input,
+  .swal2-file,
+  .swal2-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 3px;
+    border: 1px solid lighten($black, 85);
+    font-size: 18px;
+    box-shadow: inset 0 1px 1px $input-box-shadow;
+    transition: border-color box-shadow .3s;
+
+    &.swal2-inputerror {
+      border-color: $sienna !important;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 3px $tulip;
+      border: 1px solid $spindle;
+
+      &::placeholder {
+        transition: opacity .3s .03s ease;
+        opacity: .8;
+      }
+    }
+
+    &::placeholder {
+      color: lighten($black, 90);
+    }
+  }
+
+  .swal2-range {
+    input {
+      float: left;
+      width: 80%;
+    }
+
+    output {
+      float: right;
+      width: 20%;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    input,
+    output {
+      height: 43px;
+      line-height: 43px;
+      vertical-align: middle;
+      margin: 20px auto;
+      padding: 0;
+    }
+  }
+
+  .swal2-input {
+    height: 43px;
+    padding: 0 12px;
+
+    &[type='number'] {
+      max-width: 150px;
+    }
+  }
+
+  .swal2-file {
+    font-size: 20px;
+  }
+
+  .swal2-textarea {
+    height: 108px;
+    padding: 12px;
+  }
+
+  .swal2-select {
+    color: lighten($black, 33);
+    font-size: inherit;
+    padding: 5px 10px;
+    min-width: 40%;
+    max-width: 100%;
+  }
+
+  .swal2-radio {
+    border: 0;
+
+    label {
+      &:not(:first-child) {
+        margin-left: 20px;
+      }
+    }
+
+    input,
+    span {
+      vertical-align: middle;
+    }
+
+    input {
+      margin: 0 3px 0 0;
+    }
+  }
+
+  .swal2-checkbox {
+    color: lighten($black, 33);
+
+    input,
+    span {
+      vertical-align: middle;
+    }
+  }
+
+  .swal2-validationerror {
+    background-color: lighten($black, 94);
+    margin: 0 -20px;
+    overflow: hidden;
+    padding: 10px;
+    color: lighten($black, 50);
+    font-size: 16px;
+    font-weight: 300;
+    display: none;
+
+    &::before {
+      content: '!';
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: $apricot;
+      color: $white;
+      line-height: 24px;
+      text-align: center;
+      margin-right: 10px;
+    }
+  }
 }
 
-.swal2-content {
-  font-size: 18px;
-  text-align: center;
-  font-weight: 300;
-  position: relative;
-  float: none;
-  margin: 0;
-  padding: 0;
-  line-height: normal;
-  color: #555;
+@supports (-ms-accelerator: true) {
+  .swal2-range {
+    input {
+      width: 100% !important;
+    }
+
+    output {
+      display: none;
+    }
+  }
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .swal2-range {
+    input {
+      width: 100% !important;
+    }
+
+    output {
+      display: none;
+    }
+  }
 }
 
 .swal2-icon {
-  $red:    #f27474;
-  $orange: #f8bb86;
-  $cyan:   #3fc3ee;
-  $blue:   #c9dae1;
-  $green:  #a5dc86;
-
   width: 80px;
   height: 80px;
-  border: 4px solid #808080;
+  border: 4px solid transparent;
   border-radius: 50%;
   margin: 20px auto 30px;
   padding: 0;
   position: relative;
   box-sizing: content-box;
   cursor: default;
-
-  /* http://stackoverflow.com/a/4407335/1331425 */
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 
   &.swal2-error {
-    border-color: $red;
+    border-color: $error;
 
     .x-mark {
       position: relative;
@@ -172,7 +388,7 @@
       position: absolute;
       height: 5px;
       width: 47px;
-      background-color: $red;
+      background-color: $error;
       display: block;
       top: 37px;
       border-radius: 2px;
@@ -190,34 +406,34 @@
   }
 
   &.swal2-warning {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: $orange;
-    border-color: $orange;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: $warning;
+    border-color: lighten($warning, 7);
     font-size: 60px;
     line-height: 80px;
     text-align: center;
   }
 
   &.swal2-info {
-    font-family: "Open Sans", sans-serif;
-    color: $cyan;
-    border-color: $cyan;
+    font-family: 'Open Sans', sans-serif;
+    color: $info;
+    border-color: lighten($info, 20);
     font-size: 60px;
     line-height: 80px;
     text-align: center;
   }
 
   &.swal2-question {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: $blue;
-    border-color: $blue;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: $question;
+    border-color: lighten($question, 20);
     font-size: 60px;
     line-height: 80px;
     text-align: center;
   }
 
   &.swal2-success {
-    border-color: $green;
+    border-color: $success;
 
     &::before,
     &::after { // Emulate moving circular line
@@ -226,7 +442,7 @@
       position: absolute;
       width: 60px;
       height: 120px;
-      background: #fff;
+      background: $white;
       transform: rotate(45deg);
     }
 
@@ -251,7 +467,7 @@
     .placeholder { // Ring
       width: 80px;
       height: 80px;
-      border: 4px solid rgba($green, .2);
+      border: 4px solid $success-border;
       border-radius: 50%;
       box-sizing: content-box;
 
@@ -261,10 +477,10 @@
       z-index: 2;
     }
 
-    .fix {  // Hide corners left from animation
+    .fix { // Hide corners left from animation
       width: 7px;
       height: 90px;
-      background-color: #fff;
+      background-color: $white;
 
       position: absolute;
       left: 28px;
@@ -276,7 +492,7 @@
 
     .line {
       height: 5px;
-      background-color: $green;
+      background-color: $success;
       display: block;
       border-radius: 2px;
 
@@ -304,114 +520,63 @@
   }
 }
 
-.swal2-input, .swal2-textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 3px;
-  border: 1px solid rgb(215, 215, 215);
-  margin: 20px auto;
-  font-size: 18px;
-  box-shadow: inset 0px 1px 1px rgba(black, 0.06);
-  -webkit-transition: all 0.3s;
-  transition: all 0.3s;
-  &.error {
-    border-color: #f06e57 !important;
-  }
-  &:focus {
-    outline: none;
-    box-shadow: 0px 0px 3px rgb(196, 230, 245);
-    border: 1px solid rgb(180, 219, 237);
-    &::-moz-placeholder {
-      transition: opacity 0.3s 0.03s ease;
-      opacity: 0.8;
-    }
-    &:-ms-input-placeholder {
-      transition: opacity 0.3s 0.03s ease;
-      opacity: 0.8;
-    }
-    &::-webkit-input-placeholder {
-      transition: opacity 0.3s 0.03s ease;
-      opacity: 0.8;
-    }
-  }
-  &::-moz-placeholder {
-    color: lighten(#575757, 40);
-  }
-  &:-ms-input-placeholder {
-    color: lighten(#575757, 40);
-  }
-  &::-webkit-input-placeholder {
-    color: lighten(#575757, 40);
-  }
-}
+.swal2-progresssteps {
+  $lightblue: #add8e6;
+  $blue: #3085d6;
 
-.swal2-input {
-  height: 43px;
-  padding: 0 12px;
-}
+  font-weight: 600;
+  margin: 0 0 20px;
+  padding: 0;
 
-.swal2-textarea {
-  height: 108px;
-  padding: 12px;
-}
-
-.swal2-select {
-  color: #555;
-  font-size: inherit;
-  margin: 20px auto;
-  padding: 5px 10px;
-  min-width: 40%;
-  max-width: 100%;
-}
-
-.swal2-radio {
-  border: 0;
-  margin: 20px auto;
-
-  label:not(:first-child) {
-    margin-left: 20px;
-  }
-
-  input, span {
-    vertical-align: middle;
-  }
-
-  input {
-    margin: 0 3px 0 0;
-  }
-}
-
-.swal2-checkbox {
-  color: #555;
-  margin: 20px auto;
-  input, span {
-    vertical-align: middle;
-  }
-}
-
-.swal2-validationerror {
-  background-color: #f1f1f1;
-  margin: 0 -20px;
-  overflow: hidden;
-  padding: 10px;
-  color: #797979;
-  font-size: 16px;
-  font-weight: 300;
-
-  &::before {
-    content: "!";
+  li {
     display: inline-block;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: rgb(234, 125, 125);
-    color: white;
-    line-height: 24px;
+    position: relative;
+  }
+
+  .swal2-progresscircle {
+    background: $blue;
+    border-radius: 2em;
+    color: $white;
+    height: 2em;
+    line-height: 2em;
     text-align: center;
-    margin-right: 10px;
+    width: 2em;
+    z-index: 20;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &.swal2-activeprogressstep {
+      background: $blue;
+
+      ~ .swal2-progresscircle {
+        background: $lightblue;
+      }
+
+      ~ .swal2-progressline {
+        background: $lightblue;
+      }
+    }
+  }
+
+  .swal2-progressline {
+    background: $blue;
+    height: .4em;
+    margin: 0 -1px;
+    z-index: 10;
   }
 }
 
+
+// github.com/limonte/sweetalert2/issues/268
+[class^='swal2'] {
+  -webkit-tap-highlight-color: $transparent;
+}
 
 // Animations
 
@@ -449,25 +614,27 @@
 @include keyframes(hideSweetAlert) {
   0% {
     transform: scale(1);
+    opacity: 1;
   }
 
   100% {
     transform: scale(.5);
+    opacity: 0;
   }
 }
 
-.show-swal2 {
+.swal2-show {
   @include animation('showSweetAlert 0.3s');
 
-  &.no-animation {
+  &.swal2-noanimation {
     @include animation('none');
   }
 }
 
-.hide-swal2 {
-  @include animation('hideSweetAlert 0.2s');
+.swal2-hide {
+  @include animation('hideSweetAlert 0.15s forwards');
 
-  &.no-animation {
+  &.swal2-noanimation {
     @include animation('none');
   }
 }
@@ -560,8 +727,12 @@
   @include animation('animate-success-long 0.75s');
 }
 
-.swal2-icon.swal2-success.animate::after {
-  @include animation('rotatePlaceholder 4.25s ease-in');
+.swal2-success {
+  &.animate {
+    &::after {
+      @include animation('rotatePlaceholder 4.25s ease-in');
+    }
+  }
 }
 
 
@@ -614,11 +785,11 @@
 
 @include keyframes(pulse-warning) {
   0% {
-    border-color: #f8d486;
+    border-color: $corn;
   }
 
   100% {
-    border-color: #f8bb86;
+    border-color: $manhattan;
   }
 }
 

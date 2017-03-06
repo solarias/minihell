@@ -198,7 +198,7 @@ html, body {
         z-index:99;
 
     width:100%;
-    height:14rem;
+    height:13.6rem;
 
     background-color:black;
     border-bottom:0.02rem black solid;
@@ -241,7 +241,7 @@ html, body {
         margin:0.5rem auto 0 auto;
         padding:0.1rem;
         width:8rem;
-        height:9rem;
+        height:8.5rem;
 
         background:rgba(0,0,0,0.8);
         border:0.1rem white outset;
@@ -295,7 +295,7 @@ html, body {
     #cover_loading {
         position:absolute;
         left:0;right:0;
-        bottom:1rem;
+        bottom:0.4rem;
         overflow:hidden;
 
         margin:1rem auto 0 auto;
@@ -376,7 +376,7 @@ html, body {
 
     color:white;
     font-weight:bold;
-    font-size:0.5rem;
+    font-size:0.4rem;
         line-height:1.0rem;
     text-align:center;
 }
@@ -459,56 +459,25 @@ html, body {
     position:absolute;
     z-index:10;
 
-    width:3.5rem;
+    width:3.8rem;
     height:1.4rem;
 
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #FFFFFF), color-stop(1.00, #A0A0A0));
-    background: -webkit-linear-gradient(top, #ffffff, #A0A0A0);
-    background: linear-gradient(to bottom, #ffffff, #A0A0A0);
+    background: -webkit-linear-gradient(#ffffff, #A0A0A0);
+    background: linear-gradient(#ffffff, #A0A0A0);
     border:0.02rem gray outset;
     border-radius:0.3rem;
     opacity:0.9;
 
-    font-size:0.45rem;
+    font-size:0.6rem;
     font-weight:bold;
 }
     .main_option:active {
         background: #A0A0A0;
         opacity:1;
     }
-    #main_search_change {
-        bottom:3.6rem;
-        right:0;
-
-        border-top-right-radius:0;
-        border-bottom-right-radius:0;
-    }
-    #main_sound_change {
-        bottom:1.9rem;
-        right:0;
-
-        border-top-right-radius:0;
-        border-bottom-right-radius:0;
-    }
     #main_character_change {
+        right:0.2rem;
         bottom:0.2rem;
-        right:0;
-
-        border-top-right-radius:0;
-        border-bottom-right-radius:0;
-
-        font-size:0.5rem;
-    }
-    #main_inventory {
-        bottom:0.2rem;
-        left:0;
-
-        width:2rem;
-
-        border-top-left-radius:0;
-        border-bottom-left-radius:0;
-
-        font-size:0.6rem;
     }
 
     /*세트 정보*/
@@ -518,7 +487,7 @@ html, body {
         right:0;top:1.2rem;
 
         padding:0.1rem 0.2rem;
-        width:6rem;
+        width:auto;
         height:auto;
 
         background-color: rgba(0,0,0,0.7);
@@ -526,7 +495,7 @@ html, body {
 
         font-size:0.35rem;
         font-weight:normal;
-        text-align:left;
+        text-align:right;
 
         display:none;
     }
@@ -536,14 +505,14 @@ html, body {
 
     padding:0.1rem;
     width:100%;
-    height:2rem;
+    height:1.6rem;
 
     background:black;
-    border:0.1rem #909090 outset;
+    border:0.08rem #909090 outset;
     box-sizing: border-box;
 
     color:white;
-    font-size:0.5rem;
+    font-size:0.4rem;
     font-weight:bold;
 }
     #frame_board hr {
@@ -555,18 +524,18 @@ html, body {
         position:relative;
         float:left;
         width:calc((100% - 0.2rem) / 3);
-        height:0.8rem;
+        height:0.6rem;
         box-sizing: border-box;
         vertical-align: middle;}
         .board_img {
             float:left;
-            width:0.7rem;
-            height:0.7rem;
+            width:0.5rem;
+            height:0.5rem;
             display:inline-block;}
         .board_text {
             float:left;
             margin-left:0.2rem;
-            height:0.8rem;
+            height:0.6rem;
             display:block;}
     #board_count {
         width:40%;}
@@ -576,7 +545,7 @@ html, body {
         border-left:0.02rem white solid;}
         #board_perfect1 {color:yellow;display:none;}
         #board_perfect2 {width:calc(66% - 0.2rem);
-            color:yellow;font-size:0.4rem;line-height:0.6rem;
+            color:yellow;font-size:0.4rem;line-height:0.4rem;
             display:none;}
     #board_soul, #board_beed {
         margin-top:-0.1rem;
@@ -593,7 +562,7 @@ html, body {
     top:0;
     overflow:hidden;
 
-    padding-top:14rem;
+    padding-top:13.6rem;
     width: 100%;
     height: 100%;
 
@@ -630,54 +599,84 @@ html, body {
 .button_side{
     position:absolute;
         z-index:3;
-    top:10%;
     display:block;
 
-    width:20%;
-    height:80%;
+    width:26%;
 
     box-sizing:border-box;
-    -webkit-transition:width 0.3s, left 0.3s, right 0.3s;
-    transition:width 0.3s, left 0.3s, right 0.3s;
+    -webkit-transition:width 0.3s, left 0.3s, right 0.3s, top 0.3s, bottom 0.3s;
+    transition:width 0.3s, left 0.3s, right 0.3s, top 0.3s, bottom 0.3s;
 
-    font-size:0.6rem;
+    font-size:0.7rem;
     font-weight:bold;
 }
-#button_left {
-    left:0;
+#button_left_top {
+    left:0;top:0;
+    height:48%;
+
+    background: -webkit-linear-gradient(#ffffff, #FFD83E);
+    background: linear-gradient(#ffffff, #FFD83E);
+    border:0.05rem gray outset;
+    border-left:0.05rem transparent outset;
+    border-bottom-right-radius:0.4rem;
+}
+    #button_left_top.hide {
+        left:-26%;
+    }
+#button_left_bottom {
+    left:0;bottom:0;
+    height:48%;
 
     background: -webkit-linear-gradient(#ffffff, #516BFF);
     background: linear-gradient(#ffffff, #516BFF);
     border:0.05rem gray outset;
     border-left:0.05rem transparent outset;
     border-top-right-radius:0.4rem;
-    border-bottom-right-radius:0.4rem;
 }
-    #button_left.hide {
-        left:-20%;
+    #button_left_bottom.hide {
+        left:-26%;bottom:10%;
     }
-    #button_left.long {
-        left:0;
+    #button_left_bottom.long {
+        left:0;bottom:10%;
         width:30%;
+        height:80%;
+        border-top-right-radius:0.4rem;
+        border-bottom-right-radius:0.4rem;
         font-size:0.7rem;
     }
-#button_right {
-    right:0;
+#button_right_top {
+    right:0;top:0;
+    height:48%;
 
     background: -webkit-linear-gradient(#ffffff, #FF6A00);
     background: linear-gradient(#ffffff, #FF6A00);
     border:0.05rem gray outset;
     border-right:0.05rem transparent outset;
-    border-top-left-radius:0.4rem;
     border-bottom-left-radius:0.4rem;
 }
-    #button_right.hide {
-        right:-20%;
+    #button_right_top.hide {
+        right:-26%;top:10%;
     }
-    #button_right.long {
-        right:0;
+    #button_right_top.long {
+        right:0;top:10%;
         width:50%;
+        height:80%;
+        border-top-left-radius:0.4rem;
+        border-bottom-left-radius:0.4rem;
         font-size:0.7rem;
+    }
+#button_right_bottom {
+    right:0;bottom:0;
+    height:48%;
+
+    background: -webkit-linear-gradient(#bce2d8 0%,#00e8b1 100%);
+    background: linear-gradient(#bce2d8 0%,#00e8b1 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    border:0.05rem gray outset;
+    border-right:0.05rem transparent outset;
+    border-top-left-radius:0.4rem;
+}
+    #button_right_bottom.hide {
+        right:-26%;
     }
 
 
@@ -969,6 +968,101 @@ html, body {
                     height:calc(100% - 4rem);
                 }
                 .dg_list{height:3.2rem;}
+
+
+                #option_box {
+                    padding:0.2rem;
+                    height:2000px;
+                }
+                        #option_side {
+                            position:absolute;
+                                z-index:100;
+                            left:-2rem;bottom:3rem;
+
+                            padding:0.1rem;
+                            width:2rem;
+                            height:2.2rem;
+
+                            background:rgba(0,0,0,0.6);
+                            border:0.02rem black solid;
+                            border-top-left-radius:0.2rem;
+                            border-bottom-left-radius:0.2rem;
+                            box-sizing: border-box;
+
+                            display:none;
+                        }
+                        #option_clearRecord {
+                            padding:0 0;
+                            width:1.8rem;
+                            height:2rem;
+                            background:red;
+                            box-sizing: border-box;
+
+                            color:white;
+                            text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
+                            font-size:0.4rem;
+                            line-height:0.5rem;
+                        }
+                                #option_clearRecord:active {
+                                    background-color:orange;
+                                }
+                .option_button {
+                    margin-bottom:0.5rem;
+                    padding:0 0.2rem;
+                    width:100%;
+                    height:1.2rem;
+
+                    background:black;
+                    border:0.03rem skyblue outset;
+                    border-radius:0.2rem;
+                    box-sizing: border-box;
+
+                    color:white;
+                    font-size:0.6rem;
+                    font-weight:bold;
+                    line-height:1.2rem;
+
+                    display:block;
+                }
+                    #option_character {
+                        padding-left:1.9rem;
+                        height:1.7rem;
+                        background:yellow;
+                            background-position:0.1rem 0.1rem;
+                            background-repeat:no-repeat;
+                            background-size:1.8rem 1.5rem;
+                        box-sizing: border-box;
+                        color:black;
+                        font-size:0.8rem;
+                    }
+                .option_checkbox {
+                    width:0.8rem;
+                    height:0.8rem;
+
+                    vertical-align:top;
+                }
+                    .option_checkbox:hover {
+                        cursor:pointer;
+                    }
+                .option_label {
+                    margin-bottom:0.2rem;
+                    padding:0 0.2rem;
+                    width:calc(100% - 1rem);
+                    height:0.8rem;
+
+                    background:black;
+                    border:0.03rem skyblue outset;
+                    border-radius:0.2rem;
+                    box-sizing: border-box;
+
+                    color:white;
+                    font-size:0.4rem;
+                    font-weight:bold;
+                    line-height:0.8rem;
+
+                    display:inline-block;
+                }
+
                 .cha_list{
                     margin-bottom:0.2rem;
                     padding-left:2.1rem;
@@ -989,22 +1083,23 @@ html, body {
                 }
             #dg_gate{background-image:url('../img/slot/gate.png')}
 
-            #cha1{background-image:url('../img/character_face/swordman_m_on.png')}
-            #cha2{background-image:url('../img/character_face/swordman_f_on.png')}
-            #cha3{background-image:url('../img/character_face/darkknight_m_on.png')}
-            #cha4{background-image:url('../img/character_face/fighter_m_on.png')}
-            #cha5{background-image:url('../img/character_face/fighter_f_on.png')}
-            #cha6{background-image:url('../img/character_face/gunner_m_on.png')}
-            #cha7{background-image:url('../img/character_face/gunner_f_on.png')}
-            #cha8{background-image:url('../img/character_face/mage_m_on.png')}
-            #cha9{background-image:url('../img/character_face/mage_f_on.png')}
-            #cha10{background-image:url('../img/character_face/creator_f_on.png')}
-            #cha11{background-image:url('../img/character_face/priest_m_on.png')}
-            #cha12{background-image:url('../img/character_face/priest_f_on.png')}
-            #cha13{background-image:url('../img/character_face/thief_f_on.png')}
-            #cha14{background-image:url('../img/character_face/knight_f_on.png')}
-            #cha15{background-image:url('../img/character_face/lancer_m_on.png')}
-            #cha16{background-image:url('../img/character_face/beckey_on.png')}
+            .cha1{background-image:url('../img/character_face/swordman_m.png')}
+            .cha2{background-image:url('../img/character_face/swordman_f.png')}
+            .cha3{background-image:url('../img/character_face/darkknight_m.png')}
+            .cha4{background-image:url('../img/character_face/fighter_m.png')}
+            .cha5{background-image:url('../img/character_face/fighter_f.png')}
+            .cha6{background-image:url('../img/character_face/gunner_m.png')}
+            .cha7{background-image:url('../img/character_face/gunner_f.png')}
+            .cha8{background-image:url('../img/character_face/mage_m.png')}
+            .cha9{background-image:url('../img/character_face/mage_f.png')}
+            .cha10{background-image:url('../img/character_face/creator_f.png')}
+            .cha11{background-image:url('../img/character_face/priest_m.png')}
+            .cha12{background-image:url('../img/character_face/priest_f.png')}
+            .cha13{background-image:url('../img/character_face/thief_f.png')}
+            .cha14{background-image:url('../img/character_face/knight_f.png')}
+            .cha15{background-image:url('../img/character_face/lancer_m.png')}
+            .cha16{background-image:url('../img/character_face/beckey.png')}
+
 #frame_wish {
     position:absolute;
         z-index:100;
