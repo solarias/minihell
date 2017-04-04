@@ -57,7 +57,7 @@ var spriteInfo = [
 	{
 		"name":"item",
 		"type":"item",
-		"url":"https://solarias.github.io/dnf/sprite/images/sprite_item.png",
+		"url":"./sprite/images/sprite_item.png",
 		"tw":"",
 		"th":"",
 		"x":"",

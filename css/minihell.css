@@ -861,7 +861,7 @@ html, body {
                 width:1rem;
                 height:1rem;
 
-                background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_hell.png');
+                background-image:url('../sprite/images/sprite_hell.png');
                     background-size:22.5rem auto;
                 box-sizing: border-box;
             }
@@ -1173,7 +1173,7 @@ html, body {
             height:1rem;
 
             background-color:black;
-            background-image:url('https://solarias.github.io/dnf/sprite/images/sprite_hell.png');
+            background-image:url('../sprite/images/sprite_hell.png');
                 background-position:0 0;
                 background-size:22.5rem auto;
         }

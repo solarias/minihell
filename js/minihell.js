@@ -151,8 +151,8 @@ var imageList = [];
         imageList.push("./img/character_face/" + key + ".png");
     }
     /*아이템 스프라이트 이미지*/
-    imageList.push("https://solarias.github.io/dnf/sprite/images/sprite_item.png");
-    imageList.push("https://solarias.github.io/dnf/sprite/images/sprite_hell.png");
+    imageList.push("./sprite/images/sprite_item.png");
+    imageList.push("./sprite/images/sprite_hell.png");
     /*에픽 이펙트 스프라이트*/
     for (i = 0;i < spriteInfo.length;i++) {
         var info = spriteInfo[i];
