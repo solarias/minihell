@@ -24,8 +24,8 @@ var droprate = {//아이템 드랍률 (합산 기준)
     num:[0.065,0.04,0.0065]
 };
 var droprate_special = {//특수 에픽 드랍률
-    "metro_6":[0.11,0,0,0.89],//이계의 틈
-    "$perfect":[1,0,0,0]//퍼펙트 모드
+    "metro_6":[0.11,0,0],//이계의 틈
+    "$perfect":[1,0,0,]//퍼펙트 모드
 };
 var droptype = {//장비 타입별 드랍확률 가중치
     name:["무기","방어구","악세서리","특수장비"],
@@ -365,8 +365,8 @@ simulateP.prototype.build = function(target) {
     current_rate[0] = deepCopy(droprate);
     current_rate[1] = {name:[],num:[]};
     //특수지역이라면 해당 확률 변경된
-    if (Object.keys(droprate_special).indexOf(selectedDungeon.now.id) >= 0)
-        current_rate[0].num = deepCopy(droprate_special[selectedDungeon.now.id]);
+    if (Object.keys(droprate_special).indexOf(selectedDungeon.after.id) >= 0)
+        current_rate[0].num = deepCopy(droprate_special[selectedDungeon.after.id]);
     //퍼펙트모드라면 별도 확률 처리
     if (user.perfectMode) current_rate[0].num = deepCopy(droprate_special.$perfect);
     //개별 드랍률로 치환(하면서 합쳐놓기)
