@@ -22,6 +22,12 @@
 			<div id="frame_cover"><div id="frame_cover_bg">
 				<div id="cover_title">에픽의 균열</div>
 				<div id="cover_notice">
+					<p title>2017-10-2</p>
+					<p content>
+						- 채널 목록 업데이트(던파 오리진)<br>
+						- 에픽조각 시스템 추가<br>
+						<span class="color_yellow">(게이트에서 '에픽조각 안내' 확인)</span>
+					</p>
 					<p title>2017-4-20</p>
 					<p content>
 						- 마계의 틈에서 던전 변경 후 탐색 시 오류나던 현상 수정
@@ -142,13 +148,14 @@
 					저를 클릭하면 퍼펙트 모드를 이용할 수 있습니다.
 				</div>
 				<div id="main_npc" class="npc_erze"></div>
+				<div id="main_tool" class="npc_tool"></div>
 				<div id="main_crack" gpuaccel></div>
 				<!--캔버스 - 캐릭터, 아이템, 이펙트-->
 				<div id="canvas_cover">
 					<canvas id="main_canvas" width="540px" height="405px"></canvas>
 				</div>
 				<!--버튼들-->
-				<button id="main_character_change" class="main_option">캐릭터 변경</button>
+				<button id="main_craft" class="main_option">에픽조각 안내</button>
 			</div>
 
 			<div id="frame_board">
@@ -258,39 +265,40 @@
 				<div id="wish_cover"></div>
 				<div id="wish_title">찜하기</div>
 				<div id="wish_item1" class="wish_item">1
-					<div id="wish_item_icon1" class="wish_item_icon"></div>
+					<div id="wish_item_icon1" class="wish_item_icon"><span id="wish_item_jogak1" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state1" class="wish_item_state"></div>
+					<div id="wish_item_gabriel"></div>
 				</div>
 				<div id="wish_item2" class="wish_item">2
-					<div id="wish_item_icon2" class="wish_item_icon"></div>
+					<div id="wish_item_icon2" class="wish_item_icon"><span id="wish_item_jogak2" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state2" class="wish_item_state"></div>
 				</div>
 				<div id="wish_item3" class="wish_item">3
-					<div id="wish_item_icon3" class="wish_item_icon"></div>
+					<div id="wish_item_icon3" class="wish_item_icon"><span id="wish_item_jogak3" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state3" class="wish_item_state"></div>
 				</div>
 				<div id="wish_item4" class="wish_item">4
-					<div id="wish_item_icon4" class="wish_item_icon"></div>
+					<div id="wish_item_icon4" class="wish_item_icon"><span id="wish_item_jogak4" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state4" class="wish_item_state"></div>
 				</div>
 				<div id="wish_item5" class="wish_item">5
-					<div id="wish_item_icon5" class="wish_item_icon"></div>
+					<div id="wish_item_icon5" class="wish_item_icon"><span id="wish_item_jogak5" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state5" class="wish_item_state"></div>
 				</div>
 				<div id="wish_item6" class="wish_item">6
-					<div id="wish_item_icon6" class="wish_item_icon"></div>
+					<div id="wish_item_icon6" class="wish_item_icon"><span id="wish_item_jogak6" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state6" class="wish_item_state"></div>
 				</div>
 				<div id="wish_item7" class="wish_item">7
-					<div id="wish_item_icon7" class="wish_item_icon"></div>
+					<div id="wish_item_icon7" class="wish_item_icon"><span id="wish_item_jogak7" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state7" class="wish_item_state"></div>
 				</div>
 				<div id="wish_item8" class="wish_item">8
-					<div id="wish_item_icon8" class="wish_item_icon"></div>
+					<div id="wish_item_icon8" class="wish_item_icon"><span id="wish_item_jogak8" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state8" class="wish_item_state"></div>
 				</div>
 				<div id="wish_item9" class="wish_item">9
-					<div id="wish_item_icon9" class="wish_item_icon"></div>
+					<div id="wish_item_icon9" class="wish_item_icon"><span id="wish_item_jogak9" class="wish_item_jogak font_shadow"></span></div>
 					<div id="wish_item_state9" class="wish_item_state"></div>
 				</div>
 				<div id="wish_clear"><p>찜목록<br/>초기화</p></div>

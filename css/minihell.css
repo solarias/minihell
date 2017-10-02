@@ -82,11 +82,12 @@
 .color_set {
 	color:#59FF00;
 }
-/*
 .font_shadow {
     text-shadow:0rem -0.02rem black,0.02rem -0.02rem black,0.02rem 0rem black,0.02rem 0.02rem black,0rem 0.02rem black,-0.02rem 0.02rem black,-0.02rem 0rem black,-0.02rem -0.02rem black;
 }
-*/
+.align_left {
+    text-align:left;
+}
 /*그림자 효과*/
 #wrapper button:hover, #wrapper select:hover, #wrapper label:hover {
     outline:0.15rem white solid !important;
@@ -420,6 +421,18 @@ html, body {
     .npc_erze {
         width:1.2rem;height:2.9rem;background-image:url('../img/npc/erze.gif');
         background-size:100% 100%;}
+#main_tool {
+    position:absolute;
+        z-index:1;
+    right:0.2rem;
+    bottom:2rem;
+
+    width:4rem;height:6rem;
+    background-image:url('../img/npc/tool.gif');
+    background-size:100% 100%;
+
+    background-position:0 0;
+}
 #main_crack {
     position:absolute;
         z-index:2;
@@ -475,9 +488,11 @@ html, body {
         background: #A0A0A0;
         opacity:1;
     }
-    #main_character_change {
+    #main_craft {
         right:0.2rem;
         bottom:0.2rem;
+
+        font-size:0.5rem;
     }
 
     /*세트 정보*/
@@ -499,6 +514,10 @@ html, body {
 
         display:none;
     }
+        .icon_gabriel {
+            width:0.35rem;
+            height:0.35rem;
+        }
 /*보드 프레임*/
 #frame_board {
     position:relative;
@@ -512,7 +531,7 @@ html, body {
     box-sizing: border-box;
 
     color:white;
-    font-size:0.4rem;
+    font-size:0.35rem;
     font-weight:bold;
 }
     #frame_board hr {
@@ -538,7 +557,7 @@ html, body {
             height:0.6rem;
             display:block;}
     #board_count {
-        width:40%;}
+        width:25%;}
     #board_invite, #board_perfect1, #board_perfect2 {
         padding-left:0.1rem;
         width:calc(60% - 0.2rem);
@@ -793,8 +812,9 @@ html, body {
             border-bottom:0.02rem white solid;
             box-sizing: border-box;
 
+            font-size:0.25rem;
             color:skyblue;
-            line-height:0.45rem;
+            line-height:0.3rem;
         }
             /*아이템 내 요소들은 모두 선택불가*/
             .item_li * {
@@ -822,19 +842,27 @@ html, body {
                 background-color:rgba(45,127,179,0.5);
                 background-image:url('../img/icon_wished.png');
                     background-repeat:no-repeat;
-                    background-position:98% 100%;
-                    background-size:1rem 1rem;
+                    background-position:98% 0%;
+                    background-size:0.8rem 0.8rem;
             }
-            /*텍스트 컬러*/
+            /*텍스트 컬러 & 크기*/
+                /*크기*/
+                .item_li::first-line {
+                    font-size:0.3rem;
+                    line-height:0.35rem;
+                }
                 /*이름*/
                 .item_li.color_epic::first-line {
                     color:#E5B64A;
+                    line-height:0.35rem;
                 }
                 .item_li.color_set::first-line {
                     color:#59FF00;
+                    line-height:0.35rem;
                 }
                 .item_li.color_nothing::first-line {
                     color:#868484;
+                    line-height:0.35rem;
                 }
                 /*수량*/
                 .item_li {
@@ -843,16 +871,6 @@ html, body {
                 .item_li.color_nothing {
                     color:transparent;
                 }
-        #inventory_scroll p {
-            position:relative;
-
-            float:right;
-            width:calc(100% - 1.1rem);
-            height:0.5rem;
-
-            font-size:0.35rem;
-            line-height:0.5rem;
-        }
             #inventory_scroll .icon {
                 position:absolute;
                 left:0;top:0;
@@ -876,6 +894,44 @@ html, body {
             #inventory_scroll .right {
                 float:right;
             }
+            #inventory_scroll .jogakProgress {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                float:left;
+                position:relative;
+
+                margin-top:0.1rem;
+                width:100%;
+                height:0.2rem;
+
+                background: #606060;
+                border-radius:0.1rem;
+
+                display:block;
+            }
+                #inventory_scroll .jogakBar {
+                    position:absolute;
+                    left:0;top:0;
+                    width:50%;
+                    height:100%;
+
+                    background: -webkit-linear-gradient(to bottom, #FBDB21, #FF8C00);
+                    background: linear-gradient(to bottom, #FBDB21, #FF8C00); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+                    border-radius:0.1rem;
+                }
+                #inventory_scroll .jogakNum {
+                    position:relative;
+                    left:0;top:0;
+                    width:100%;
+                    height:100%;
+
+                    color:white;
+                    font-size:0.2rem;
+                        line-height:0.2rem;
+                    text-align:center;
+                    display:block;
+                }
 
         .slot_list {
             margin-bottom:0.1rem;
@@ -1125,7 +1181,7 @@ html, body {
             width:calc(2rem * 0.55);
             height:calc(16.6rem * 0.6);
 
-            opacity:0.6;
+            opacity:0.8;
         }
         #frame_wish.mini #wish_cover {display:block;}
         #frame_wish.mini #wish_title {display:none;}
@@ -1183,6 +1239,17 @@ html, body {
             .wish_item_icon:hover {
                 cursor:pointer;
             }
+        .wish_item_jogak {
+            position:absolute;
+            right:0.05rem;bottom:0.4rem;
+            width:100%;
+            height:0.3rem;
+
+            font-size:0.35rem;
+            text-align:right;
+
+            display:block;
+        }
         .wish_item_state {
             position:absolute;
             left:0;top:1rem;
@@ -1195,6 +1262,18 @@ html, body {
         }
             .wish_item_state.no {background-color:red}
             .wish_item_state.yes {background-color:#59FF00}
+            .wish_item_state.jogak {
+            	-webkit-animation: jogak_alert 0.3s infinite alternate;
+                animation: jogak_alert 0.3s infinite alternate;
+            }
+                @-webkit-keyframes jogak_alert {
+                    from {background-color:#826C00;}
+                    to {background-color:yellow;outline:0.1rem yellow solid;}
+                }
+                @keyframes jogak_alert {
+                    from {background-color:#826C00;}
+                    to {background-color:yellow;outline:0.1rem yellow solid;}
+                }
     #wish_clear {
         position:relative;
 

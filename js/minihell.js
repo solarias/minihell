@@ -53,6 +53,11 @@ var autoWish = [];//찜목록 늦게출현 오토
         autoWish[i];
     }
 var wishLimit = 9;//찜하기 최대치
+//조각 관련
+var jogakAmount = 11;//총 11개의 조각이 떨어짐
+var jogakMax = 1000;//총 1000개 모아야 제작 가능
+var gabrielPercent = 0.02;//가브리엘 등장 확률
+var overmade = [];//드랍한도 초과 완성템
 
 
 //던전 관련
@@ -228,7 +233,7 @@ for (i = 0;i < dungeonList.length;i++) {
 //효과음
 var itemSfxList = ["epic_appear","epic_land","epic_appear_wish","epic_land_wish","item_appear"];
 var hitList = ["hit_slash","hit_hit","hit_gun","hit_magic","hit_beckey"];
-var sfxList = ["slot_open","slot_close","slot_act","map_show","map_enter", "wish_set"];
+var sfxList = ["slot_open","slot_close","slot_act","map_show","map_enter", "wish_set","gabriel"];
 var sfxObj = {};
 //에픽 사운드 업데이트
 for (i = 0;i < itemSfxList.length;i++) {
@@ -263,6 +268,8 @@ for (i = 0;i < sfxList.length;i++) {
     });
     sfxObj[sfxList[i]].loadCompleted = false;
 }
+    //일부 큰 소리 작게
+    sfxObj.gabriel.volume(0.3);
 //유저 정보(세이브 가능)
 var user = {
     //저장 정보
@@ -422,9 +429,101 @@ simulateP.prototype.run = function() {
         var todayArr = [];//모든 탐색결과
         var epicArr = [];//에픽템 결과물
         var wishedArr = [];//희망템 결과물
+        var dropable = droparea.length;//드랍 가능 아이템 수
         var falseNum = 0;
-        for (var i = 0;i < droparea.length;i++) {
-            //개별 탐색 결과 확인
+        //드랍한도 초과 아이템부터 먼저 처리
+        if (overmade.length > 0) {
+            todayArr.push([indexArrKey(itemList,"id",overmade[0]),"wished"]);
+            overmade.shift();
+        }
+        //가브리엘 조각 드랍 (2% 확률)
+        if (Math.random() < gabrielPercent) {
+            if (user.wish !== undefined && user.wish[0] !== undefined) {
+                var id = user.wish[0];
+                if (!user.inventory[id]) {
+                    user.inventory[id] = {};
+                    user.inventory[id].jogak = 5;/*획득량*/
+                } else {
+                    user.inventory[id].jogak += 5;
+                }
+                //획득 효과음
+                if (user.option.sfx) sfxObj.gabriel.play();
+                //찜 아이템 조각 현황 업데이트
+                $("#main_set").style.display = "block";
+                $("#main_set").className = "color_set";
+                var text = "<img class='icon_gabriel' src='./img/icon_gabriel.png'> 가브리엘 조각 교환! (<span class='color_yellow'>" + indexArrKey(itemList,"id",id).name + "</span>)<br>";
+                if ($("#main_set").innerHTML.length <= 0) {
+                    $("#main_set").innerHTML = text;
+                } else {
+                    $("#main_set").innerHTML += text;
+                }
+                //조각이 상한치에 들어왔으면 획득으로 처리
+                if (user.inventory[id].jogak >= jogakMax) {
+                    if (!user.inventory[id].crafted) {
+                        user.inventory[id].crafted = 1;
+                        if (dropable > 0) {
+                            todayArr.push([indexArrKey(itemList,"id",id),"craft"]);
+                            dropable -= 1;
+                        } else {
+                            overmade.push(id);
+                        }
+                    } else if (user.inventory[id].jogak >= jogakMax * (user.inventory[id].crafted+1)) {
+                        user.inventory[id].crafted = +1;
+                        if (dropable > 0) {
+                            todayArr.push([indexArrKey(itemList,"id",id),"craft"]);
+                            dropable -= 1;
+                        } else {
+                            overmade.push(id);
+                        }
+                    }
+                }
+                //찜 아이템 조각 현황 업데이트
+                display.modifyJogak(id);
+            }
+        }
+        //비 가브리엘 조작 드랍 개시
+        for (var i = 0;i < jogakAmount;i++) {
+            //조각 아이템 선정
+            var jItem = this.getEpic().id;
+            //조각 개수 업데이트
+            if (!user.inventory[jItem]) {
+                user.inventory[jItem] = {};
+                user.inventory[jItem].jogak = 1;/*획득량*/
+            } else {
+                user.inventory[jItem].jogak += 1;
+            }
+            //조각이 상한치에 들어왔으면 획득으로 처리
+            if (user.inventory[jItem].jogak >= jogakMax) {
+                if (!user.inventory[jItem].crafted) {
+                    user.inventory[jItem].crafted = 1;
+                    if (dropable > 0) {
+                        todayArr.push([indexArrKey(itemList,"id",jItem),"craft"]);
+                        dropable -= 1;
+                    } else {
+                        overmade.push(jItem);
+                    }
+                } else if (user.inventory[jItem].jogak >= jogakMax * (user.inventory[jItem].crafted+1)) {
+                    user.inventory[jItem].crafted = +1;
+                    if (dropable > 0) {
+                        todayArr.push([indexArrKey(itemList,"id",jItem),"craft"]);
+                        dropable -= 1;
+                    } else {
+                        overmade.push(jItem);
+                    }
+                }
+            }
+            //찜 아이템 조각 현황 업데이트
+            display.modifyJogak(jItem);
+        }
+        display.checkWish();
+        //드랍한도 초과로 제작 불가 아이템 있으면 안내
+        if (overmade.length > 0) {
+            $("#main_set").style.display = "block";
+            $("#main_set").className = "color_set";
+            $("#main_set").innerHTML += "<span class='yellow'>" + thousand(overmade.length) + "개의 아이템은 조각을 모두 모았지만, 드랍한도 초과로 다음 회차에 드랍됩니다.</span><br>";
+        };
+        //개별 탐색 결과 확인
+        for (var i = 0;i < dropable;i++) {
             var result = simulate.getResult();
             //탐색 결과 임시저장
             todayArr.push(result);
@@ -538,11 +637,13 @@ simulateP.prototype.getResult = function() {
         //에픽 아이템 선정
         var item = this.getEpic();
         //찜한 아이템인지 & 미보유 아이템인지 판별
-        if (user.wish.indexOf(item.id) >= 0 && !user.inventory[item.id]) {
-            //찜한 아이템이라면 결과는 "찜했음"이 됨
-            result = "wished";
+        if (user.wish.indexOf(item.id) >= 0 &&
+            (!user.inventory[item.id] ||
+                (user.inventory[item.id] && !user.inventory[item.id].have))) {
+                    //찜한 아이템이라면 결과는 "찜했음"이 됨
+                    result = "wished";
         }
-        //결과 키워드 반환 (일반 에픽은 epic, 찜한 에픽은 "wished")
+        //결과 키워드 반환 (일반 에픽은 "epic", 찜한 에픽은 "wished")
         return [item, result];
     //(결과 : Not 에픽, Not 꽝)
     } else if (result !== false) {
@@ -560,7 +661,7 @@ simulateP.prototype.getEpic = function() {
     var type = droptype.name[type_num];
     //아이템 레벨 선정
     var lv = droplevel.name[rand(current_level[type_num])];
-    //아이템 최종 선정
+    //아이템 목록 재설정
     var tempArr = [];
     for (i=0;i<itemList.length;i++) {
         if ((itemList[i].sort1 === type || /*종류-무기*/
@@ -570,7 +671,7 @@ simulateP.prototype.getEpic = function() {
             tempArr.push(itemList[i]);
         }
     }
-    //미리 리스트에서 랜덤으로 선정, 반환
+    //리스트에서 랜덤으로 선정, 반환
     return tempArr[Math.floor(Math.random() * tempArr.length)];
 };
 //★아이템 선정결과 반영
@@ -590,15 +691,17 @@ simulateP.prototype.applyItem = function(item, wished) {
     if (typeof item !== "string") {
         //1. 아이템 획득/보유량/최초획득시기 기억
         var target;
-        if (!user.inventory[item.id]) {
-            user.inventory[item.id] = {};
-            user.inventory[item.id].get = 1;/*획득량*/
-            user.inventory[item.id].have = 1;/*보유량*/
-            user.inventory[item.id].firstGet = user.count;/*최초획득시기*/
-        } else {
-            user.inventory[item.id].get += 1;
-            user.inventory[item.id].have += 1;
-        }
+        /*아이디 체크*/
+        if (!user.inventory[item.id]) user.inventory[item.id] = {};
+        /*획득량*/
+        if (!user.inventory[item.id].get) user.inventory[item.id].get = 1;
+            else user.inventory[item.id].get += 1;
+        /*보유량*/
+        if (!user.inventory[item.id].have) user.inventory[item.id].have = 1;
+            else user.inventory[item.id].have += 1;
+        /*최초획득시기*/
+        if (!user.inventory[item.id].firstGet) user.inventory[item.id].firstGet = user.count;
+            else user.inventory[item.id].get += 1;
 
         //2. 아이템 획득내역 기록
             var itemObj = {};
@@ -672,9 +775,9 @@ simulateP.prototype.applyItem = function(item, wished) {
             }
 
         //3. 도감 업데이트
-        display.modifyInventory(item.id);
+        display.modifyInventory(item.id, wished);
         //4. (찜한 아이템이라면) 찜 목록 업데이트
-        display.checkWish(item.id);
+        display.checkWish();
 
     }
     //비에픽 : 세트 정보 미출력
@@ -712,11 +815,13 @@ simulateP.prototype.dropEpic = function(pos,item,wished) {
 
     //아이템 이름 변경
     var nameText = item.name;
-    animation.setItemName(pos, item.name, "epic");
+        //(제작한 아이템이라면) 뒤에 문구 추가
+        if (wished === "craft") nameText += " (조각 완성)";
+    animation.setItemName(pos, nameText, "epic");
 
     //에픽 등장 사운드
     if (user.option.sfx) {
-        if (wished !== "wished") {
+        if (wished !== "wished" && wished !== "craft") {
             //일반 에픽사운드 (아직 미출력이면)
             if (!sfxObj.epic_appear.playing())
                 sfxObj.epic_appear.play();
@@ -727,7 +832,7 @@ simulateP.prototype.dropEpic = function(pos,item,wished) {
         }
     }
     //에픽 등장 이펙트
-    if (wished !== "wished") {
+    if (wished !== "wished" && wished !== "craft") {
         animation.epicBeam(pos, "epic_appear");
     } else {
         animation.epicBeam(pos, "epic_appear_wish", {flip:true});
@@ -735,7 +840,7 @@ simulateP.prototype.dropEpic = function(pos,item,wished) {
     //아이템 회전 & 루팅 시작
     animation.moveItem(pos, wished, function() {
         //콜백
-        if (wished !== "wished") {
+        if (wished !== "wished" && wished !== "craft") {
         //일반 이펙트
             //에픽 착지 이펙트
             animation.epicBeam(pos, "epic_land");
@@ -756,7 +861,7 @@ simulateP.prototype.dropEpic = function(pos,item,wished) {
         void $("#main_crack").offsetWidth;
         //에픽 착지 사운드
         if (user.option.sfx) {
-            if (wished !== "wished") {
+            if (wished !== "wished" && wished !== "craft") {
                 //일반 에픽사운드
                 sfxObj.epic_land.play();
             } else {
@@ -1239,13 +1344,9 @@ displayP.prototype.createInventory = function(cmd) {
     var item;
     var id = "";
     var rarity = "";
-    var set = "";
-    var setKey = "";
-    var line = "";
-    var amount = 0;
-    var firstGet = 0;
-    var icon = "";
-        var icon_position = "";
+    var set = "", setKey = "", line = "";
+    var amount = 0, firstGet = 0, jogak = 0;
+    var icon = "", icon_position = "";
     //획득 가능 장비 레벨대 파악
     var levelList = [];
     for (var i = 0;i < dungeonList.length;i++) {
@@ -1265,8 +1366,9 @@ displayP.prototype.createInventory = function(cmd) {
         //ID, 등급 기억
         id = item.id;
         rarity = (item.set === "") ? "epic" : "set";
-        amount = (user.inventory[id]) ? user.inventory[id].have : 0;
-        firstGet = (user.inventory[id]) ? user.inventory[id].firstGet : 0;
+        amount = (user.inventory[id] && user.inventory[id].have) ? user.inventory[id].have : 0;
+        firstGet = (user.inventory[id] && user.inventory[id].firstGet) ? user.inventory[id].firstGet : 0;
+        jogak = (user.inventory[id] && user.inventory[id].jogak) ? user.inventory[id].jogak : 0;
         if (amount === 0) rarity = "nothing";
         //세트 키워드
         if (item.set !== "") {
@@ -1309,6 +1411,11 @@ displayP.prototype.createInventory = function(cmd) {
             el_firstGet.innerHTML = " (" + firstGet + "회차)";
         var el_detail = document.createElement("span.right.color_white");
             el_detail.innerHTML =  "[Lv." + item.level.toString() + "][" + ttype + "]";
+        var el_jogak = document.createElement("div.jogakProgress");
+            var el_jogak_bar = document.createElement("spen.jogakBar");
+                el_jogak_bar.style.width = Math.min(100, ((jogak / jogakMax) * 100)).toString() + "%";
+            var el_jogak_num = document.createElement("spen.jogakNum.font_shadow");
+                el_jogak_num.innerHTML = thousand(jogak) + " 에픽조각";
         //★아이템이 찜한건 지 체크
         if (user.wish.indexOf(id) >= 0) {
             //해당 아이템 이름 색상 변경, WISH 아이콘 추가
@@ -1318,6 +1425,9 @@ displayP.prototype.createInventory = function(cmd) {
         el_item.appendChild(el_icon);
         el_item.appendChild(el_firstGet);
         el_item.appendChild(el_detail);
+        el_item.appendChild(el_jogak);
+            el_jogak.appendChild(el_jogak_bar);
+            el_jogak.appendChild(el_jogak_num);
         //invenInfo에 저장해두기
         invenInfo.appendChild(el_item);
     }
@@ -1386,14 +1496,18 @@ displayP.prototype.updateInventory = function() {
     }
 };
 //★ 도감정보 수정 (documentFragment 활용)
-displayP.prototype.modifyInventory = function(id) {
+displayP.prototype.modifyInventory = function(id, wished) {
     //아이템 지정
     var item = indexArrKey(itemList,"id",id);
     //등급, 보유량, 최초획득시점 파악
     var rarity = (item.set === "") ? "epic" : "set";
     var have = (user.inventory[id]) ? user.inventory[id].have : 0;
     var firstGet = (user.inventory[id]) ? user.inventory[id].firstGet : 0;
+    var jogak = (user.inventory[id] && user.inventory[id].jogak) ? user.inventory[id].jogak : 0;
     //도감정보 수정
+        //(보유량 상관없이) 조각 수 업데이트
+        invenInfo.querySelector("#item_" + id + " .jogakBar").style.width = Math.min(100, ((jogak / jogakMax) * 100)).toString() + "%";
+        invenInfo.querySelector("#item_" + id + " .jogakNum").innerHTML  = thousand(jogak) + " 에픽조각";
         //(보유량 >= 1)
         if (have > 0) {
             //아이콘 표시
@@ -1405,7 +1519,10 @@ displayP.prototype.modifyInventory = function(id) {
             invenInfo.querySelector("#item_" + id).innerHTML =
                 invenInfo.querySelector("#item_" + id).innerHTML.replace(/\[x?(\d+)?\]/gi,"[x" + thousand(have) + "]");
             //최초획득 변경
-            invenInfo.querySelectorAll("#item_" + id + " .firstGet")[0].innerHTML = " (" + thousand(firstGet) + "회차)";
+            var count_text = " (" + thousand(firstGet) + "회차";
+                if (wished === "craft") count_text += ", 조각 완성";
+            count_text += ")";
+            invenInfo.querySelectorAll("#item_" + id + " .firstGet")[0].innerHTML = count_text;
             invenInfo.querySelectorAll("#item_" + id + " .firstGet")[0].classList.remove("nothing");
         //(보유량 = 0)
         } else  {
@@ -1421,6 +1538,17 @@ displayP.prototype.modifyInventory = function(id) {
             invenInfo.querySelectorAll("#item_" + id + " .firstGet")[0].innerHTML = "";
             invenInfo.querySelectorAll("#item_" + id + " .firstGet")[0].classList.add("nothing");
         }
+    //수정된 도감정보 업데이트
+    this.updateInventory();
+};
+//★ 도감 "조각"정보 수정 (documentFragment 활용)
+displayP.prototype.modifyJogak = function(id) {
+    //아이템 지정, 필요 정보 입수
+    var item = indexArrKey(itemList,"id",id);
+    var jogak = (user.inventory[id] && user.inventory[id].jogak) ? user.inventory[id].jogak : 0;
+    //조각 수 업데이트
+    invenInfo.querySelector("#item_" + id + " .jogakBar").style.width = Math.min(100, ((jogak / jogakMax) * 100)).toString() + "%";
+    invenInfo.querySelector("#item_" + id + " .jogakNum").innerHTML  = thousand(jogak) + " 에픽조각";
     //수정된 도감정보 업데이트
     this.updateInventory();
 };
@@ -1533,20 +1661,37 @@ displayP.prototype.checkWish = function() {
                 spritePosition(item.icon,"rem");
             //찜 아이템 보유여부 체크
             if (user.inventory[id] && user.inventory[id].have > 0) {
+                //아이템 보유 시
                 $("#wish_item_state" + (i+1).toString()).classList.remove("no");
+                $("#wish_item_state" + (i+1).toString()).classList.remove("jogak");
                 $("#wish_item_state" + (i+1).toString()).classList.add("yes");
-            } else {
+            } else if (user.inventory[id] && user.inventory[id].jogak >= jogakMax) {
+                //(아이템은 없지만) 제작 가능 시
                 $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
+                $("#wish_item_state" + (i+1).toString()).classList.remove("no");
+                $("#wish_item_state" + (i+1).toString()).classList.add("jogak");
+            } else {
+                //그 외
+                $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
+                $("#wish_item_state" + (i+1).toString()).classList.remove("jogak");
                 $("#wish_item_state" + (i+1).toString()).classList.add("no");
             }
+            //찜 아이템 조각 개수 체크
+            var tmpJogak =
+                (user.inventory[id] && user.inventory[id].jogak) ? user.inventory[id].jogak : 0;
+            $("#wish_item_jogak" + (i+1).toString()).innerHTML = thousand(tmpJogak);
         //(찜 안해둔 칸)
         } else {
             //아이콘 제거
             $("#wish_item_icon" + (i+1).toString()).style.backgroundPosition = "";
             $("#wish_item_icon" + (i+1).toString()).classList.add("nothing");
+            $("#wish_item_jogak" + (i+1).toString()).innerHTML = "";
             //찜 아이템 보유여부 : OFF
             $("#wish_item_state" + (i+1).toString()).classList.remove("yes");
             $("#wish_item_state" + (i+1).toString()).classList.remove("no");
+            $("#wish_item_state" + (i+1).toString()).classList.remove("jogak");
+            //찜 아이템 조각 개수 체크
+            $("#wish_item_jogak" + (i+1).toString()).innerHTML = "";
         }
     }
 };
@@ -2049,6 +2194,7 @@ mainP.prototype.enterMap = function(target) {
                 //던전 - NPC 관련, 메인 버튼 치우기
                 $("#main_npc_text").style.display = "none";
                 $("#main_npc").style.display = "none";
+                $("#main_tool").style.display = "none";
                 var options = $$(".main_option");
                 for (var i = 0;i < options.length;i++) {
                     options[i].style.display = "none";
@@ -2061,6 +2207,7 @@ mainP.prototype.enterMap = function(target) {
                 //던전 - NPC 관련, 메인 버튼 표시
                 $("#main_npc_text").style.display = "inline-block";
                 $("#main_npc").style.display = "block";
+                $("#main_tool").style.display = "block";
                 var options = $$(".main_option");
                 for (var i = 0;i < options.length;i++) {
                     options[i].style.display = "block";
@@ -2419,6 +2566,8 @@ mainP.prototype.setMenuButton = function() {
                 user.option.searchMode = selected;
                 //탐색모드 출력
                 $("#option_searchMode_text").innerHTML = user.option.searchMode;
+                    //게이트가 아니라면 버튼 문구도 변경
+                    if (selectedDungeon.now.id !== "gate") $("#button_main").innerHTML = user.option.searchMode + " 탐색";
 
                 //적용 사운드 출력
                 if (user.option.sfx) sfxObj.slot_act.play();
@@ -2567,10 +2716,6 @@ mainP.prototype.setMenuButton = function() {
         });
     };
 
-    //※ 기타 버튼 : 캐릭터 변경
-    $("#main_character_change").onclick = function() {
-        $("#option_character").click();
-    };
     //※ 기타 버튼 : NPC 클릭 (퍼펙트 모드)
     $("#main_npc").onclick = function() {
         if (!user.perfectMode) {
@@ -2636,6 +2781,18 @@ mainP.prototype.setMenuButton = function() {
 
 };
 var main = new mainP();
+
+$("#main_craft").onclick = function() {
+    swal({
+        title:"에픽조각 안내",
+        imageUrl: './img/gabriel.png',
+        html:"<div class='align_left'>"+
+            "<p>＊지옥파티를 돌 때마다 무작위로 10개의 장비가 에픽조각을 1개씩 획득합니다. 획득한 조각은 도감이나 찜 창에서 확인할 수 있습니다.</p><br>"+
+            "<p>＊첫번째 찜 아이템은 탐색 중 2% 확률로 가브리엘을 만나 에픽조각을 5개 획득합니다.</p><br>" +
+            "<p>＊에픽조각 1,000개를 모을 때마다, 해당 장비가 던전에서 드랍됩니다.</p>"+
+            "</div>"
+    });
+};
 //=====================================================================
 //※ 실행
 //=====================================================================
@@ -2660,6 +2817,11 @@ var main = new mainP();
 document.addEventListener("DOMContentLoaded", function(e) {
     //초기 함수
     main.init();
+    /*
+    display.createInventory();
+    main.setMenuButton();
+    $("#button_left_top").click();
+    */
 
     //나가기 경고
         //웹 브라우저
